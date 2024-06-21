@@ -73,8 +73,9 @@ grouped = {
 
 }
 
+
 def replace_item(item):
-    for pattern, actual in grouped: 
+    for pattern, actual in grouped.items(): 
         if re.search(pattern, item):
             return actual 
     return item 
@@ -83,3 +84,5 @@ def replace_item(item):
 df['physicalexampath'] = df['physicalexampath'].apply(replace_item)
 
 # %%
+
+df.head(100000000000000000000)
