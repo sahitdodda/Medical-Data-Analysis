@@ -85,4 +85,8 @@ df['physicalexampath'] = df['physicalexampath'].apply(replace_item)
 
 # %%
 
+# for now setting to nans and dropping all nans 
+df.loc[df['physicalexampath'].contains('notes')] = np.NaN
+
+
 df.head(100000000000000000000)
