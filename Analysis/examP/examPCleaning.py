@@ -3,9 +3,14 @@ import pandas as pd
 import numpy as np 
 import re 
 
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+
 df = pd.read_csv('examP.csv')
 
 df.head()
+
 
 
 # %%
@@ -81,6 +86,8 @@ def replace_item(item):
     return item 
 
 
+
+
 df['physicalexampath'] = df['physicalexampath'].apply(replace_item)
 
 # %%
@@ -89,4 +96,63 @@ df['physicalexampath'] = df['physicalexampath'].apply(replace_item)
 
 
 df.loc[df['physicalexampath'].str.contains('notes', na=False), 'physicalexampath'] = np.NaN
+
 df.head(100000000000000000000)
+
+
+# %%
+
+# Now, we attempt to do some level of multindexing 
+
+'''
+ PID -> TIME -> 1  FIO2
+                2  FIO2
+                3  FIO2
+                _______
+                1  O2sat
+                2  ... 
+                3                
+'''
+
+# the correct method should approx be sortby, which should create a multi index 
+# kind of exactly in the fashion shown above. 
+
+
+# temporary solution 
+
+# tells you where stuff moved in context of the original
+# df.reset_index(inplace=True)
+
+df = df.sort_values(by=['patientunitstayid', 'Time', 'physicalexampath'])
+df.set_index(['patientunitstayid', 'Time', 'physicalexampath'], inplace=True)
+df.head()
+
+
+
+# %%
+
+# example plots to make sure nothing be broken 
+
+plt.figure()
+# cool test woooo funny graph
+sns.barplot(data=df, x='Time', y='physicalexamtext')
+
+
+
+
+# %% 
+fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(15, 10))
+axes = axes.flatten()
+
+for i, col in enumerate(df.columns):
+    sns.scatterplot(data=df, x='Time', y=col, ax=axes[i])
+    axes[i].set_title(col)
+
+plt.tight_layout()
+plt.show()
+
+
+
+# look into LL idea for plotting each 
+# patientid!! and then also each lab. 
+
