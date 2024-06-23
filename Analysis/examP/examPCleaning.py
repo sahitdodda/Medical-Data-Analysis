@@ -12,6 +12,11 @@ df = pd.read_csv('examP.csv')
 df.head()
 
 
+# %%
+
+sns.heatmap(pd.isnull(df), cmap = 'viridis')
+
+
 
 # %%
 # techhnically there are no negatives 
@@ -102,6 +107,13 @@ df.head(100000000000000000000)
 
 # %%
 
+pathList = df['physicalexampath'].tolist()
+print(pathList)
+
+df.dropna(subset='physicalexampath')
+
+# %%
+
 # Now, we attempt to do some level of multindexing 
 
 '''
@@ -125,7 +137,7 @@ df.head(100000000000000000000)
 
 df = df.sort_values(by=['patientunitstayid', 'Time', 'physicalexampath'])
 df.set_index(['patientunitstayid', 'Time', 'physicalexampath'], inplace=True)
-df.head()
+df.head(100000000)
 
 
 
@@ -135,8 +147,17 @@ df.head()
 
 plt.figure()
 # cool test woooo funny graph
-sns.barplot(data=df, x='Time', y='physicalexamtext')
+sns.barplot(data=df, x='Time', y=df.columns.get_level_values(0))
 
+
+
+
+
+
+# %%
+
+catList = df['physicalexampath'].tolist()
+print(catList)
 
 
 
@@ -145,7 +166,7 @@ fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(15, 10))
 axes = axes.flatten()
 
 for i, col in enumerate(df.columns):
-    sns.scatterplot(data=df, x='Time', y=col, ax=axes[i])
+    sns.scatterplot(data=df, x='Time', y='physicalexamvalue', ax=axes[i])
     axes[i].set_title(col)
 
 plt.tight_layout()
@@ -155,4 +176,7 @@ plt.show()
 
 # look into LL idea for plotting each 
 # patientid!! and then also each lab. 
+
+
+# %%
 
