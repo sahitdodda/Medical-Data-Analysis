@@ -28,58 +28,60 @@ df.head()
 # %%
 
 grouped = { 
-    'notes/Progress Notes/Physical Exam/Physical Exam/Constitutional/Vital Sign and Physiological Data/FiO2%/FiO2%' : 'FiO2%', 
-    'notes/Progress Notes/Physical Exam/Physical Exam/Constitutional/Vital Sign and Physiological Data/O2 Sat%/O2 Sat% Current' : 'O2 Sat%', 
-    'notes/Progress Notes/Physical Exam/Physical Exam/Constitutional/Vital Sign and Physiological Data/PEEP/PEEP' : 'PEEP',
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Constitutional/Vital Sign and Physiological Data/FiO2%/FiO2%' : 'FiO2%', 
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Constitutional/Vital Sign and Physiological Data/O2 Sat%/O2 Sat% Current' : 'O2 Sat%', 
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Constitutional/Vital Sign and Physiological Data/PEEP/PEEP' : 'PEEP',
 
     # group 1, spontaneous and ventilated
-    'notes/Progress Notes/Physical Exam/Physical Exam/Constitutional/Vital Sign and Physiological Data/Resp Mode/' : 'respMode',
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Constitutional/Vital Sign and Physiological Data/Resp Mode/' : 'respMode',
 
-    'notes/Progress Notes/Physical Exam/Physical Exam/Constitutional/Weight and I&O/Weight (kg)/Admission' : 'kgAdmission',
+    # doesn't exist!!!!!!
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Constitutional/Weight and I&O/Weight (kg)/Admission' : 'kgAdmission',
 
-    # group 2 
-    'notes/Progress Notes/Physical Exam/Physical Exam/Head and Neck/Eyes/Pupils/(reaction)/' : 'pupilReact',
+    # group 2 -> doesn't exist!!!!!!
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Head and Neck/Eyes/Pupils/(reaction)/' : 'pupilReact',
 
-    # group 3
-    'notes/Progress Notes/Physical Exam/Physical Exam/Head and Neck/Eyes/Pupils/(symmetry)/' : 'pupilSymmetry',
+    # group 3 -> doesn't exist!!!!!
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Head and Neck/Eyes/Pupils/(symmetry)/' : 'pupilSymmetry',
 
     # group 4
-    'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/Cranial Nerves/' : 'crainNerves',
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/Cranial Nerves/' : 'crainNerves',
 
     # group 5 
-    'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/' : 'neuroGCS',
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/' : 'neuroGCS',
 
-    # group 6 
-    'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Eyes Score' : 'neuroGCS_Eyes',
+    # group 6 -> !!!!
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Eyes Score/' : 'neuroGCS_Eyes',
 
-    # group 7 
-    'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Mental Status/Affect/' : 'mentalAffect',
+    # group 7 !!!!
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Mental Status/Affect/' : 'mentalAffect',
 
     # group 8 
-    'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Mental Status/Level of Consciousness/' : 'levelConsciousness', 
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Mental Status/Level of Consciousness/' : 'levelConsciousness', 
 
-    # group 9 
-    'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Mental Status/Orientation/unable to assess orientation' : 'unableOrient',
+    # group 9 -> doesn't exist!!!!!
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Mental Status/Orientation/unable to assess orientation/' : 'unableOrient',
 
-    # group 10 
-    'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Motor Score/' : 'neuroGCS_Motor',
+    # group 10 !!!!
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Motor Score/' : 'neuroGCS_Motor',
 
-    # group 11
-    'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Score/' : 'neuroGCS_Score',
+    # group 11!!!!!
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Score/' : 'neuroGCS_Score',
 
-    # group 12
-    'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Verbal Score/' : 'neuroGCS_Verbal_Score',
+    # group 12!!!!
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Verbal Score/' : 'neuroGCS_Verbal_Score',
 
-    'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/Motor/decreased strength' : 'motorDecreased',
-
-    'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/Reflexes/Abnormal Reflex/diffusely' : 'reflexDiffused',
-
-    'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/Reflexes/decreased ' : 'reflexDecreased',
-
-    'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/Sensation/no response to pain ' : 'noPain', 
+    # does not exist !!!!
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/Motor/decreased strength/' : 'motorDecreased',
+    # not exist !!!!
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/Reflexes/Abnormal Reflex/diffusely/' : 'reflexDiffused',
+    # not exist !!!!
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/Reflexes/decreased/ ' : 'reflexDecreased',
+    #!!!!
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/Sensation/no response to pain/ ' : 'noPain', 
 
     # group 13 
-    'notes/Progress Notes/Physical Exam/Physical Exam/Pulmonary/Airway/' : 'pulmonaryAirway'
+    r'notes/Progress Notes/Physical Exam/Physical Exam/Pulmonary/Airway/' : 'pulmonaryAirway'
 
 }
 
@@ -107,10 +109,10 @@ df.head(100000000000000000000)
 
 # %%
 
+
+df.dropna(subset=['physicalexampath'], inplace=True)
 pathList = df['physicalexampath'].tolist()
 print(pathList)
-
-df.dropna(subset='physicalexampath')
 
 # %%
 
@@ -136,7 +138,7 @@ df.dropna(subset='physicalexampath')
 # df.reset_index(inplace=True)
 
 df = df.sort_values(by=['patientunitstayid', 'Time', 'physicalexampath'])
-df.set_index(['patientunitstayid', 'Time', 'physicalexampath'], inplace=True)
+# df.set_index(['patientunitstayid', 'Time', 'physicalexampath'], inplace=True)
 df.head(100000000)
 
 
@@ -147,7 +149,7 @@ df.head(100000000)
 
 plt.figure()
 # cool test woooo funny graph
-sns.barplot(data=df, x='Time', y=df.columns.get_level_values(0))
+sns.barplot(data=df, x='Time', y='physicalexampath')
 
 
 
@@ -165,9 +167,9 @@ print(catList)
 fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(15, 10))
 axes = axes.flatten()
 
-for i, col in enumerate(df.columns):
-    sns.scatterplot(data=df, x='Time', y='physicalexamvalue', ax=axes[i])
-    axes[i].set_title(col)
+for i, col in enumerate(catList):
+    sns.scatterplot(data=df, x='Time', y=catList, ax=axes[i])
+    axes[i].set_title(catList)
 
 plt.tight_layout()
 plt.show()
