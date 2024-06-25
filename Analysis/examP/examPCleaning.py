@@ -118,6 +118,9 @@ df = df.sort_values(by=['patientunitstayid', 'Time', 'physicalexampath'])
 # df.set_index(['patientunitstayid', 'Time', 'physicalexampath'], inplace=True)
 df.head(100000000)
 
+# %%
+
+df.to_csv('examP_results.csv')
 
 
 # %%

@@ -10,4 +10,9 @@ df.loc[df["apachescore"] < 1, 'apachescore'] = np.NaN
 
 
 # %%
-df.dropna()
+df = df.sort_values(by=['patientunitstayid'])
+df.head()
+
+# %%
+
+df.to_csv('apache_results.csv')

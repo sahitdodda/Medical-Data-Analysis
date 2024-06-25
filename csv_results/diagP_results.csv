@@ -1,0 +1,227 @@
+,patientunitstayid,activeupondischarge,diagnosisstring,diagnosispriority
+1,193629,True,burns/trauma|trauma - CNS|intracranial injury|with subdural hematoma,Primary
+20,216904,True,neurologic|post-neurosurgery|post craniotomy|for hemorrhage,Major
+49,263556,True,burns/trauma|trauma - CNS|intracranial injury|with subdural hematoma,Major
+63,263556,True,endocrine|glucose metabolism|diabetes mellitus,Major
+85,263556,True,neurologic|post-neurosurgery|post craniotomy|for hemorrhage,Primary
+89,263556,True,burns/trauma|trauma - CNS|intracranial injury|with loss of consciousness of unknown duration,Major
+93,263556,True,pulmonary|respiratory failure|acute respiratory failure|due to neurological process,Major
+97,263556,True,burns/trauma|trauma - CNS|intracranial injury|with depressed mental status,Major
+291,306989,True,pulmonary|respiratory failure|acute respiratory failure|due to neurological process,Major
+292,306989,True,burns/trauma|trauma - CNS|intracranial injury|with herniation syndrome,Primary
+295,306989,True,burns/trauma|trauma - CNS|intracranial injury|with loss of consciousness of unknown duration,Primary
+299,306989,True,burns/trauma|trauma - CNS|intracranial injury|with subdural hematoma,Primary
+306,306989,True,neurologic|post-neurosurgery|post craniotomy|for hemorrhage,Major
+356,621883,True,pulmonary|respiratory failure|acute respiratory failure,Major
+353,621883,True,neurologic|trauma - CNS|intracranial injury|with subdural hematoma,Major
+346,621883,True,hematology|bleeding and red blood cell disorders|anemia,Major
+350,621883,True,neurologic|post-neurosurgery|post craniectomy,Primary
+371,799478,True,neurologic|trauma - CNS|intracranial injury|with subdural hematoma,Primary
+376,799478,True,pulmonary|respiratory failure|acute respiratory failure,Major
+384,799478,True,pulmonary|respiratory failure|Tracheostomy performed during this admission for ventilatory support,Major
+392,799478,True,neurologic|post-neurosurgery|post craniotomy,Major
+413,1079428,True,neurologic|post-neurosurgery|post craniotomy|for hemorrhage,Primary
+439,1082792,True,burns/trauma|trauma - skeletal|bone fracture(s)|lumbar spine,Major
+419,1082792,True,burns/trauma|trauma- head and neck|facial bone fracture,Major
+423,1082792,True,burns/trauma|trauma - CNS|intracranial injury|with intracerebral hemorrhage,Primary
+432,1082792,True,burns/trauma|trauma - CNS|intracranial injury|with subdural hematoma,Primary
+437,1082792,True,burns/trauma|trauma - CNS|intracranial injury|with herniation syndrome,Primary
+474,1088266,True,surgery|neurosurgical issues|elevated intracranial pressure,Major
+463,1088266,True,neurologic|trauma - CNS|fracture of skull|base,Major
+456,1088266,True,neurologic|trauma - CNS|increased intracranial pressure,Primary
+609,1116007,True,neurologic|post-neurosurgery|post craniotomy|for hemorrhage,Major
+612,1116007,True,burns/trauma|trauma - CNS|intracranial injury|with intracerebral hemorrhage,Primary
+615,1116007,True,burns/trauma|trauma - CNS|intracranial injury|with subdural hematoma,Primary
+629,1116007,True,burns/trauma|trauma - chest|lung trauma,Major
+631,1116007,True,burns/trauma|trauma - CNS|spinal cord injury|lumbar,Major
+700,1130290,True,burns/trauma|trauma- head and neck|facial bone fracture|orbital fracture,Major
+713,1130290,True,burns/trauma|trauma - CNS|intracranial injury|with subarachnoid hemorrhage,Major
+718,1130290,True,burns/trauma|trauma - CNS|intracranial injury|with concussion,Major
+719,1130290,True,burns/trauma|trauma- head and neck|facial bone fracture|maxillary fracture,Major
+728,1130290,True,burns/trauma|trauma - CNS|intracranial injury|with subdural hematoma,Major
+729,1130290,True,burns/trauma|trauma - skeletal|bone fracture(s)|ribs,Major
+731,1130290,True,pulmonary|respiratory failure|acute respiratory failure|suspected,Primary
+736,1130290,True,burns/trauma|trauma - chest|lung trauma|right,Major
+749,1162658,True,burns/trauma|trauma - CNS|intracranial injury,Major
+748,1162658,True,burns/trauma|trauma - CNS|fracture of skull,Major
+742,1162658,True,neurologic|post-neurosurgery|post craniotomy,Primary
+746,1162658,True,pulmonary|respiratory failure|acute respiratory failure,Major
+760,1210520,True,neurologic|trauma - CNS|intracranial injury|with subdural hematoma,Primary
+761,1210520,True,neurologic|trauma - CNS|intracranial injury|with intracerebral hemorrhage,Primary
+762,1210520,True,burns/trauma|trauma - skeletal|bone fracture(s),Major
+948,2375786,True,neurologic|post-neurosurgery|post craniotomy,Primary
+950,2375786,True,cardiovascular|ventricular disorders|hypertension,Major
+957,2671145,True,burns/trauma|trauma - CNS|intracranial injury|with diffuse axonal injury,Primary
+958,2671145,True,pulmonary|respiratory failure|acute respiratory failure,Major
+959,2671145,True,burns/trauma|trauma - CNS|intracranial injury|with loss of consciousness 1-24 hours,Primary
+960,2671145,True,burns/trauma|trauma - skeletal|bone fracture(s)|cervical spine,Major
+1010,2683425,True,neurologic|trauma - CNS|coma,Major
+1004,2683425,True,pulmonary|pleural disorders|pleural effusion,Major
+966,2683425,True,cardiovascular|shock / hypotension|sepsis|severe,Primary
+973,2683425,True,pulmonary|pulmonary infections|pneumonia,Major
+992,2683425,True,infectious diseases|GI infections|peritonitis,Major
+1015,2689775,True,endocrine|fluids and electrolytes|diabetes insipidus|nephrogenic,Major
+1018,2689775,True,burns/trauma|trauma - CNS|increased intracranial pressure,Major
+1019,2689775,True,burns/trauma|trauma - CNS|intracranial injury|loss of consciousness <= 60 mins,Primary
+1020,2689775,True,burns/trauma|trauma - CNS|fracture of skull,Major
+1023,2721908,True,neurologic|post-neurosurgery|post craniotomy,Major
+1026,2721908,True,burns/trauma|trauma - CNS|fracture of skull,Major
+1027,2721908,True,burns/trauma|trauma - CNS|depressed level of consciousness,Primary
+1040,2722053,True,burns/trauma|trauma - skeletal|bone fracture(s)|right upper extremity|radius|closed,Major
+1039,2722053,True,burns/trauma|trauma - chest|pneumothorax,Major
+1038,2722053,True,pulmonary|respiratory failure|acute respiratory failure,Major
+1037,2722053,True,burns/trauma|trauma - skeletal|bone fracture(s)|cervical spine|open,Major
+1036,2722053,True,burns/trauma|trauma- head and neck|facial bone fracture|orbital fracture,Major
+1035,2722053,True,burns/trauma|trauma - CNS|intracranial injury|with epidural hematoma,Primary
+1033,2722053,True,burns/trauma|trauma - CNS|fracture of skull|base,Major
+1031,2722053,True,burns/trauma|trauma- head and neck|facial bone fracture|nasal fracture,Major
+1030,2722053,True,burns/trauma|trauma - CNS|intracranial injury|with loss of consciousness 1-24 hours,Primary
+1029,2722053,True,burns/trauma|trauma - chest|lung trauma|with contusion of lung,Major
+1028,2722053,True,burns/trauma|trauma- head and neck|facial bone fracture|maxillary fracture,Major
+1034,2722053,True,burns/trauma|trauma - skeletal|bone fracture(s)|right lower extremity,Major
+1032,2722053,True,burns/trauma|trauma - chest|lung trauma|left,Major
+1062,2724565,True,burns/trauma|trauma - CNS|intracranial injury|with subarachnoid hemorrhage,Primary
+1056,2724565,True,burns/trauma|trauma - skeletal|bone fracture(s)|acetabulum|closed,Major
+1061,2724565,True,burns/trauma|trauma - skeletal|bone fracture(s)|pelvis|closed,Major
+1059,2724565,True,burns/trauma|trauma - CNS|intracranial injury|with intraventricular hemorrhage,Primary
+1057,2724565,True,burns/trauma|trauma - chest|lung trauma|with contusion of lung,Major
+1054,2724565,True,neurologic|altered mental status / pain|change in mental status,Major
+1049,2724565,True,burns/trauma|trauma - CNS|depressed level of consciousness,Major
+1046,2724565,True,burns/trauma|trauma - skeletal|bone fracture(s)|right upper extremity|humerus|closed,Major
+1044,2724565,True,burns/trauma|trauma - skeletal|bone fracture(s)|ribs|closed,Major
+1043,2724565,True,burns/trauma|trauma - chest|lung trauma|right,Major
+1050,2724565,True,burns/trauma|trauma - chest|lung trauma|left,Major
+1066,2725853,True,burns/trauma|trauma - CNS|intracranial injury|with loss of consciousness of unknown duration,Primary
+1067,2725853,True,burns/trauma|trauma - CNS|intracranial injury|with intracerebral hemorrhage,Primary
+1073,2725853,True,pulmonary|respiratory failure|acute respiratory failure,Major
+1085,2767039,True,burns/trauma|trauma - CNS|intracranial injury|with subarachnoid hemorrhage,Major
+1087,2767039,True,neurologic|altered mental status / pain|change in mental status,Primary
+1093,2767039,True,burns/trauma|trauma - CNS|intracranial injury|with loss of consciousness 1-24 hours,Major
+1125,2768739,True,neurologic|trauma - CNS|intracranial injury|with subdural hematoma,Major
+1121,2768739,True,hematology|platelet disorders|thrombocytopenia,Major
+1109,2768739,True,neurologic|trauma - CNS|intracranial injury|with subarachnoid hemorrhage,Major
+1104,2768739,True,neurologic|post-neurosurgery|post craniotomy|for hemorrhage,Primary
+1098,2768739,True,neurologic|altered mental status / pain|drug withdrawal syndrome|alcohol,Major
+1100,2768739,True,neurologic|trauma - CNS|intracranial injury|with cerebral contusion,Major
+1139,2773734,True,burns/trauma|trauma - CNS|intracranial injury|with subdural hematoma,Primary
+1141,2782239,True,burns/trauma|trauma - CNS|fracture of skull|vault|closed|with intracerebral hemorrhage,Primary
+1143,2782239,True,burns/trauma|trauma - skeletal|bone fracture(s)|pelvis,Major
+1144,2782239,True,pulmonary|respiratory failure|acute respiratory distress,Major
+1146,2782239,True,pulmonary|respiratory failure|acute respiratory failure,Major
+1148,2782239,True,burns/trauma|trauma - CNS|fracture of skull|vault|closed|with subarachnoid hemorrhage,Primary
+1150,2782239,True,pulmonary|trauma|chest wall trauma,Major
+1152,2782239,True,burns/trauma|trauma- head and neck|eye injury,Major
+1169,2803129,True,pulmonary|pulmonary infections|pneumonia,Major
+1168,2803129,True,burns/trauma|trauma - CNS|intracranial injury|with loss of consciousness 1-24 hours,Major
+1158,2803129,True,pulmonary|respiratory failure|acute respiratory failure,Major
+1165,2803129,True,neurologic|post-neurosurgery|post craniotomy,Primary
+1166,2803129,True,burns/trauma|trauma - CNS|intracranial injury|with subdural hematoma,Major
+1170,2823473,True,burns/trauma|trauma - CNS|coma,Major
+1171,2823473,True,burns/trauma|trauma - abdomen|blunt abdominal trauma,Major
+1172,2823473,True,burns/trauma|trauma - abdomen|hepatic trauma,Major
+1173,2823473,True,burns/trauma|trauma - CNS|fracture of skull,Primary
+1174,2823473,True,burns/trauma|trauma - skeletal|bone fracture(s)|left lower extremity,Major
+1175,2823473,True,burns/trauma|trauma - skeletal|bone fracture(s)|right lower extremity,Major
+1176,2846229,True,burns/trauma|trauma - CNS|intracranial injury|with subarachnoid hemorrhage,Primary
+1179,2846229,True,burns/trauma|trauma - CNS|fracture of skull,Major
+1181,2846229,True,burns/trauma|trauma - CNS|intracranial injury|with subdural hematoma,Primary
+1183,2846229,True,cardiovascular|arrhythmias|atrial fibrillation,Major
+1214,2870532,True,burns/trauma|trauma - CNS|fracture of skull|vault,Major
+1208,2870532,True,burns/trauma|trauma - CNS|fracture of skull|base,Major
+1207,2870532,True,burns/trauma|trauma - CNS|increased intracranial pressure,Major
+1196,2870532,True,burns/trauma|trauma - CNS|intracranial injury|with loss of consciousness of unknown duration,Primary
+1192,2870532,True,burns/trauma|trauma - CNS|intracranial injury|with subarachnoid hemorrhage,Primary
+1198,2870532,True,burns/trauma|trauma - CNS|intracranial injury|with subdural hematoma,Primary
+1241,2885054,True,burns/trauma|trauma- head and neck|facial bone fracture,Major
+1216,2885054,True,burns/trauma|trauma - chest|lung trauma,Major
+1220,2885054,True,pulmonary|pulmonary infections|pneumonia,Major
+1224,2885054,True,burns/trauma|trauma - CNS|intracranial injury|with subarachnoid hemorrhage,Primary
+1225,2885054,True,burns/trauma|trauma - CNS|intracranial injury|with epidural hematoma,Primary
+1229,2885054,True,burns/trauma|trauma - skeletal|bone fracture(s)|lumbar spine,Major
+1233,2885054,True,pulmonary|respiratory failure|chronic respiratory failure,Major
+1237,2885054,True,neurologic|post-neurosurgery|post craniectomy,Major
+1250,2887235,True,cardiovascular|cardiac arrest|cardiac arrest,Major
+1251,2887235,True,burns/trauma|trauma - CNS|intracranial injury,Major
+1247,2887235,True,neurologic|trauma - CNS|fracture of skull|vault|open,Major
+1248,2887235,True,neurologic|post-neurosurgery|post craniotomy,Primary
+1252,2890935,True,burns/trauma|trauma - CNS|intracranial injury|with subdural hematoma,Major
+1256,2890935,True,neurologic|post-neurosurgery|post craniotomy|for hemorrhage,Primary
+1267,2890935,True,neurologic|altered mental status / pain|coma,Major
+1269,2890935,True,pulmonary|pulmonary infections|pneumonia,Major
+1270,2895083,True,neurologic|disorders of vasculature|cerebral subdural hematoma,Primary
+1296,2898120,True,burns/trauma|trauma - chest|lung trauma|right,Major
+1294,2898120,True,burns/trauma|trauma - CNS|intracranial injury|with intracerebral hemorrhage,Primary
+1292,2898120,True,burns/trauma|trauma - abdomen|blunt abdominal trauma,Major
+1286,2898120,True,burns/trauma|trauma - chest|lung trauma|with contusion of lung,Major
+1297,2898120,True,burns/trauma|trauma - skeletal|bone fracture(s)|ribs,Major
+1277,2898120,True,burns/trauma|trauma - skeletal|bone fracture(s)|cervical spine,Major
+1273,2898120,True,burns/trauma|trauma - CNS|intracranial injury|with subdural hematoma,Primary
+1271,2898120,True,burns/trauma|trauma - chest|pneumothorax,Major
+1282,2898120,True,burns/trauma|trauma - skeletal|bone fracture(s)|clavicle,Major
+1349,3064120,True,neurologic|trauma - CNS|increased intracranial pressure|herniation syndrome|uncal,Primary
+1634,3064120,True,neurologic|disorders of vasculature|cerebral subdural hematoma|secondary to trauma,Major
+1646,3064120,True,neurologic|seizures|seizures|generalized tonic -clonic,Major
+1658,3064120,True,neurologic|seizures|seizures|suspected,Major
+2341,3075566,True,neurologic|trauma - CNS|intracranial injury|with subarachnoid hemorrhage,Primary
+2347,3075566,True,neurologic|trauma - CNS|intracranial injury|with intracerebral hemorrhage,Primary
+2522,3075566,True,neurologic|trauma - CNS|depressed level of consciousness,Major
+2349,3075566,True,neurologic|trauma - CNS|intracranial injury|with subdural hematoma,Primary
+2350,3075566,True,infectious diseases|systemic/other infections|fever|etiology unknown,Major
+2469,3075566,True,burns/trauma|trauma - CNS|intracranial injury,Major
+2386,3075566,True,pulmonary|respiratory failure|acute respiratory failure|due to neurological process,Primary
+2468,3075566,True,neurologic|CNS mass lesions|brain herniation syndrome,Major
+2511,3075566,True,neurologic|altered mental status / pain|coma,Major
+2339,3075566,True,neurologic|post-neurosurgery|post craniectomy,Major
+2379,3075566,True,surgery|neurosurgical issues|brain edema|present on closure,Major
+2335,3075566,True,neurologic|trauma - CNS|intracranial injury|with cerebral contusion,Primary
+2322,3075566,True,surgery|neurosurgical issues|high risk for seizures,Major
+2328,3075566,True,cardiovascular|arrhythmias|AV block|complete heart block,Major
+2287,3075566,True,neurologic|trauma - CNS|intracranial injury|with cerebral contusion,Major
+2303,3075566,True,neurologic|trauma - CNS|intracranial injury|with subdural hematoma,Major
+2306,3075566,True,neurologic|trauma - CNS|increased intracranial pressure|herniation syndrome|central,Major
+2307,3075566,True,neurologic|trauma - CNS|intracranial injury|no loss of consciousness,Major
+2329,3075566,True,neurologic|trauma - CNS|intracranial injury|with edema,Major
+2315,3075566,True,neurologic|trauma - CNS|intracranial injury|with loss of consciousness 1-24 hours,Major
+2319,3075566,True,neurologic|trauma - CNS|intracranial injury|with increased ICP,Major
+2323,3075566,True,neurologic|trauma - CNS|intracranial injury|with depressed mental status,Major
+2324,3075566,True,cardiovascular|arrhythmias|AV block|etiology undefined,Major
+2311,3075566,True,neurologic|trauma - CNS|intracranial injury|with subarachnoid hemorrhage,Major
+3859,3210988,True,neurologic|trauma - CNS|intracranial injury|no loss of consciousness,Major
+3858,3210988,True,burns/trauma|trauma - CNS|intracranial injury|with intracerebral hemorrhage,Primary
+3860,3210988,True,cardiovascular|vascular disorders|hypertension,Major
+3854,3210988,True,neurologic|post-neurosurgery|post craniotomy|for hemorrhage,Major
+3856,3210988,True,burns/trauma|trauma - CNS|intracranial injury|with subarachnoid hemorrhage,Primary
+3869,3212405,True,neurologic|post-neurosurgery|post craniotomy,Primary
+3877,3212405,True,neurologic|trauma - CNS|intracranial injury|with subarachnoid hemorrhage,Major
+3885,3212405,True,infectious diseases|GI infections|diarrhea due to infection|C. difficile colitis,Major
+3893,3212405,True,neurologic|trauma - CNS|intracranial injury|with subdural hematoma,Major
+3987,3214569,True,surgery|orthopedic surgery|s/p surgical repair of fracture,Major
+3990,3214569,True,burns/trauma|trauma - skeletal|bone fracture(s)|right upper extremity|ulna,Major
+3991,3214569,True,neurologic|post-neurosurgery|post craniotomy|for hemorrhage,Primary
+4037,3217832,True,burns/trauma|trauma - CNS|intracranial injury,Primary
+4033,3217832,True,burns/trauma|trauma - CNS|spinal cord injury|cervical,Major
+4020,3217832,True,neurologic|post-neurosurgery|post craniotomy|for hemorrhage,Major
+4017,3217832,True,burns/trauma|trauma - CNS|spinal cord injury|lumbar,Major
+4098,3222024,True,burns/trauma|trauma- head and neck|oral injury,Major
+4112,3222024,True,neurologic|post-neurosurgery|post craniotomy|for hemorrhage,Primary
+4116,3222024,True,burns/trauma|trauma- head and neck|facial bone fracture|orbital trauma,Major
+4118,3222024,True,burns/trauma|trauma- head and neck|eye injury|right,Major
+4148,3245093,True,burns/trauma|trauma - skeletal|bone fracture(s)|right upper extremity|radius|open,Major
+4153,3245093,True,burns/trauma|trauma - CNS|intracranial injury|with epidural hematoma,Major
+4152,3245093,True,burns/trauma|trauma - CNS|intracranial injury|with subarachnoid hemorrhage,Major
+4151,3245093,True,burns/trauma|trauma - CNS|intracranial injury|with cerebral contusion,Major
+4150,3245093,True,burns/trauma|trauma - skeletal|bone fracture(s)|clavicle|open,Major
+4146,3245093,True,neurologic|post-neurosurgery|post craniotomy|for hemorrhage,Primary
+4143,3245093,True,burns/trauma|trauma - chest|pneumothorax,Major
+4139,3245093,True,burns/trauma|trauma - skeletal|bone fracture(s)|scapula,Major
+4131,3245093,True,burns/trauma|trauma - skeletal|bone fracture(s)|right upper extremity|ulna|open,Major
+4127,3245093,True,burns/trauma|trauma - CNS|intracranial injury|loss of consciousness <= 60 mins,Major
+4123,3245093,True,burns/trauma|trauma- head and neck|facial bone fracture|orbital fracture,Major
+4172,3246709,True,burns/trauma|trauma - skeletal|bone fracture(s)|cervical spine,Major
+4177,3246709,True,burns/trauma|trauma - skeletal|bone fracture(s)|clavicle,Major
+4190,3246709,True,neurologic|post-neurosurgery|post craniotomy|for hemorrhage,Primary
+4199,3246709,True,burns/trauma|trauma - CNS|depressed level of consciousness,Major
+4209,3336597,True,burns/trauma|trauma - chest|pneumothorax,Major
+4211,3336597,True,burns/trauma|trauma - CNS|fracture of skull,Major
+4206,3336597,True,burns/trauma|trauma - chest|lung trauma|with contusion of lung,Major
+4213,3336597,True,burns/trauma|trauma - CNS|intracranial injury|with subarachnoid hemorrhage,Primary

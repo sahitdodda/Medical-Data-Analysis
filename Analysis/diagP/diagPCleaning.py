@@ -22,8 +22,11 @@ df = df.loc[df['activeupondischarge'] != False]
 
 # %%
 df = df.loc[df['diagnosispriority'].isin(['Primary', 'Major'])]
-
+df = df.sort_values(by=['patientunitstayid'])
 df.head()
 
+# %%
+
+df.to_csv('diagP_results.csv')
 
 

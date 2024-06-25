@@ -59,6 +59,8 @@ df.head()
 df = df.sort_values(by=['patientunitstayid', 'Time'])
 df.head(100000)
 
+# %%
 
+df.to_csv('infsP_results.csv')
 
 

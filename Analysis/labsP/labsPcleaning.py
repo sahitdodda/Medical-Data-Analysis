@@ -103,6 +103,11 @@ df.head()
 
 
 # %%
+
+df.to_csv('labsP_results.csv')
+
+
+# %%
 df.shape
 
 # %%
