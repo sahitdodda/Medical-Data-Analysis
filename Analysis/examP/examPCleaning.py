@@ -28,6 +28,11 @@ df.head()
 # %%
 
 grouped = { 
+    # level of consciousness 
+    # pupils 
+        # pupils reaction and pupils symmetry
+    # get weight 
+
     r'notes/Progress Notes/Physical Exam/Physical Exam/Constitutional/Vital Sign and Physiological Data/FiO2%/FiO2%' : 'FiO2%', 
     r'notes/Progress Notes/Physical Exam/Physical Exam/Constitutional/Vital Sign and Physiological Data/O2 Sat%/O2 Sat% Current' : 'O2 Sat%', 
     r'notes/Progress Notes/Physical Exam/Physical Exam/Constitutional/Vital Sign and Physiological Data/PEEP/PEEP' : 'PEEP',
@@ -51,7 +56,7 @@ grouped = {
     r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/' : 'neuroGCS',
 
     # group 6 -> !!!!
-    r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Eyes Score/' : 'neuroGCS_Eyes',
+    # r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Eyes Score/' : 'neuroGCS_Eyes',
 
     # group 7 !!!!
     r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Mental Status/Affect/' : 'mentalAffect',
@@ -63,13 +68,13 @@ grouped = {
     r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Mental Status/Orientation/unable to assess orientation/' : 'unableOrient',
 
     # group 10 !!!!
-    r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Motor Score/' : 'neuroGCS_Motor',
+    # r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Motor Score/' : 'neuroGCS_Motor',
 
     # group 11!!!!!
-    r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Score/' : 'neuroGCS_Score',
+    # r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Score/' : 'neuroGCS_Score',
 
     # group 12!!!!
-    r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Verbal Score/' : 'neuroGCS_Verbal_Score',
+    # r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/GCS/Verbal Score/' : 'neuroGCS_Verbal_Score',
 
     # does not exist !!!!
     r'notes/Progress Notes/Physical Exam/Physical Exam/Neurologic/Motor/decreased strength/' : 'motorDecreased',

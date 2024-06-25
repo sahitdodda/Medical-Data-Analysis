@@ -122,6 +122,10 @@ df.head()
 
 # PROCESS: 
 # ask about the 1.8% nacl having different spacings and stuff. 
+# note that nacl is all over the place, reassign all versions to one 
+# group. 
+
+# pool nacl into a separate group and parse through it later 
 
 grouped = ['1.8%NaCl (ml/hr)','3% NaCl (ml/hr)',
            '3% saline (ml/hr)', 'Cisatracurium (mcg/kg/min)', 

@@ -175,6 +175,28 @@ print(dfList.length())
 
 
 
+
+# %% 
+
+tempNode = dfList.head
+count = 0
+while tempNode: 
+    dt = tempNode.data 
+    # in temporary dataframe, checking only sodium for graphs
+    dt = dt.loc[dt['labname'] == 'sodium']
+    # shows which one we're working with 
+
+    # print(dt.head())
+    plt.figure()
+    # plt.ylim(top = 180)
+    # plt.ylim(bottom = 110)
+    sns.scatterplot(data = dt, x = dt['labresultoffset'], y = dt['labresult'])
+    count += 1
+    tempNode = tempNode.next
+
+
+
+
 # %%
 tempNode = dfList.head
 count = 0

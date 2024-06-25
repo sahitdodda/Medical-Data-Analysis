@@ -3,7 +3,7 @@
 import pandas as pd 
 import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sb
+import seaborn as sns
 from sklearn.cluster import KMeans
 
 df = pd.read_csv('vitalsP.csv')
@@ -23,7 +23,7 @@ df.describe()
 
 # %%
 # NAN map
-sb.heatmap(pd.isnull(df), cmap = 'viridis')
+sns.heatmap(pd.isnull(df), cmap = 'viridis')
 
 # %%
 # Total na values per column in df
@@ -72,45 +72,45 @@ df.to_csv('xgB.csv', sep = ',', index=False)
 
 
 # %%
-sb.scatterplot(x= df['dayhour'], y=df["icp"])
+sns.scatterplot(x= df['dayhour'], y=df["icp"])
 
 # %%
-sb.lineplot(x= df['dayhour'], y=df["icp"])
+sns.lineplot(x= df['dayhour'], y=df["icp"])
 
 # %%
-sb.scatterplot(x= df['temperature'], y=df["icp"])
-
-
-# %%
-sb.scatterplot(x= df['sao2'], y=df["icp"])
+sns.scatterplot(x= df['temperature'], y=df["icp"])
 
 
 # %%
-sb.scatterplot(x= df['heartrate'], y=df["icp"])
+sns.scatterplot(x= df['sao2'], y=df["icp"])
 
 
 # %%
-sb.scatterplot(x= df['respiration'], y=df["icp"])
+sns.scatterplot(x= df['heartrate'], y=df["icp"])
 
 
 # %%
-sb.scatterplot(x= df['cvp'], y=df["icp"])
+sns.scatterplot(x= df['respiration'], y=df["icp"])
 
 
 # %%
-sb.scatterplot(x= df['etco2'], y=df["icp"])
+sns.scatterplot(x= df['cvp'], y=df["icp"])
 
 
 # %%
-sb.scatterplot(x= df['systemicsystolic'], y=df["icp"])
+sns.scatterplot(x= df['etco2'], y=df["icp"])
 
 
 # %%
-sb.scatterplot(x= df['systemicdiastolic'], y=df["icp"])
+sns.scatterplot(x= df['systemicsystolic'], y=df["icp"])
 
 
 # %%
-sb.scatterplot(x= df['systemicmean'], y=df["icp"])
+sns.scatterplot(x= df['systemicdiastolic'], y=df["icp"])
+
+
+# %%
+sns.scatterplot(x= df['systemicmean'], y=df["icp"])
 
 
 # %%
@@ -124,7 +124,7 @@ fig, axes = plt.subplots(nrows=3, ncols=4, figsize=(15, 10))
 axes = axes.flatten()
 
 for i, col in enumerate(cols):
-    sb.scatterplot(data=df, x='dayhour', y=col, ax=axes[i])
+    sns.scatterplot(data=df, x='dayhour', y=col, ax=axes[i])
     axes[i].set_title(col)
 
 plt.tight_layout()
@@ -133,14 +133,14 @@ plt.show()
 # %%
 #group scatter plot
 numeric_cols = ['temperature', 'sao2', 'heartrate', 'respiration', 'cvp', 'etco2', 'systemicsystolic', 'systemicdiastolic', 'systemicmean', 'icp']
-colors = sb.color_palette("husl", len(numeric_cols))  # Generate a palette of colors
+colors = sns.color_palette("husl", len(numeric_cols))  # Generate a palette of colors
 
 # Create a figure
 fig, ax = plt.subplots(figsize=(10, 6))
 
 # Plot each numeric column as a scatter plot with a different color
 for i, col in enumerate(numeric_cols):
-    sb.scatterplot(data=df, x='dayhour', y=col, ax=ax, color=colors[i], label=col)
+    sns.scatterplot(data=df, x='dayhour', y=col, ax=ax, color=colors[i], label=col)
 
 # Add a legend
 ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
@@ -157,7 +157,7 @@ plt.show()
 
 # %%
 numeric_cols = ['temperature', 'sao2', 'heartrate', 'respiration', 'cvp', 'etco2', 'systemicsystolic', 'systemicdiastolic', 'systemicmean']
-colors = sb.color_palette("husl", len(numeric_cols))  # Generate a palette of colors
+colors = sns.color_palette("husl", len(numeric_cols))  # Generate a palette of colors
 
 # Create a figure with subplots
 fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(18, 12))
@@ -165,7 +165,7 @@ axes = axes.flatten()
 
 # Plot each numeric column as a scatter plot with a different color
 for i, col in enumerate(numeric_cols):
-    sb.scatterplot(data=df, x=col, y='icp', ax=axes[i], color=colors[i], label=col)
+    sns.scatterplot(data=df, x=col, y='icp', ax=axes[i], color=colors[i], label=col)
     axes[i].set_title(f"{col} vs ICP")
     axes[i].set_xlabel(col)
     axes[i].set_ylabel('ICP')
@@ -182,14 +182,14 @@ plt.show()
 
 # %%
 numeric_cols = ['temperature', 'sao2', 'heartrate', 'respiration', 'cvp', 'etco2', 'systemicsystolic', 'systemicdiastolic', 'systemicmean', 'dayhour']
-colors = sb.color_palette("husl", len(numeric_cols))  # Generate a palette of colors
+colors = sns.color_palette("husl", len(numeric_cols))  # Generate a palette of colors
 
 # Create a figure
 fig, ax = plt.subplots(figsize=(10, 6))
 
 # Plot each numeric column as a scatter plot with a different color
 for i, col in enumerate(numeric_cols):
-    sb.scatterplot(data=df, x=col, y='icp', ax=ax, color=colors[i], label=col)
+    sns.scatterplot(data=df, x=col, y='icp', ax=ax, color=colors[i], label=col)
 
 # Add a legend
 ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
@@ -212,7 +212,7 @@ fig, axes = plt.subplots(nrows=3, ncols=4, figsize=(15, 10))
 axes = axes.flatten()
 
 for i, col in enumerate(cols):
-    sb.lineplot(data=df, x='dayhour', y=col, ax=axes[i])
+    sns.lineplot(data=df, x='dayhour', y=col, ax=axes[i])
     axes[i].set_title(col)
 
 plt.tight_layout()
@@ -220,15 +220,15 @@ plt.show()
 
 # %%
 numeric_cols = ['temperature', 'sao2', 'heartrate', 'respiration', 'cvp', 'etco2', 'systemicsystolic', 'systemicdiastolic', 'systemicmean']
-colors = sb.color_palette("husl", len(numeric_cols))  # Generate a palette of colors
+colors = sns.color_palette("husl", len(numeric_cols))  # Generate a palette of colors
 
-# Create a figure with subplots
+# Create a figure with subplots 
 fig, axes = plt.subplots(nrows=3, ncols=3, figsize=(18, 12))
 axes = axes.flatten()
 
 # Plot each numeric column as a line plot with a different color
 for i, col in enumerate(numeric_cols):
-    sb.lineplot(data=df, x=col, y='icp', ax=axes[i], color=colors[i], label=col)
+    sns.lineplot(data=df, x=col, y='icp', ax=axes[i], color=colors[i], label=col)
     axes[i].set_title(f"ICP vs {col}")
     axes[i].set_xlabel(col)
     axes[i].set_ylabel('ICP')
@@ -242,14 +242,14 @@ plt.show()
 
 # %%
 numeric_cols = ['temperature', 'sao2', 'heartrate', 'respiration', 'cvp', 'etco2', 'systemicsystolic', 'systemicdiastolic', 'systemicmean']
-colors = sb.color_palette("husl", len(numeric_cols))  # Generate a palette of colors
+colors = sns.color_palette("husl", len(numeric_cols))  # Generate a palette of colors
 
 # Create a figure
 fig, ax = plt.subplots(figsize=(10, 6))
 
 # Plot each numeric column as a line plot with a different color
 for i, col in enumerate(numeric_cols):
-    sb.lineplot(data=df, x=col, y='icp', ax=ax, color=colors[i], label=col)
+    sns.lineplot(data=df, x=col, y='icp', ax=ax, color=colors[i], label=col)
 
 # Add a legend
 ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
@@ -266,14 +266,14 @@ plt.show()
 # %%
 #group line plot
 numeric_cols = ['temperature', 'sao2', 'heartrate', 'respiration', 'cvp', 'etco2', 'systemicsystolic', 'systemicdiastolic', 'systemicmean', 'icp']
-colors = sb.color_palette("husl", len(numeric_cols))  # Generate a palette of colors
+colors = sns.color_palette("husl", len(numeric_cols))  # Generate a palette of colors
 
 # Create a figure
 fig, ax = plt.subplots(figsize=(10, 6))
 
 # Plot each numeric column as a line with a different color
 for i, col in enumerate(numeric_cols):
-    sb.lineplot(data=df, x='dayhour', y=col, ax=ax, color=colors[i], label=col)
+    sns.lineplot(data=df, x='dayhour', y=col, ax=ax, color=colors[i], label=col)
 
 # Add a legend
 ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
@@ -299,7 +299,7 @@ axes = axes.flatten()
 
 # Plot each numeric column as a KDE
 for i, col in enumerate(numeric_cols):
-    sb.kdeplot(data=df, x=col, ax=axes[i], shade=True)
+    sns.kdeplot(data=df, x=col, ax=axes[i], shade=True)
     axes[i].set_title(col)
 
 # Adjust spacing between subplots
@@ -317,7 +317,7 @@ axes = axes.flatten()
 
 # Plot each numeric column as a KDE against 'icp'
 for i, col in enumerate(numeric_cols):
-    sb.kdeplot(data=df, x='icp', hue=col, ax=axes[i], shade=True, legend=False)
+    sns.kdeplot(data=df, x='icp', hue=col, ax=axes[i], shade=True, legend=False)
     axes[i].set_title(f"ICP vs {col}")
 
 # Adjust spacing between subplots
@@ -335,7 +335,7 @@ fig, ax = plt.subplots(figsize=(10, 6))
 
 # Plot the KDE for 'icp' colored by each numeric column
 for col in numeric_cols:
-    sb.kdeplot(data=df, x='icp', hue=col, ax=ax, shade=True, multiple="stack")
+    sns.kdeplot(data=df, x='icp', hue=col, ax=ax, shade=True, multiple="stack")
 
 # Set the plot title and axis labels
 ax.set_title('KDE Plot of ICP colored by Numeric Columns')
@@ -351,14 +351,14 @@ plt.show()
 # %%
 # Group KDE plot
 numeric_cols = ['temperature', 'sao2', 'heartrate', 'respiration', 'cvp', 'etco2', 'systemicsystolic', 'systemicdiastolic', 'systemicmean', 'icp']
-colors = sb.color_palette("husl", len(numeric_cols))  # Generate a palette of colors
+colors = sns.color_palette("husl", len(numeric_cols))  # Generate a palette of colors
 
 # Create a figure
 fig, ax = plt.subplots(figsize=(10, 6))
 
 # Plot each numeric column as a KDE curve with a different color
 for i, col in enumerate(numeric_cols):
-    sb.kdeplot(data=df[col], ax=ax, color=colors[i], label=col, shade=True)
+    sns.kdeplot(data=df[col], ax=ax, color=colors[i], label=col, shade=True)
 
 # Add a legend
 ax.legend(bbox_to_anchor=(1.02, 1), loc='upper left', borderaxespad=0)
