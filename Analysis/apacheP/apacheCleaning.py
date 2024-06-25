@@ -9,3 +9,5 @@ df.head()
 df.loc[df["apachescore"] < 1, 'apachescore'] = np.NaN
 
 
+# %%
+df.dropna()
