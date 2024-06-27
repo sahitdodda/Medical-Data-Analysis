@@ -9,6 +9,8 @@ import re
 from sklearn.linear_model import LinearRegression
 import missingno as mno
 from sklearn.preprocessing import MinMaxScaler
+from statsmodels.inputation.mice import MICEData
+
 
 import sys 
 sys.path.append('LinkedListClass.py')
@@ -27,6 +29,13 @@ time_list = df_vitalsP['Time']
 df_vitalsP.head()
 
 df_vitalsP = df_vitalsP.drop(columns=['Unnamed: 0', 'observationoffset', 'Day', 'Hour'])
+# patient 1082792 literally has only one data point :) 
+
+# df_vitalsP = df_vitalsP.loc[df_vitalsP['patientunitstayid'].isin(['30989', '11302920'])]
+
+
+
+
 df_vitalsP.head()
 
 # %% 
@@ -115,9 +124,9 @@ count = 0
 
 while tempNode:
     print(f"The count is {count}")
-    print(dt.head())
-
     dt = tempNode.data
+    print(dt.index.get_level_values('Time'))
+    
 
     # there was a bracket 0 at the end for some reason
     patient = dt.index.get_level_values('patientunitstayid').unique()[0]
@@ -132,7 +141,7 @@ while tempNode:
     # Plot each numeric column
     for column in numeric_columns:
         if column != 'Time':  # Exclude 'Time' as it's our x-axis
-            sns.lineplot(data=dt, x='Time', y=column, label=column, ax=ax)
+            sns.scatterplot(data=dt, x='Time', y=column, label=column, ax=ax)
     
     plt.xlabel('Time', fontsize=12)
     plt.ylabel('Value', fontsize=12)
@@ -140,14 +149,18 @@ while tempNode:
     plt.tight_layout()
     plt.show()
     
+    
     count += 1
     tempNode = tempNode.next
 
 # %%
+
+# This code is in fact better, the num d type thing is a bit of a problem and doesn't show data 
+# for patient 9 
 tempNode = dfL_vitals.head
 count = 0
 
-while tempNode and count < 5:  # Limit to 5 patients for example
+while tempNode and count < 12:  # Limit to 5 patients for example
     dt = tempNode.data
     patient = dt.index.get_level_values('patientunitstayid').unique()[0]
     
@@ -171,6 +184,41 @@ while tempNode and count < 5:  # Limit to 5 patients for example
     tempNode = tempNode.next
 
 print(f"Total patients plotted: {count}")
+
+
+
+
+
+
+# %%
+# ----------------very big line break ----------------------
+
+
+
+
+
+
+'''
+     (\           
+    (  \  /(o)\    The code below is the numscaler code  
+    (   \/  ()/ /)  
+     (   `;.))'".) 
+      `(/////.-'
+   =====))=))===() 
+     ///'       
+    //   PjP/ejm
+   '    
+'''
+
+
+
+
+
+
+
+
+# ----------------very big line break ----------------------
+
 # %%
 #Normalize Data
 
