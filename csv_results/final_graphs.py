@@ -26,8 +26,8 @@ icp_list = df_vitalsP['icp']
 time_list = df_vitalsP['Time']
 df_vitalsP.head()
 
-
-
+df_vitalsP = df_vitalsP.drop(columns=['Unnamed: 0', 'observationoffset', 'Day', 'Hour'])
+df_vitalsP.head()
 
 # %% 
 # scatterplot of icp vs time 
@@ -51,7 +51,7 @@ df_apache = df_apache.dropna()
 df_infs = df_infs.dropna()
 
 # %%
-mno.matrix(df_apache, figsize=(20, 6))
+mno.matrix(df_vitalsP, figsize=(20, 6))
 
 # %%
 
@@ -60,13 +60,13 @@ mno.matrix(df_apache, figsize=(20, 6))
 
 
 df_vitalsP = df_vitalsP.sort_values(by=['patientunitstayid', 'Time'])
-df_vitalsP = df_vitalsP.set_index(['patientunitstayid'])
+df_vitalsP = df_vitalsP.set_index(['patientunitstayid', 'Time'])
 
 
 # %%
 
 # check that it worked 
-df_vitalsP.loc[193629]
+# df_vitalsP.loc[193629]
 
 # %%
 
@@ -77,47 +77,49 @@ print(len(unique_patient_ids))
 
 # %% 
 
+# with set_names we ensured that the dataframe has the correct index every time
+
 dfL_vitals = LL()
 
 for patient_id in unique_patient_ids: 
-    dfIter = df_vitalsP.loc[patient_id]
+    # dfIter = df_vitalsP.loc[patient_id]
+    # should get datframe for each patient
+    dfIter = df_vitalsP.xs(patient_id, level='patientunitstayid', drop_level=False)
+    # dfIter.index.set_names(['patientunitstayid', 'Time'], inplace=True)
     dfL_vitals.append(dfIter)
 
 dfL_vitals.display()
 print(dfL_vitals.length())
 
 
- # %%
-
-tempNode = dfL_vitals.head
-count = 0
-while tempNode: 
-    dt = tempNode.data 
-    #shows which one we're working with 
-
-    patient = dt.index.get_level_values('patientunitstayid').unique()
-    columns = dt.loc[patient].columns
-    plt.figure()
-    # plt.ylim(top = 180)
-    # plt.ylim(bottom = 110)
-    print(patient)
-    for column in columns: 
-        sns.scatterplot(data = dt, x = time_list, y = icp_list, label='icp')
-        # sns.scatterplot(data = dt, x = time_list, y = column)
-
-    count += 1
-    tempNode = tempNode.next
-        
-
-
 
 # %%
 
+# This is the debugging print
+tempNode = dfL_vitals.head
+count = 0
+while tempNode: 
+    dt = tempNode.data
+    print("Current index:", dt.index)
+    print("Index names:", dt.index.names)
+    print(f'The patient count is {count}')
+    # print(dt.head())
+    patient = dt.index.get_level_values('patientunitstayid').unique()[0]
+    count += 1
+    tempNode = tempNode.next
+
+# %%
+# ----- Actual graphs are below here -----
 tempNode = dfL_vitals.head
 count = 0
 
 while tempNode:
+    print(f"The count is {count}")
+    print(dt.head())
+
     dt = tempNode.data
+
+    # there was a bracket 0 at the end for some reason
     patient = dt.index.get_level_values('patientunitstayid').unique()[0]
     
     # Select only numeric columns
@@ -140,10 +142,7 @@ while tempNode:
     
     count += 1
     tempNode = tempNode.next
-    
-    # Optional: limit the number of plots to prevent excessive output
-    if count >= 5:  # Adjust this number as needed
-        break
+
 # %%
 tempNode = dfL_vitals.head
 count = 0
@@ -152,7 +151,7 @@ while tempNode and count < 5:  # Limit to 5 patients for example
     dt = tempNode.data
     patient = dt.index.get_level_values('patientunitstayid').unique()[0]
     
-    columns = [col for col in dt.columns if col not in ['observationoffset', 'Time']]
+    columns = [col for col in dt.columns]
     
     plt.figure(figsize=(15, 10))
     plt.title(f"Patient ID: {patient}", fontsize=16)
@@ -248,10 +247,14 @@ plt.show()
 tempNode = dfL_vitals.head
 count = 0
 
-while tempNode:  # Limit to 5 patients for example
+
+# note we also only need the 54 patients from apachescore, not the 4 extra patients. 
+
+while tempNode:  
     dt = tempNode.data
     patient = dt.index.get_level_values('patientunitstayid').unique()[0]
-    
+    print(dt.head())
+
     # Create subplots
     fig, axs = plt.subplots(3, 1, figsize=(15, 20), sharex=True)
     fig.suptitle(f"Patient ID: {patient}", fontsize=16)
