@@ -24,6 +24,7 @@ df_examP = pd.read_csv('examP_results.csv')
 
 df_vitalsP = pd.read_csv('vitalsP.csv')
 
+
 icp_list = df_vitalsP['icp']
 time_list = df_vitalsP['Time']
 df_vitalsP.head()
@@ -55,9 +56,26 @@ mno.matrix(df_vitalsP, figsize=(20, 6))
 
 # %%
 # median of the last 30 minutes in ICP 
-df_vitalsP = df_vitalsP.fillna(df_vitalsP.median())
-df_apache = df_apache.dropna()
-df_infs = df_infs.dropna()
+# df_vitalsP = df_vitalsP.fillna(df_vitalsP.median())
+# df_apache = df_apache.dropna()
+# df_infs = df_infs.dropna()
+print(df_vitalsP.dtypes)
+
+
+#%%
+df_vitalsP = df_vitalsP.fillna(method='ffill')
+
+#%%
+df_vitalsP.head()
+
+#%%
+mno.matrix(df_vitalsP, figsize=(20, 6))
+
+#%%
+#testing for data correlation between all variables
+missing_corr = df_vitalsP.isnull().corr()
+print(missing_corr)
+
 
 # %%
 mno.matrix(df_vitalsP, figsize=(20, 6))
@@ -141,7 +159,7 @@ while tempNode:
     # Plot each numeric column
     for column in numeric_columns:
         if column != 'Time':  # Exclude 'Time' as it's our x-axis
-            sns.scatterplot(data=dt, x='Time', y=column, label=column, ax=ax)
+            sns.lineplot(data=dt, x='Time', y=column, label=column, ax=ax)
     
     plt.xlabel('Time', fontsize=12)
     plt.ylabel('Value', fontsize=12)
