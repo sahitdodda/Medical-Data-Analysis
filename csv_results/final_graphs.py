@@ -8,6 +8,7 @@ import seaborn as sns
 import re
 from sklearn.linear_model import LinearRegression
 import missingno as mno
+from sklearn.preprocessing import MinMaxScaler
 
 import sys 
 sys.path.append('LinkedListClass.py')
@@ -111,8 +112,6 @@ while tempNode:
 
 
 # %%
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 tempNode = dfL_vitals.head
 count = 0
@@ -145,4 +144,147 @@ while tempNode:
     # Optional: limit the number of plots to prevent excessive output
     if count >= 5:  # Adjust this number as needed
         break
+# %%
+tempNode = dfL_vitals.head
+count = 0
+
+while tempNode and count < 5:  # Limit to 5 patients for example
+    dt = tempNode.data
+    patient = dt.index.get_level_values('patientunitstayid').unique()[0]
+    
+    columns = [col for col in dt.columns if col not in ['observationoffset', 'Time']]
+    
+    plt.figure(figsize=(15, 10))
+    plt.title(f"Patient ID: {patient}", fontsize=16)
+    
+    print(f"Plotting data for patient {patient}")
+    
+    for column in columns:
+        sns.scatterplot(data=dt, x='Time', y=column, label=column)
+    
+    plt.xlabel('Time', fontsize=12)
+    plt.ylabel('Value', fontsize=12)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.tight_layout()
+    plt.show()
+    
+    count += 1
+    tempNode = tempNode.next
+
+print(f"Total patients plotted: {count}")
+# %%
+#Normalize Data
+
+scaler = MinMaxScaler()
+normalized_data = scaler.fit_transform(dt.drop('Time', axis=1))
+normalized_df = pd.DataFrame(normalized_data, columns=dt.drop('Time', axis=1).columns)
+normalized_df['Time'] = dt['Time']
+
+plt.figure(figsize=(15, 10))
+for col in normalized_df.columns:
+    if col != 'Time':
+        plt.plot(normalized_df['Time'], normalized_df[col], label=col)
+
+plt.title(f"Patient ID: {patient}", fontsize=16)
+plt.xlabel('Time')
+plt.ylabel('Normalized Value')
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+plt.tight_layout()
+plt.show()
+# %%
+fig, axs = plt.subplots(3, 1, figsize=(15, 20), sharex=True)
+fig.suptitle(f"Patient ID: {patient}", fontsize=16)
+
+# Plot high-range variables
+high_range = ['Unnamed: 0']
+for col in high_range:
+    axs[0].plot(dt['Time'], dt[col], label=col)
+axs[0].legend()
+axs[0].set_ylabel('High Range')
+
+# Plot mid-range variables
+mid_range = ['systemicsystolic', 'systemicdiastolic', 'systemicmean', 'heartrate']
+for col in mid_range:
+    axs[1].plot(dt['Time'], dt[col], label=col)
+axs[1].legend()
+axs[1].set_ylabel('Mid Range')
+
+# Plot low-range variables
+low_range = ['temperature', 'sao2', 'respiration', 'icp']
+for col in low_range:
+    axs[2].plot(dt['Time'], dt[col], label=col)
+axs[2].legend()
+axs[2].set_ylabel('Low Range')
+
+plt.xlabel('Time')
+plt.tight_layout()
+plt.show()
+# %%
+fig, ax1 = plt.subplots(figsize=(15, 10))
+fig.suptitle(f"Patient ID: {patient}", fontsize=16)
+
+# Plot high-range variable on secondary y-axis
+ax2 = ax1.twinx()
+ax2.plot(dt['Time'], dt['Unnamed: 0'], label='Unnamed: 0', color='r')
+ax2.set_ylabel('Unnamed: 0', color='r')
+
+# Plot other variables on primary y-axis
+for col in dt.columns:
+    if col not in ['Time', 'Unnamed: 0']:
+        ax1.plot(dt['Time'], dt[col], label=col)
+
+ax1.set_xlabel('Time')
+ax1.set_ylabel('Value')
+ax1.legend(loc='upper left')
+ax2.legend(loc='upper right')
+
+plt.tight_layout()
+plt.show()
+
+
+# %%
+
+
+tempNode = dfL_vitals.head
+count = 0
+
+while tempNode:  # Limit to 5 patients for example
+    dt = tempNode.data
+    patient = dt.index.get_level_values('patientunitstayid').unique()[0]
+    
+    # Create subplots
+    fig, axs = plt.subplots(3, 1, figsize=(15, 20), sharex=True)
+    fig.suptitle(f"Patient ID: {patient}", fontsize=16)
+
+    # Plot high-range variables
+    high_range = ['Unnamed: 0']
+    for col in high_range:
+        axs[0].plot(dt['Time'], dt[col], label=col)
+    axs[0].legend()
+    axs[0].set_ylabel('High Range')
+
+    # Plot mid-range variables
+    mid_range = ['systemicsystolic', 'systemicdiastolic', 'systemicmean', 'heartrate']
+    for col in mid_range:
+        axs[1].plot(dt['Time'], dt[col], label=col)
+    axs[1].legend()
+    axs[1].set_ylabel('Mid Range')
+
+    # Plot low-range variables
+    low_range = ['temperature', 'sao2', 'respiration', 'icp']
+    for col in low_range:
+        axs[2].plot(dt['Time'], dt[col], label=col)
+    axs[2].legend()
+    axs[2].set_ylabel('Low Range')
+
+    plt.xlabel('Time')
+    plt.tight_layout()
+    plt.show()
+    
+    print(f"Plotted data for patient {patient}")
+    
+    count += 1
+    tempNode = tempNode.next
+
+print(f"Total patients plotted: {count}")
 # %%
