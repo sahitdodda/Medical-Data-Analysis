@@ -9,7 +9,7 @@ import re
 from sklearn.linear_model import LinearRegression
 import missingno as mno
 from sklearn.preprocessing import MinMaxScaler
-from statsmodels.inputation.mice import MICEData
+from statsmodels.imputation.mice import MICEData
 
 
 import sys 
