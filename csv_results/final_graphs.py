@@ -63,7 +63,7 @@ print(df_vitalsP.dtypes)
 
 
 #%%
-df_vitalsP = df_vitalsP.fillna(method='bfill')
+df_vitalsP = df_vitalsP.fillna(method='ffill')
 
 #%%
 df_vitalsP.head()
