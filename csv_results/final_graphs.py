@@ -111,3 +111,38 @@ while tempNode:
 
 
 # %%
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+tempNode = dfL_vitals.head
+count = 0
+
+while tempNode:
+    dt = tempNode.data
+    patient = dt.index.get_level_values('patientunitstayid').unique()[0]
+    
+    # Select only numeric columns
+    numeric_columns = dt.select_dtypes(include=[np.number]).columns
+    
+    # Create a bigger figure to accommodate multiple plots
+    fig, ax = plt.subplots(figsize=(15, 10))
+    plt.title(f"Patient ID: {patient}", fontsize=16)
+    
+    # Plot each numeric column
+    for column in numeric_columns:
+        if column != 'Time':  # Exclude 'Time' as it's our x-axis
+            sns.lineplot(data=dt, x='Time', y=column, label=column, ax=ax)
+    
+    plt.xlabel('Time', fontsize=12)
+    plt.ylabel('Value', fontsize=12)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+    plt.tight_layout()
+    plt.show()
+    
+    count += 1
+    tempNode = tempNode.next
+    
+    # Optional: limit the number of plots to prevent excessive output
+    if count >= 5:  # Adjust this number as needed
+        break
+# %%
