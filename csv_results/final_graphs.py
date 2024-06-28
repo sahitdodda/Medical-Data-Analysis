@@ -174,7 +174,9 @@ while tempNode:
     for column in numeric_columns:
         if column != 'Time':  # Exclude 'Time' as it's our x-axis
             sns.lineplot(data=dt, x='Time', y=column, label=column, ax=ax)
-    
+
+    if(dt.index.get_level_values('Time').max() > 72):
+        plt.xlim(0, 72)
     plt.xlabel('Time', fontsize=12)
     plt.ylabel('Value', fontsize=12)
     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
@@ -223,7 +225,7 @@ plt.figure(figsize=(14, 6))
 for patient_id in df_expired['patientunitstayid'].unique():
     patient_data = df_expired[df_expired['patientunitstayid'] == patient_id]
     plt.plot(patient_data['Time'], patient_data['icp'], label=f'Patient {patient_id}')
-plt.ylim(5, 75)
+plt.ylim(5, 40)
 plt.title('ICP Values of Expired Patients')
 plt.xlabel('Time')
 plt.ylabel('ICP Value')
