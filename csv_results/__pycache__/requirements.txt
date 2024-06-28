@@ -1,1 +1,12 @@
-requirements
+streamlit
+pandas
+numpy
+matplotlib
+seaborn
+re
+sklearn
+missingno
+statsmodels
+plotly
+streamlit
+sys
