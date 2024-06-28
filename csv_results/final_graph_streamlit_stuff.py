@@ -252,7 +252,21 @@ fig.update_yaxes(range=[0, 50])
 st.plotly_chart(fig)
 
 
+# %%
+# Bell curve histogram 
+with st.expander(f'Histogram of ICP Values for All Patients'):
+    # Combine ICP values from all patients
+    all_icp_values = df_vitalCopy['icp']
 
+    # Create a histogram
+    fig = go.Figure(data=[go.Histogram(x=all_icp_values, xbins=dict(start=0, end=50, size=1))])
+
+    fig.update_layout(title='Histogram of ICP Values for All Patients',
+                    xaxis_title='ICP Value',
+                    yaxis_title='Count',
+                    bargap=0.2)
+
+    st.plotly_chart(fig)
 
 # %%
 
@@ -271,6 +285,25 @@ fig.update_yaxes(range=[5, 55])
 
 st.plotly_chart(fig)
 
+
+with st.expander(f'Histogram of ICP Values for Alive Patients'):
+    # Combine ICP values from all patients
+    all_icp_values = df_alive['icp']
+
+    # Create a histogram
+    fig = go.Figure(data=[go.Histogram(x=all_icp_values, xbins=dict(start=0, end=50, size=1))])
+
+    fig.update_layout(title='Histogram of ICP Values for Alive Patients',
+                    xaxis_title='ICP Value',
+                    yaxis_title='Count',
+                    bargap=0.2)
+
+    st.plotly_chart(fig)
+    
+    multi = ''' We noticed a :blue-background[normal, right skewed distribution curve] as expected for alive patients.  
+    '''
+
+    st.markdown(multi)
 # -------
 
 st.title('Interactive ICP of Expired Patients')
@@ -286,6 +319,26 @@ fig.update_yaxes(range=[5, 55])
 
 st.plotly_chart(fig)
 
+
+with st.expander(f'Histogram of ICP Values for Expired Patients'):
+    # Combine ICP values from all patients
+    all_icp_values = df_expired['icp']
+
+    # Create a histogram
+    fig = go.Figure(data=[go.Histogram(x=all_icp_values, xbins=dict(start=0, end=50, size=1))])
+
+    fig.update_layout(title='Histogram of ICP Values for Expired Patients',
+                    xaxis_title='ICP Value',
+                    yaxis_title='Count',
+                    bargap=0.2)
+
+    st.plotly_chart(fig)
+
+    multi = ''' However, for expired patients we noticed :blue-background[survivorship bias]. We would have to split by time.  
+    We also do note that the mean for this data is to the right of the previous graph for higher ICP values on average. 
+    '''
+
+    st.markdown(multi)
 
 # %%
 
