@@ -239,8 +239,57 @@ df_alive = df_vitalCopy[df_vitalCopy['patientunitstayid'].isin(alive_list)]
 
 # ----------------------- ACTUAL STREAMLIT GRAPHS ------------------------------
 
+# %%
+
+st.title('All ICP values vs Time')
+fig = go.Figure()
+for patient_id in df_vitalCopy['patientunitstayid'].unique():
+    patient_data = df_vitalCopy[df_vitalCopy['patientunitstayid'] == patient_id]
+    fig.add_trace(go.Scatter(x=patient_data['Time'], y=patient_data['icp'], mode='lines', name=f'Patient {patient_id}'))
+
+fig.update_layout(title='All ICP values vs Time', xaxis_title='Time', yaxis_title='ICP Value', hovermode='closest')
+fig.update_yaxes(range=[0, 50])
+st.plotly_chart(fig)
+
+
+
 
 # %%
+
+
+st.title('Interactive ICP of Alive patients')
+
+
+fig = go.Figure()
+
+for patient_id in df_alive['patientunitstayid'].unique():
+    patient_data = df_alive[df_alive['patientunitstayid'] == patient_id]
+    fig.add_trace(go.Scatter(x=patient_data['Time'], y=patient_data['icp'], mode='lines', name=f'Patient {patient_id}'))
+
+fig.update_layout(title='ICP Values of Alive Patients', xaxis_title='Time', yaxis_title='ICP Value', hovermode='closest')
+fig.update_yaxes(range=[5, 55])
+
+st.plotly_chart(fig)
+
+# -------
+
+st.title('Interactive ICP of Expired Patients')
+
+fig = go.Figure()
+
+for patient_id in df_expired['patientunitstayid'].unique():
+    patient_data = df_expired[df_expired['patientunitstayid'] == patient_id]
+    fig.add_trace(go.Scatter(x=patient_data['Time'], y=patient_data['icp'], mode='lines', name=f'Patient {patient_id}'))
+
+fig.update_layout(title='Interactive ICP of Expired Patients', xaxis_title='Time', yaxis_title='ICP Value', hovermode='closest')
+fig.update_yaxes(range=[5, 55])
+
+st.plotly_chart(fig)
+
+
+# %%
+
+st.title('Vitals of Every Patient')
 
 tempNode = dfL_vitals.head
 while tempNode: 
@@ -266,37 +315,5 @@ while tempNode:
     
     tempNode = tempNode.next
 
-# %%
-
-
-st.title('Interactive ICP of Alive patients')
-
-with st.expander('ICP 1'):
-    fig = go.Figure()
-
-    for patient_id in df_alive['patientunitstayid'].unique():
-        patient_data = df_alive[df_alive['patientunitstayid'] == patient_id]
-        fig.add_trace(go.Scatter(x=patient_data['Time'], y=patient_data['icp'], mode='lines', name=f'Patient {patient_id}'))
-
-    fig.update_layout(title='ICP Values of Alive Patients', xaxis_title='Time', yaxis_title='ICP Value', hovermode='closest')
-    fig.update_yaxes(range=[5, 55])
-
-    st.plotly_chart(fig)
-
-# -------
-
-st.title('Interactive ICP of Expired Patients')
-
-with st.expander('ICP 2'):
-    fig = go.Figure()
-
-    for patient_id in df_expired['patientunitstayid'].unique():
-        patient_data = df_expired[df_expired['patientunitstayid'] == patient_id]
-        fig.add_trace(go.Scatter(x=patient_data['Time'], y=patient_data['icp'], mode='lines', name=f'Patient {patient_id}'))
-
-    fig.update_layout(title='ICP Values of Alive Patients', xaxis_title='Time', yaxis_title='ICP Value', hovermode='closest')
-    fig.update_yaxes(range=[5, 55])
-
-    st.plotly_chart(fig)
 
 
