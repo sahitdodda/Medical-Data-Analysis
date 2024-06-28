@@ -157,6 +157,7 @@ count = 0
 while tempNode:
     print(f"The count is {count}")
     dt = tempNode.data
+    print(dt.head())
     print(dt.index.get_level_values('Time'))
     
 

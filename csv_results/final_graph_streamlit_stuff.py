@@ -139,55 +139,56 @@ print(dfL_vitals.length())
 # %%
 
 # This is the debugging print
-tempNode = dfL_vitals.head
-count = 0
-while tempNode: 
-    dt = tempNode.data
-    print("Current index:", dt.index)
-    print("Index names:", dt.index.names)
-    print(f'The patient count is {count}')
-    # print(dt.head())
-    patient = dt.index.get_level_values('patientunitstayid').unique()[0]
-    count += 1
-    tempNode = tempNode.next
+# tempNode = dfL_vitals.head
+# count = 0
+# while tempNode: 
+#     dt = tempNode.data
+#     print("Current index:", dt.index)
+#     print("Index names:", dt.index.names)
+#     print(f'The patient count is {count}')
+#     # print(dt.head())
+#     patient = dt.index.get_level_values('patientunitstayid').unique()[0]
+#     count += 1
+#     tempNode = tempNode.next
 
 # %%
 # ----- Actual graphs are below here -----
-tempNode = dfL_vitals.head
-count = 0
 
-while tempNode:
-    print(f"The count is {count}")
-    dt = tempNode.data
-    print(dt.index.get_level_values('Time'))
+# tempNode = dfL_vitals.head
+# count = 0
+
+# while tempNode:
+#     print(f"The count is {count}")
+#     dt = tempNode.data
+#     print(dt.index.get_level_values('Time'))
     
 
-    # there was a bracket 0 at the end for some reason
-    patient = dt.index.get_level_values('patientunitstayid').unique()[0]
+#     # there was a bracket 0 at the end for some reason
+#     patient = dt.index.get_level_values('patientunitstayid').unique()[0]
     
-    # Select only numeric columns
-    numeric_columns = dt.select_dtypes(include=[np.number]).columns
+#     # Select only numeric columns
+#     numeric_columns = dt.select_dtypes(include=[np.number]).columns
     
-    # Create a bigger figure to accommodate multiple plots
-    fig, ax = plt.subplots(figsize=(15, 10))
-    plt.title(f"Patient ID: {patient}", fontsize=16)
+#     # Create a bigger figure to accommodate multiple plots
+#     fig, ax = plt.subplots(figsize=(15, 10))
+#     plt.title(f"Patient ID: {patient}", fontsize=16)
     
-    # Plot each numeric column
-    for column in numeric_columns:
-        if column != 'Time':  # Exclude 'Time' as it's our x-axis
-            sns.lineplot(data=dt, x='Time', y=column, label=column, ax=ax)
+#     # Plot each numeric column
+#     for column in numeric_columns:
+#         if column != 'Time':  # Exclude 'Time' as it's our x-axis
+#             sns.lineplot(data=dt, x='Time', y=column, label=column, ax=ax)
 
-    if(dt.index.get_level_values('Time').max() > 72):
-        plt.xlim(0, 72)
-    plt.xlabel('Time', fontsize=12)
-    plt.ylabel('Value', fontsize=12)
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    plt.tight_layout()
-    plt.show()
+#     if(dt.index.get_level_values('Time').max() > 72):
+#         plt.xlim(0, 72)
+#     plt.xlabel('Time', fontsize=12)
+#     plt.ylabel('Value', fontsize=12)
+#     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+#     plt.tight_layout()
+#     plt.show()
     
     
-    count += 1
-    tempNode = tempNode.next
+#     count += 1
+#     tempNode = tempNode.next
 
 # %%
 # ------------------- more important graphs -----------------------
@@ -207,63 +208,95 @@ alive_list = [193629, 263556, 272638, 621883, 799478, 1079428, 1082792,
 df_expired = df_vitalCopy[df_vitalCopy['patientunitstayid'].isin(expired_list)]
 df_alive = df_vitalCopy[df_vitalCopy['patientunitstayid'].isin(alive_list)]
 
-plt.figure(figsize=(14, 6))
+# plt.figure(figsize=(14, 6))
 
-for patient_id in df_alive['patientunitstayid'].unique():
-    patient_data = df_alive[df_alive['patientunitstayid'] == patient_id]
-    # plt.plot(patient_data['Time'], patient_data['icp'], label=f'Patient {patient_id}')
-    sns.lineplot(data = patient_data, x = 'Time', y = 'icp')
-plt.ylim(5, 55)
+# for patient_id in df_alive['patientunitstayid'].unique():
+#     patient_data = df_alive[df_alive['patientunitstayid'] == patient_id]
+#     # plt.plot(patient_data['Time'], patient_data['icp'], label=f'Patient {patient_id}')
+#     sns.lineplot(data = patient_data, x = 'Time', y = 'icp')
+# plt.ylim(5, 55)
 
-plt.title('ICP Values of Alive Patients')
-plt.xlabel('Time')
-plt.ylabel('ICP Value')
+# plt.title('ICP Values of Alive Patients')
+# plt.xlabel('Time')
+# plt.ylabel('ICP Value')
+
+# # %%
+# # Graph for the expired patients 
+
+# plt.figure(figsize=(14, 6))
+
+# for patient_id in df_expired['patientunitstayid'].unique():
+#     patient_data = df_expired[df_expired['patientunitstayid'] == patient_id]
+#     plt.plot(patient_data['Time'], patient_data['icp'], label=f'Patient {patient_id}')
+# plt.ylim(5, 40)
+# plt.title('ICP Values of Expired Patients')
+# plt.xlabel('Time')
+# plt.ylabel('ICP Value')
+
 
 # %%
-# Graph for the expired patients 
 
-plt.figure(figsize=(14, 6))
 
-for patient_id in df_expired['patientunitstayid'].unique():
-    patient_data = df_expired[df_expired['patientunitstayid'] == patient_id]
-    plt.plot(patient_data['Time'], patient_data['icp'], label=f'Patient {patient_id}')
-plt.ylim(5, 40)
-plt.title('ICP Values of Expired Patients')
-plt.xlabel('Time')
-plt.ylabel('ICP Value')
+# ----------------------- ACTUAL STREAMLIT GRAPHS ------------------------------
 
 
 # %%
 
+tempNode = dfL_vitals.head
+while tempNode: 
+    dt = tempNode.data
+    patient = dt.index.get_level_values('patientunitstayid').unique()[0]
+    time = dt.index.get_level_values('Time')
+    with st.expander(f'Patient ID: {patient}'):
+        fig = go.Figure()
+        numeric_columns = dt.select_dtypes(include=[np.number]).columns
+        for column in numeric_columns:
+            if column != 'Time':  # Exclude 'Time' as it's our x-axis
+                fig.add_trace(go.Scatter(x=time, y=dt[column], mode='lines', name=column))
+        
+        fig.update_layout(title = f'Patient ID {patient}', xaxis_title = 'Time', yaxis_title = 'Value', hovermode = 'closest')
 
-# ----------------------- REST OF STREAMLIT GRAPHS ------------------------------
+        # see if we need this 
+        # fig.update_yaxes(range=[dt[numeric_columns].min().min(), dt[numeric_columns].max().max()])
+        
+        if(dt.index.get_level_values('Time').max() > 72):
+            fig.update_xaxes(range=[0,72])
+
+        st.plotly_chart(fig)
+    
+    tempNode = tempNode.next
+
+# %%
+
 
 st.title('Interactive ICP of Alive patients')
 
-fig = go.Figure()
+with st.expander('ICP 1'):
+    fig = go.Figure()
 
-for patient_id in df_alive['patientunitstayid'].unique():
-    patient_data = df_alive[df_alive['patientunitstayid'] == patient_id]
-    fig.add_trace(go.Scatter(x=patient_data['Time'], y=patient_data['icp'], mode='lines', name=f'Patient {patient_id}'))
+    for patient_id in df_alive['patientunitstayid'].unique():
+        patient_data = df_alive[df_alive['patientunitstayid'] == patient_id]
+        fig.add_trace(go.Scatter(x=patient_data['Time'], y=patient_data['icp'], mode='lines', name=f'Patient {patient_id}'))
 
-fig.update_layout(title='ICP Values of Alive Patients', xaxis_title='Time', yaxis_title='ICP Value', hovermode='closest')
-fig.update_yaxes(range=[5, 55])
+    fig.update_layout(title='ICP Values of Alive Patients', xaxis_title='Time', yaxis_title='ICP Value', hovermode='closest')
+    fig.update_yaxes(range=[5, 55])
 
-st.plotly_chart(fig)
+    st.plotly_chart(fig)
 
 # -------
 
 st.title('Interactive ICP of Expired Patients')
 
-fig = go.Figure()
+with st.expander('ICP 2'):
+    fig = go.Figure()
 
-for patient_id in df_expired['patientunitstayid'].unique():
-    patient_data = df_expired[df_expired['patientunitstayid'] == patient_id]
-    fig.add_trace(go.Scatter(x=patient_data['Time'], y=patient_data['icp'], mode='lines', name=f'Patient {patient_id}'))
+    for patient_id in df_expired['patientunitstayid'].unique():
+        patient_data = df_expired[df_expired['patientunitstayid'] == patient_id]
+        fig.add_trace(go.Scatter(x=patient_data['Time'], y=patient_data['icp'], mode='lines', name=f'Patient {patient_id}'))
 
-fig.update_layout(title='ICP Values of Alive Patients', xaxis_title='Time', yaxis_title='ICP Value', hovermode='closest')
-fig.update_yaxes(range=[5, 55])
+    fig.update_layout(title='ICP Values of Alive Patients', xaxis_title='Time', yaxis_title='ICP Value', hovermode='closest')
+    fig.update_yaxes(range=[5, 55])
 
-st.plotly_chart(fig)
+    st.plotly_chart(fig)
 
 
