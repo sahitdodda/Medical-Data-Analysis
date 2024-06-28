@@ -29,14 +29,20 @@ icp_list = df_vitalsP['icp']
 time_list = df_vitalsP['Time']
 df_vitalsP.head()
 
-df_vitalsP = df_vitalsP.drop(columns=['Unnamed: 0', 'observationoffset', 'Day', 'Hour'])
+df_vitalsP = df_vitalsP.drop(columns=['Unnamed: 0', 'observationoffset', 'Day', 'Hour', 'systemicdiastolic', 'systemicsystolic'])
 # patient 1082792 literally has only one data point :) 
+# missing ids from og list but not in gen list {2782239}
+patient_list = [
+    306989, 1130290, 1210520, 1555058, 1580984, 2375786, 2823473,
+    2887235, 2898120, 3075566, 3336597, 193629, 263556, 272638, 621883, 799478, 1079428, 1082792,
+    1088266, 1092809, 1116007, 1162658, 1175888, 1535342, 1556670, 2198292,
+    2247037, 2405050, 2671145, 2683425, 2689775, 2721908, 2722053, 2724565,
+    2725853, 2767039, 2768739, 2773734, 2803129, 2846229, 2870532,
+    2885054, 2890935, 2895083, 3064120, 3100062, 3210988, 3212405, 3214569,
+    3217832, 3222024, 3245093, 3347750, 2782239 
+]
 
-# df_vitalsP = df_vitalsP.loc[df_vitalsP['patientunitstayid'].isin(['30989', '11302920'])]
-
-
-
-
+df_vitalsP = df_vitalsP.loc[df_vitalsP['patientunitstayid'].isin(patient_list)]
 df_vitalsP.head()
 
 # %% 
@@ -87,6 +93,9 @@ mno.matrix(df_vitalsP, figsize=(20, 6))
 
 
 df_vitalsP = df_vitalsP.sort_values(by=['patientunitstayid', 'Time'])
+
+df_vitalCopy = df_vitalsP
+
 df_vitalsP = df_vitalsP.set_index(['patientunitstayid', 'Time'])
 
 
@@ -101,6 +110,11 @@ unique_patient_ids = df_vitalsP.index.get_level_values('patientunitstayid').uniq
 print(unique_patient_ids)
 print(len(unique_patient_ids))
 
+
+orig_set = set(patient_list)
+gen_set = set(unique_patient_ids)
+missing_in_generated = orig_set - gen_set
+print(f"missing ids from og list but not in gen list {missing_in_generated}")
 
 # %% 
 
@@ -172,37 +186,91 @@ while tempNode:
     tempNode = tempNode.next
 
 # %%
+# ------------------- more important graphs -----------------------
+# note that for patient 1210520, there is a discrepancy between the two values 
+# we sure that we're ok with that? 
 
-# This code is in fact better, the num d type thing is a bit of a problem and doesn't show data 
-# for patient 9 
-tempNode = dfL_vitals.head
-count = 0
+expired_list = [306989, 1130290, 1210520, 1555058, 1580984, 2375786, 2823473,
+    2887235, 2898120, 3075566, 3336597]
 
-while tempNode and count < 12:  # Limit to 5 patients for example
-    dt = tempNode.data
-    patient = dt.index.get_level_values('patientunitstayid').unique()[0]
-    
-    columns = [col for col in dt.columns]
-    
-    plt.figure(figsize=(15, 10))
-    plt.title(f"Patient ID: {patient}", fontsize=16)
-    
-    print(f"Plotting data for patient {patient}")
-    
-    for column in columns:
-        sns.scatterplot(data=dt, x='Time', y=column, label=column)
-    
-    plt.xlabel('Time', fontsize=12)
-    plt.ylabel('Value', fontsize=12)
-    plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    plt.tight_layout()
-    plt.show()
-    
-    count += 1
-    tempNode = tempNode.next
+alive_list = [193629, 263556, 272638, 621883, 799478, 1079428, 1082792,
+    1088266, 1092809, 1116007, 1162658, 1175888, 1535342, 1556670, 2198292,
+    2247037, 2405050, 2671145, 2683425, 2689775, 2721908, 2722053, 2724565,
+    2725853, 2767039, 2768739, 2773734, 2803129, 2846229, 2870532,
+    2885054, 2890935, 2895083, 3064120, 3100062, 3210988, 3212405, 3214569,
+    3217832, 3222024, 3245093, 3347750, 2782239]
 
-print(f"Total patients plotted: {count}")
+df_expired = df_vitalCopy[df_vitalCopy['patientunitstayid'].isin(expired_list)]
+df_alive = df_vitalCopy[df_vitalCopy['patientunitstayid'].isin(alive_list)]
 
+plt.figure(figsize=(14, 6))
+
+for patient_id in df_alive['patientunitstayid'].unique():
+    patient_data = df_alive[df_alive['patientunitstayid'] == patient_id]
+    # plt.plot(patient_data['Time'], patient_data['icp'], label=f'Patient {patient_id}')
+    sns.lineplot(data = patient_data, x = 'Time', y = 'icp')
+plt.ylim(5, 55)
+
+plt.title('ICP Values of Alive Patients')
+plt.xlabel('Time')
+plt.ylabel('ICP Value')
+
+# %%
+# Graph for the expired patients 
+
+plt.figure(figsize=(14, 6))
+
+for patient_id in df_expired['patientunitstayid'].unique():
+    patient_data = df_expired[df_expired['patientunitstayid'] == patient_id]
+    plt.plot(patient_data['Time'], patient_data['icp'], label=f'Patient {patient_id}')
+plt.ylim(5, 75)
+plt.title('ICP Values of Expired Patients')
+plt.xlabel('Time')
+plt.ylabel('ICP Value')
+
+
+# ----------------- GRAPH LEVELS -------------------
+
+# ---- THE THREE LEVELS OF ALIVE LIST  -------
+
+
+fig, axes = plt.subplots(nrows = 1, ncols = 3, figsize = (18,5))
+
+for patient_id in df_alive['patientunitstayid'].unique():
+    patient_data = df_alive[df_alive['patientunitstayid'] == patient_id]
+    # plt.plot(patient_data['Time'], patient_data['icp'], label=f'Patient {patient_id}')
+    if(df_alive.loc[patient_id]['icp'] > 0 and df_alive.loc[patient_id]['icp'] < 25):
+        sns.lineplot(ax=axes[0], data = patient_data, x = 'Time', y = 'icp')    
+    if(df_alive.loc[patient_id] > 25 and df_alive.loc[patient_id] < 50):
+        sns.lineplot(ax=axes[1], data = patient_data, x = 'Time', y = 'icp')
+    if(df_alive.loc[patient_id] > 50):
+        sns.lineplot(ax=axes[2], data = patient_data, x = 'Time', y = 'icp')
+
+plt.ylim(5, 55)
+
+plt.title('ICP Values of Alive Patients')
+plt.xlabel('Time')
+plt.ylabel('ICP Value')
+
+
+
+
+
+
+
+# plt.legend()
+# def determine_status(patient_id):
+#     if patient_id in alive_list:
+#         return 'alive'
+#     elif patient_id in expired_list:
+#         return 'dead'
+#     else:
+#         return 'unknown'
+
+# df_vitalCopy['status'] = df_vitalCopy['patientunitstayid'].apply(determine_status)
+# df_vitalCopy.head()
+
+# %%
 
 
 
@@ -218,7 +286,7 @@ print(f"Total patients plotted: {count}")
 
 '''
      (\           
-    (  \  /(o)\    The code below is the numscaler code  
+    (  \  /(o)\    The code below is the numscaler code, fix later   
     (   \/  ()/ /)  
      (   `;.))'".) 
       `(/////.-'
