@@ -234,7 +234,9 @@ plt.ylabel('ICP Value')
 
 
 # %%
-# ----------------------- STREAMLIT GRAPHS ------------------------------
+
+
+# ----------------------- REST OF STREAMLIT GRAPHS ------------------------------
 
 st.title('Interactive ICP of Alive patients')
 
@@ -249,205 +251,19 @@ fig.update_yaxes(range=[5, 55])
 
 st.plotly_chart(fig)
 
+# -------
 
-# ----------------- GRAPH LEVELS -------------------
+st.title('Interactive ICP of Expired Patients')
 
-# ---- THE THREE LEVELS OF ALIVE LIST  -------
+fig = go.Figure()
 
+for patient_id in df_expired['patientunitstayid'].unique():
+    patient_data = df_expired[df_expired['patientunitstayid'] == patient_id]
+    fig.add_trace(go.Scatter(x=patient_data['Time'], y=patient_data['icp'], mode='lines', name=f'Patient {patient_id}'))
 
-# fig, axes = plt.subplots(nrows = 1, ncols = 3, figsize = (18,5))
+fig.update_layout(title='ICP Values of Alive Patients', xaxis_title='Time', yaxis_title='ICP Value', hovermode='closest')
+fig.update_yaxes(range=[5, 55])
 
-# for patient_id in df_alive['patientunitstayid'].unique():
-#     patient_data = df_alive[df_alive['patientunitstayid'] == patient_id]
-#     # plt.plot(patient_data['Time'], patient_data['cp'], label=f'Patient {patient_id}')
-#     if(df_alive.loc[patient_id]['icp'] > 0 and df_alive.loc[patient_id]['icp'] < 25):
-#         sns.lineplot(ax=axes[0], data = patient_data, x = 'Time', y = 'icp')    
-#     if(df_alive.loc[patient_id] > 25 and df_alive.loc[patient_id] < 50):
-#         sns.lineplot(ax=axes[1], data = patient_data, x = 'Time', y = 'icp')
-#     if(df_alive.loc[patient_id] > 50):
-#         sns.lineplot(ax=axes[2], data = patient_data, x = 'Time', y = 'icp')
-
-# plt.ylim(5, 55)
-
-# plt.title('ICP Values of Alive Patients')
-# plt.xlabel('Time')
-# plt.ylabel('ICP Value')
+st.plotly_chart(fig)
 
 
-
-
-
-
-
-# plt.legend()
-# def determine_status(patient_id):
-#     if patient_id in alive_list:
-#         return 'alive'
-#     elif patient_id in expired_list:
-#         return 'dead'
-#     else:
-#         return 'unknown'
-
-# df_vitalCopy['status'] = df_vitalCopy['patientunitstayid'].apply(determine_status)
-# df_vitalCopy.head()
-
-# %%
-
-
-
-
-
-# %%
-# ----------------very big line break ----------------------
-
-
-
-
-
-
-'''
-     (\           
-    (  \  /(o)\    The code below is the numscaler code, fix later   
-    (   \/  ()/ /)  
-     (   `;.))'".) 
-      `(/////.-'
-   =====))=))===() 
-     ///'       
-    //   PjP/ejm
-   '    
-'''
-
-
-
-
-
-
-
-
-# ----------------very big line break ----------------------
-
-'''
-
-
-# %%
-#Normalize Data
-
-scaler = MinMaxScaler()
-normalized_data = scaler.fit_transform(dt.drop('Time', axis=1))
-normalized_df = pd.DataFrame(normalized_data, columns=dt.drop('Time', axis=1).columns)
-normalized_df['Time'] = dt['Time']
-
-plt.figure(figsize=(15, 10))
-for col in normalized_df.columns:
-    if col != 'Time':
-        plt.plot(normalized_df['Time'], normalized_df[col], label=col)
-
-plt.title(f"Patient ID: {patient}", fontsize=16)
-plt.xlabel('Time')
-plt.ylabel('Normalized Value')
-plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-plt.tight_layout()
-plt.show()
-# %%
-fig, axs = plt.subplots(3, 1, figsize=(15, 20), sharex=True)
-fig.suptitle(f"Patient ID: {patient}", fontsize=16)
-
-# Plot high-range variables
-high_range = ['Unnamed: 0']
-for col in high_range:
-    axs[0].plot(dt['Time'], dt[col], label=col)
-axs[0].legend()
-axs[0].set_ylabel('High Range')
-
-# Plot mid-range variables
-mid_range = ['systemicsystolic', 'systemicdiastolic', 'systemicmean', 'heartrate']
-for col in mid_range:
-    axs[1].plot(dt['Time'], dt[col], label=col)
-axs[1].legend()
-axs[1].set_ylabel('Mid Range')
-
-# Plot low-range variables
-low_range = ['temperature', 'sao2', 'respiration', 'icp']
-for col in low_range:
-    axs[2].plot(dt['Time'], dt[col], label=col)
-axs[2].legend()
-axs[2].set_ylabel('Low Range')
-
-plt.xlabel('Time')
-plt.tight_layout()
-plt.show()
-# %%
-fig, ax1 = plt.subplots(figsize=(15, 10))
-fig.suptitle(f"Patient ID: {patient}", fontsize=16)
-
-# Plot high-range variable on secondary y-axis
-ax2 = ax1.twinx()
-ax2.plot(dt['Time'], dt['Unnamed: 0'], label='Unnamed: 0', color='r')
-ax2.set_ylabel('Unnamed: 0', color='r')
-
-# Plot other variables on primary y-axis
-for col in dt.columns:
-    if col not in ['Time', 'Unnamed: 0']:
-        ax1.plot(dt['Time'], dt[col], label=col)
-
-ax1.set_xlabel('Time')
-ax1.set_ylabel('Value')
-ax1.legend(loc='upper left')
-ax2.legend(loc='upper right')
-
-plt.tight_layout()
-plt.show()
-
-
-# %%
-
-
-tempNode = dfL_vitals.head
-count = 0
-
-
-# note we also only need the 54 patients from apachescore, not the 4 extra patients. 
-
-while tempNode:  
-    dt = tempNode.data
-    patient = dt.index.get_level_values('patientunitstayid').unique()[0]
-    print(dt.head())
-
-    # Create subplots
-    fig, axs = plt.subplots(3, 1, figsize=(15, 20), sharex=True)
-    fig.suptitle(f"Patient ID: {patient}", fontsize=16)
-
-    # Plot high-range variables
-    high_range = ['Unnamed: 0']
-    for col in high_range:
-        axs[0].plot(dt['Time'], dt[col], label=col)
-    axs[0].legend()
-    axs[0].set_ylabel('High Range')
-
-    # Plot mid-range variables
-    mid_range = ['systemicsystolic', 'systemicdiastolic', 'systemicmean', 'heartrate']
-    for col in mid_range:
-        axs[1].plot(dt['Time'], dt[col], label=col)
-    axs[1].legend()
-    axs[1].set_ylabel('Mid Range')
-
-    # Plot low-range variables
-    low_range = ['temperature', 'sao2', 'respiration', 'icp']
-    for col in low_range:
-        axs[2].plot(dt['Time'], dt[col], label=col)
-    axs[2].legend()
-    axs[2].set_ylabel('Low Range')
-
-    plt.xlabel('Time')
-    plt.tight_layout()
-    plt.show()
-    
-    print(f"Plotted data for patient {patient}")
-    
-    count += 1
-    tempNode = tempNode.next
-
-print(f"Total patients plotted: {count}")
-# %%
-
-'''
