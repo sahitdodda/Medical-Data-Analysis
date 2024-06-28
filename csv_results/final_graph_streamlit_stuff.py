@@ -10,7 +10,9 @@ from sklearn.linear_model import LinearRegression
 import missingno as mno
 from sklearn.preprocessing import MinMaxScaler
 from statsmodels.imputation.mice import MICEData
+
 import plotly.graph_objects as go
+import streamlit as st
 
 import sys 
 sys.path.append('LinkedListClass.py')
@@ -231,28 +233,45 @@ plt.xlabel('Time')
 plt.ylabel('ICP Value')
 
 
+# %%
+# ----------------------- STREAMLIT GRAPHS ------------------------------
+
+st.title('Interactive ICP of Alive patients')
+
+fig = go.figure()
+
+for patient_id in df_alive['patientunitstayid'].unique():
+    patient_data = df_alive[df_alive['patientunitstayid'] == patient_id]
+    fig.add_trace(go.Scatter(x=patient_data['Time'], y=patient_data['icp'], mode='lines', name=f'Patient {patient_id}'))
+
+fig.update_layout(title='ICP Values of Alive Patients', xaxis_title='Time', yaxis_title='ICP Value', hovermode='closest')
+fig.update_yaxes(range=[5, 55])
+
+st.plotly_chart(fig)
+
+
 # ----------------- GRAPH LEVELS -------------------
 
 # ---- THE THREE LEVELS OF ALIVE LIST  -------
 
 
-fig, axes = plt.subplots(nrows = 1, ncols = 3, figsize = (18,5))
+# fig, axes = plt.subplots(nrows = 1, ncols = 3, figsize = (18,5))
 
-for patient_id in df_alive['patientunitstayid'].unique():
-    patient_data = df_alive[df_alive['patientunitstayid'] == patient_id]
-    # plt.plot(patient_data['Time'], patient_data['cp'], label=f'Patient {patient_id}')
-    if(df_alive.loc[patient_id]['icp'] > 0 and df_alive.loc[patient_id]['icp'] < 25):
-        sns.lineplot(ax=axes[0], data = patient_data, x = 'Time', y = 'icp')    
-    if(df_alive.loc[patient_id] > 25 and df_alive.loc[patient_id] < 50):
-        sns.lineplot(ax=axes[1], data = patient_data, x = 'Time', y = 'icp')
-    if(df_alive.loc[patient_id] > 50):
-        sns.lineplot(ax=axes[2], data = patient_data, x = 'Time', y = 'icp')
+# for patient_id in df_alive['patientunitstayid'].unique():
+#     patient_data = df_alive[df_alive['patientunitstayid'] == patient_id]
+#     # plt.plot(patient_data['Time'], patient_data['cp'], label=f'Patient {patient_id}')
+#     if(df_alive.loc[patient_id]['icp'] > 0 and df_alive.loc[patient_id]['icp'] < 25):
+#         sns.lineplot(ax=axes[0], data = patient_data, x = 'Time', y = 'icp')    
+#     if(df_alive.loc[patient_id] > 25 and df_alive.loc[patient_id] < 50):
+#         sns.lineplot(ax=axes[1], data = patient_data, x = 'Time', y = 'icp')
+#     if(df_alive.loc[patient_id] > 50):
+#         sns.lineplot(ax=axes[2], data = patient_data, x = 'Time', y = 'icp')
 
-plt.ylim(5, 55)
+# plt.ylim(5, 55)
 
-plt.title('ICP Values of Alive Patients')
-plt.xlabel('Time')
-plt.ylabel('ICP Value')
+# plt.title('ICP Values of Alive Patients')
+# plt.xlabel('Time')
+# plt.ylabel('ICP Value')
 
 
 
@@ -306,6 +325,9 @@ plt.ylabel('ICP Value')
 
 
 # ----------------very big line break ----------------------
+
+'''
+
 
 # %%
 #Normalize Data
@@ -427,3 +449,5 @@ while tempNode:
 
 print(f"Total patients plotted: {count}")
 # %%
+
+'''
