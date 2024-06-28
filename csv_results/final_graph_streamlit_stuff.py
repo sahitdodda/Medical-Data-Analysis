@@ -238,7 +238,7 @@ plt.ylabel('ICP Value')
 
 st.title('Interactive ICP of Alive patients')
 
-fig = go.figure()
+fig = go.Figure()
 
 for patient_id in df_alive['patientunitstayid'].unique():
     patient_data = df_alive[df_alive['patientunitstayid'] == patient_id]
