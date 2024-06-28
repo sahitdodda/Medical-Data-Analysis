@@ -10,7 +10,7 @@ from sklearn.linear_model import LinearRegression
 import missingno as mno
 from sklearn.preprocessing import MinMaxScaler
 from statsmodels.imputation.mice import MICEData
-
+import plotly.graph_objects as go
 
 import sys 
 sys.path.append('LinkedListClass.py')
