@@ -239,6 +239,8 @@ df_alive = df_vitalCopy[df_vitalCopy['patientunitstayid'].isin(alive_list)]
 
 # ----------------------- ACTUAL STREAMLIT GRAPHS ------------------------------
 
+
+
 # %%
 
 st.title('All ICP values vs Time')
@@ -269,7 +271,6 @@ with st.expander(f'Histogram of ICP Values for All Patients'):
     st.plotly_chart(fig)
 
 # %%
-
 
 st.title('Interactive ICP of Alive patients')
 
