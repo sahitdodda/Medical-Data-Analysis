@@ -371,3 +371,108 @@ while tempNode:
 
 
 
+#%%
+#Here we estimate the area under. Start by excluding irrelevant values
+df_vitalsP = df_vitalsP.reset_index()
+df_vitalsP['icpSpike20to25'] = df_vitalsP['icp'].where((df_vitalsP['icp'] >= 20) & (df_vitalsP['icp'] <= 25))
+df_vitalsP['icpSpike25to30'] = df_vitalsP['icp'].where((df_vitalsP['icp'] >= 25) & (df_vitalsP['icp'] <= 30))
+df_vitalsP['icpSpike30to35'] = df_vitalsP['icp'].where((df_vitalsP['icp'] >= 30) & (df_vitalsP['icp'] <= 35))
+df_vitalsP['icpSpike35+'] = df_vitalsP['icp'].where(df_vitalsP['icp'] >= 30)
+# %%
+df_vitalsP = df_vitalsP.reset_index()
+def area_under_curve(x, y):
+    return np.trapz(y, x)
+
+
+Twenty_to_ThirtyFive = area_under_curve(df_vitalsP['Time'].values, df_vitalsP['icpSpike20to25'].values)
+
+print(f"Estimated area: {Twenty_to_ThirtyFive}")
+
+#%%
+df_vitalsP.head()
+
+# ----------------very big line break ----------------------
+
+
+
+
+
+
+'''
+     (\           
+    (  \  /(o)\    The code below is for estimates for area    
+    (   \/  ()/ /)  under the curve for various intervals. 
+     (   `;.))'".)      Atm, the numbers should work but aren't the most usable
+      `(/////.-'
+   =====))=))===() 
+     ///'       
+    //   PjP/ejm
+   '    
+'''
+
+
+
+
+
+
+
+
+# ----------------very big line break ----------------------
+
+# %%
+
+
+def process_icp_range(df_vitalsP, time_col, icp_col, min_icp, max_icp):
+    # Create ICP range column
+    range_col = f'icpSpike{min_icp}to{max_icp}'
+    df_vitalsP[range_col] = df_vitalsP[icp_col].where((df_vitalsP[icp_col] >= min_icp) & (df_vitalsP[icp_col] <= max_icp))
+    
+    # Prepare data
+    df_clean = df_vitalsP.reset_index()
+    df_clean = df_clean[[time_col, range_col]].dropna().reset_index(drop=True)
+    time_clean = df_clean[time_col].values
+    icp_clean = df_clean[range_col].values
+    
+    # Calculate area
+    area = np.trapz(icp_clean, time_clean)
+    
+    # Create plot
+    plt.figure(figsize=(10, 6))
+    plt.plot(time_clean, icp_clean)
+    plt.xlabel('Time')
+    plt.ylabel(f'ICP ({min_icp}-{max_icp} range)')
+    plt.title(f'ICP values in {min_icp}-{max_icp} range')
+    
+    # Add area and data points info to plot
+    total_points = len(df_vitalsP)
+    clean_points = len(time_clean)
+    percentage_used = (clean_points / total_points) * 100
+    plt.text(0.05, 0.95, f'Area: {area:.2f}\nData points: {clean_points}/{total_points} ({percentage_used:.2f}%)', 
+             transform=plt.gca().transAxes, verticalalignment='top')
+    
+    plt.show()
+    
+    return area, clean_points, total_points
+
+# Define ICP ranges
+icp_ranges = [(0, 20), (20, 25), (25, 30), (30, 40), (40, 50)]
+
+# Process each range
+results = []
+for min_icp, max_icp in icp_ranges:
+    area, clean_points, total_points = process_icp_range(df_vitalsP, 'Time', 'icp', min_icp, max_icp)
+    results.append({
+        'range': f'{min_icp}-{max_icp}',
+        'area': area,
+        'clean_points': clean_points,
+        'total_points': total_points,
+        'percentage_used': (clean_points / total_points) * 100
+    })
+
+# Print summary
+for result in results:
+    print(f"ICP Range {result['range']}:")
+    print(f"  Estimated area: {result['area']:.2f}")
+    print(f"  Data points: {result['clean_points']}/{result['total_points']} ({result['percentage_used']:.2f}%)")
+    print()
+# %%
