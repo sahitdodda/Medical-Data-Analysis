@@ -473,14 +473,20 @@ for df_value in icp_ranges:
     min_icp = df_value[0]
     max_icp = df_value[1]  
     
-    filtered_icp = df_vitalsP['icp'].where((df_vitalsP['icp'] >= min_icp) & (df_vitalsP['icp'] <= max_icp))
-
     # Filter corresponding time column based on the same condition
-    filtered_time = df_vitalsP.loc[(df_vitalsP['icp'] >= min_icp) & (df_vitalsP['icp'] <= max_icp), 'Time']
+    filtered_df = df_vitalCopy.loc[(df_vitalCopy['icp'] >= min_icp) & (df_vitalCopy['icp'] <= max_icp), ['icp', 'Time']]
 
     # Create a new DataFrame with filtered data
-    df_filtered = pd.DataFrame({'icp': filtered_icp.dropna(), 'Time': filtered_time})    
+    df_icp_ranges.append(filtered_df)
 
 df_icp_ranges.display()
 print(df_icp_ranges.length())
+
+
 # %%
+
+tempNode = dfL_vitals.head
+while tempNode: 
+    dt = tempNode.data
+    
+    tempNode = tempNode.next
