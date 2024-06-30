@@ -23,9 +23,7 @@ df_diagP = pd.read_csv('diagP_results.csv')
 df_infs = pd.read_csv('infsP_results.csv')
 df_labsP = pd.read_csv('labsP_results.csv')
 df_examP = pd.read_csv('examP_results.csv')
-
 df_vitalsP = pd.read_csv('vitalsP.csv')
-
 
 icp_list = df_vitalsP['icp']
 time_list = df_vitalsP['Time']
@@ -251,26 +249,12 @@ for patient_id in df_vitalCopy['patientunitstayid'].unique():
 
 fig.update_layout(title='All ICP values vs Time', xaxis_title='Time', yaxis_title='ICP Value', hovermode='closest')
 fig.update_yaxes(range=[0, 50])
-st.plotly_chart(fig)
+fig.show()
 
 
-# %%
-# Bell curve histogram 
-with st.expander(f'Histogram of ICP Values for All Patients'):
-    # Combine ICP values from all patients
-    all_icp_values = df_vitalCopy['icp']
 
-    # Create a histogram
-    fig = go.Figure(data=[go.Histogram(x=all_icp_values, xbins=dict(start=0, end=50, size=1))])
-
-    fig.update_layout(title='Histogram of ICP Values for All Patients',
-                    xaxis_title='ICP Value',
-                    yaxis_title='Count',
-                    bargap=0.2)
-
-    st.plotly_chart(fig)
-
-# %%
+#HISTOGRAMS FOR ALIVE AND EXPIRED PATIENTS
+#  %%
 
 st.title('Interactive ICP of Alive patients')
 
@@ -284,30 +268,105 @@ for patient_id in df_alive['patientunitstayid'].unique():
 fig.update_layout(title='ICP Values of Alive Patients', xaxis_title='Time', yaxis_title='ICP Value', hovermode='closest')
 fig.update_yaxes(range=[5, 55])
 
-st.plotly_chart(fig)
+fig.show()
 
+count25_30 = df_alive[(df_alive['icp'] >= 25) & (df_alive['icp'] <= 30)].shape[0]
+count30_ = df_alive[(df_alive['icp'] >= 30)].shape[0]
+count20_25 = df_alive[(df_alive['icp'] >= 20) & (df_alive['icp'] <= 25)].shape[0]
+countAlive = df_alive['patientunitstayid'].unique().shape[0]
+print("# of Alive Patients: ", countAlive)
+print("# spikes w ICP 20-25: ", count20_25)
+print("# spikes w ICP 25-30: ", count25_30)
+print("# spikes w ICP 30+: ", count30_)
 
-with st.expander(f'Histogram of ICP Values for Alive Patients'):
-    # Combine ICP values from all patients
-    all_icp_values = df_alive['icp']
+# Bell curve histogram 
+with st.expander(f'Day 1 ICP Histogram for Alive Patients'):
+    # Filter to make a dataframe with only rows from the first 24 hours
+    within_24h = df_alive[df_alive['Time'] <= 24]
+
+    # Select only the 'icp' column values from the new dataframe
+    icp_values_within_24h = within_24h['icp']
 
     # Create a histogram
-    fig = go.Figure(data=[go.Histogram(x=all_icp_values, xbins=dict(start=0, end=50, size=1))])
+    fig = go.Figure(data=[go.Histogram(x=icp_values_within_24h, xbins=dict(start=0, end=50, size=1))])
 
-    fig.update_layout(title='Histogram of ICP Values for Alive Patients',
-                    xaxis_title='ICP Value',
-                    yaxis_title='Count',
-                    bargap=0.2)
-
-    st.plotly_chart(fig)
+    fig.update_layout(title='Day 1 ICP Histogram for Alive Patients',
+                      xaxis_title='ICP Value',
+                      yaxis_title='Count',
+                      bargap=0.2)
     
-    multi = ''' We noticed a :blue-background[normal, right skewed distribution curve] as expected for alive patients.  
-    '''
+    fig.show()
 
-    st.markdown(multi)
-# -------
+    count25_30 = within_24h[(within_24h['icp'] >= 25) & (within_24h['icp'] <= 30)].shape[0]
+    count30_ = within_24h[(within_24h['icp'] >= 30)].shape[0]
+    count20_25 = within_24h[(within_24h['icp'] >= 20) & (within_24h['icp'] <= 25)].shape[0]
+    countAlive = within_24h['patientunitstayid'].unique().shape[0]
+    print("# of Alive Patients: ", countAlive)
+    print("# spikes w ICP 20-25: ", count20_25)
+    print("# spikes w ICP 25-30: ", count25_30)
+    print("# spikes w ICP 30+: ", count30_)
 
-st.title('Interactive ICP of Expired Patients')
+
+with st.expander(f'Day 2 ICP Histogram for Alive Patients'):
+    # Corrected filtering condition with proper parentheses
+    within_48h = df_alive[(df_alive['Time'] >= 24) & (df_alive['Time'] <= 48)]
+
+    # Select only the 'icp' column values from the new dataframe
+    icp_values_within_48h = within_48h['icp']
+
+    # Corrected the variable used for plotting the histogram
+    fig = go.Figure(data=[go.Histogram(x=icp_values_within_48h, xbins=dict(start=0, end=50, size=1))])
+
+    fig.update_layout(title='Day 2 ICP Histogram for Alive Patients',
+                      xaxis_title='ICP Value',
+                      yaxis_title='Count',
+                      bargap=0.2)
+
+    fig.show()
+
+    count25_30 = within_48h[(within_48h['icp'] >= 25) & (within_48h['icp'] <= 30)].shape[0]
+    count30_ = within_48h[(within_48h['icp'] >= 30)].shape[0]
+    count20_25 = within_48h[(within_48h['icp'] >= 20) & (within_48h['icp'] <= 25)].shape[0]
+    countAlive = within_48h['patientunitstayid'].unique().shape[0]
+    print("# of Alive Patients: ", countAlive)
+    print("# spikes w ICP 20-25: ", count20_25)
+    print("# spikes w ICP 25-30: ", count25_30)
+    print("# spikes w ICP 30+: ", count30_)
+
+
+with st.expander(f'Day 3 ICP Histogram for Alive Patients'):
+    # Corrected filtering condition with proper parentheses
+    within_72h = df_alive[(df_alive['Time'] >= 48) & (df_alive['Time'] <= 72)]
+
+    # Select only the 'icp' column values from the new dataframe
+    icp_values_within_72h = within_72h['icp']
+
+    # Corrected the variable used for plotting the histogram
+    fig = go.Figure(data=[go.Histogram(x=icp_values_within_72h, xbins=dict(start=0, end=50, size=1))])
+
+    fig.update_layout(title='Day 3 ICP Histogram for Alive Patients',
+                      xaxis_title='ICP Value',
+                      yaxis_title='Count',
+                      bargap=0.2)
+
+    fig.show()
+
+    count25_30 = within_72h[(within_72h['icp'] >= 25) & (within_72h['icp'] <= 30)].shape[0]
+    count30_ = within_72h[(within_72h['icp'] >= 30)].shape[0]
+    count20_25 = within_72h[(within_72h['icp'] >= 20) & (within_72h['icp'] <= 25)].shape[0]
+    countAlive = within_72h['patientunitstayid'].unique().shape[0]
+    print("# of Alive Patients: ", countAlive)
+    print("# spikes w ICP 20-25: ", count20_25)
+    print("# spikes w ICP 25-30: ", count25_30)
+    print("# spikes w ICP 30+: ", count30_)
+
+
+# Corrected code for filtering dataframes and using the correct variable for histogram data
+
+# Bell curve histogram
+
+st.title('Interactive ICP of Expired patients')
+
 
 fig = go.Figure()
 
@@ -315,31 +374,99 @@ for patient_id in df_expired['patientunitstayid'].unique():
     patient_data = df_expired[df_expired['patientunitstayid'] == patient_id]
     fig.add_trace(go.Scatter(x=patient_data['Time'], y=patient_data['icp'], mode='lines', name=f'Patient {patient_id}'))
 
-fig.update_layout(title='Interactive ICP of Expired Patients', xaxis_title='Time', yaxis_title='ICP Value', hovermode='closest')
+fig.update_layout(title='ICP Values of Expired Patients', xaxis_title='Time', yaxis_title='ICP Value', hovermode='closest')
 fig.update_yaxes(range=[5, 55])
 
-st.plotly_chart(fig)
+fig.show()
+
+count25_30 = df_expired[(df_expired['icp'] >= 25) & (df_expired['icp'] <= 30)].shape[0]
+count30_ = df_expired[(df_expired['icp'] >= 30)].shape[0]
+count20_25 = df_expired[(df_expired['icp'] >= 20) & (df_expired['icp'] <= 25)].shape[0]
+countAlive = df_expired['patientunitstayid'].unique().shape[0]
+print("# of Alive Patients: ", countAlive)
+print("# spikes w ICP 20-25: ", count20_25)
+print("# spikes w ICP 25-30: ", count25_30)
+print("# spikes w ICP 30+: ", count30_)
 
 
-with st.expander(f'Histogram of ICP Values for Expired Patients'):
-    # Combine ICP values from all patients
-    all_icp_values = df_expired['icp']
+with st.expander(f'Day 1 ICP Histogram for Expired Patients'):
+    # Filter to make a dataframe with only rows from the first 24 hours
+    expired_within_24h = df_expired[df_expired['Time'] <= 24]
+
+    # Select only the 'icp' column values from the new dataframe
+    icp_values_within_24h = expired_within_24h['icp']
 
     # Create a histogram
-    fig = go.Figure(data=[go.Histogram(x=all_icp_values, xbins=dict(start=0, end=50, size=1))])
+    fig = go.Figure(data=[go.Histogram(x=icp_values_within_24h, xbins=dict(start=0, end=50, size=1))])
 
-    fig.update_layout(title='Histogram of ICP Values for Expired Patients',
-                    xaxis_title='ICP Value',
-                    yaxis_title='Count',
-                    bargap=0.2)
+    fig.update_layout(title='Day 1 ICP Histogram for Expired Patients',
+                      xaxis_title='ICP Value',
+                      yaxis_title='Count',
+                      bargap=0.2)
 
-    st.plotly_chart(fig)
+    fig.show()
+    count25_30 = expired_within_24h[(expired_within_24h['icp'] >= 25) & (expired_within_24h['icp'] <= 30)].shape[0]
+    count30_ = expired_within_24h[(expired_within_24h['icp'] >= 30)].shape[0]
+    count20_25 = expired_within_24h[(expired_within_24h['icp'] >= 20) & (expired_within_24h['icp'] <= 25)].shape[0]
+    countExpired = expired_within_24h['patientunitstayid'].unique().shape[0]
+    print("# of Alive Patients: ", countExpired)
+    print("# spikes w ICP 20-25: ", count20_25)
+    print("# spikes w ICP 25-30: ", count25_30)
+    print("# spikes w ICP 30+: ", count30_)
 
-    multi = ''' However, for expired patients we noticed :blue-background[survivorship bias]. We would have to split by time.  
-    We also do note that the mean for this data is to the right of the previous graph for higher ICP values on average. 
-    '''
 
-    st.markdown(multi)
+with st.expander(f'Day 2 ICP Histogram for Expired Patients'):
+    # Corrected filtering condition with proper parentheses
+    expired_within_48h = df_expired[(df_expired['Time'] >= 24) & (df_expired['Time'] <= 48)]
+
+    # Select only the 'icp' column values from the new dataframe
+    icp_values_within_48h = expired_within_48h['icp']
+
+    # Corrected the variable used for plotting the histogram
+    fig = go.Figure(data=[go.Histogram(x=icp_values_within_48h, xbins=dict(start=0, end=50, size=1))])
+
+    fig.update_layout(title='Day 2 ICP Histogram for Expired Patients',
+                      xaxis_title='ICP Value',
+                      yaxis_title='Count',
+                      bargap=0.2)
+
+    fig.show()
+
+    count25_30 = expired_within_48h[(expired_within_48h['icp'] >= 25) & (expired_within_48h['icp'] <= 30)].shape[0]
+    count30_ = expired_within_48h[(expired_within_48h['icp'] >= 30)].shape[0]
+    count20_25 = expired_within_48h[(expired_within_48h['icp'] >= 20) & (expired_within_48h['icp'] <= 25)].shape[0]
+    countExpired = expired_within_48h['patientunitstayid'].unique().shape[0]
+    print("# of Alive Patients: ", countExpired)
+    print("# spikes w ICP 20-25: ", count20_25)
+    print("# spikes w ICP 25-30: ", count25_30)
+    print("# spikes w ICP 30+: ", count30_)
+
+
+with st.expander(f'Day 3 ICP Histogram for Expired Patients'):
+    # Corrected filtering condition with proper parentheses
+    expired_within_72h = df_expired[(df_expired['Time'] >= 48) & (df_expired['Time'] <= 72)]
+
+    # Select only the 'icp' column values from the new dataframe
+    icp_values_within_72h = expired_within_72h['icp']
+
+    # Corrected the variable used for plotting the histogram
+    fig = go.Figure(data=[go.Histogram(x=icp_values_within_72h, xbins=dict(start=0, end=50, size=1))])
+
+    fig.update_layout(title='Day 3 ICP Histogram for Expired Patients',
+                      xaxis_title='ICP Value',
+                      yaxis_title='Count',
+                      bargap=0.2)
+
+    fig.show()
+
+    count25_30 = expired_within_72h[(expired_within_72h['icp'] >= 25) & (expired_within_72h['icp'] <= 30)].shape[0]
+    count30_ = expired_within_72h[(expired_within_72h['icp'] >= 30)].shape[0]
+    count20_25 = expired_within_72h[(expired_within_72h['icp'] >= 20) & (expired_within_72h['icp'] <= 25)].shape[0]
+    countExpired = expired_within_72h['patientunitstayid'].unique().shape[0]
+    print("# of Alive Patients: ", countExpired)
+    print("# spikes w ICP 20-25: ", count20_25)
+    print("# spikes w ICP 25-30: ", count25_30)
+    print("# spikes w ICP 30+: ", count30_)
 
 # %%
 
@@ -365,7 +492,7 @@ while tempNode:
         if(dt.index.get_level_values('Time').max() > 72):
             fig.update_xaxes(range=[0,72])
 
-        st.plotly_chart(fig)
+        fig.show()
     
     tempNode = tempNode.next
 
