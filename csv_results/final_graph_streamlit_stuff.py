@@ -369,28 +369,6 @@ while tempNode:
     
     tempNode = tempNode.next
 
-
-
-#%%
-#Here we estimate the area under. Start by excluding irrelevant values
-df_vitalsP = df_vitalsP.reset_index()
-df_vitalsP['icpSpike20to25'] = df_vitalsP['icp'].where((df_vitalsP['icp'] >= 20) & (df_vitalsP['icp'] <= 25))
-df_vitalsP['icpSpike25to30'] = df_vitalsP['icp'].where((df_vitalsP['icp'] >= 25) & (df_vitalsP['icp'] <= 30))
-df_vitalsP['icpSpike30to35'] = df_vitalsP['icp'].where((df_vitalsP['icp'] >= 30) & (df_vitalsP['icp'] <= 35))
-df_vitalsP['icpSpike35+'] = df_vitalsP['icp'].where(df_vitalsP['icp'] >= 30)
-# %%
-df_vitalsP = df_vitalsP.reset_index()
-def area_under_curve(x, y):
-    return np.trapz(y, x)
-
-
-Twenty_to_ThirtyFive = area_under_curve(df_vitalsP['Time'].values, df_vitalsP['icpSpike20to25'].values)
-
-print(f"Estimated area: {Twenty_to_ThirtyFive}")
-
-#%%
-df_vitalsP.head()
-
 # ----------------very big line break ----------------------
 
 
@@ -418,6 +396,20 @@ df_vitalsP.head()
 
 
 # ----------------very big line break ----------------------
+
+#%%
+#Here we estimate the area under. Start by excluding irrelevant values
+df_vitalsP = df_vitalsP.reset_index()
+df_vitalsP['icpSpike20to25'] = df_vitalsP['icp'].where((df_vitalsP['icp'] >= 20) & (df_vitalsP['icp'] <= 25))
+df_vitalsP['icpSpike25to30'] = df_vitalsP['icp'].where((df_vitalsP['icp'] >= 25) & (df_vitalsP['icp'] <= 30))
+df_vitalsP['icpSpike30to35'] = df_vitalsP['icp'].where((df_vitalsP['icp'] >= 30) & (df_vitalsP['icp'] <= 35))
+df_vitalsP['icpSpike35+'] = df_vitalsP['icp'].where(df_vitalsP['icp'] >= 30)
+# %%
+
+#%%
+df_vitalsP.head()
+
+
 
 # %%
 
