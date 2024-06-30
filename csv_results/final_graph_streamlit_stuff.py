@@ -73,6 +73,7 @@ print(df_vitalsP.dtypes)
 #%%
 df_vitalsP = df_vitalsP.fillna(method='ffill')
 
+
 #%%
 df_vitalsP.head()
 
@@ -399,11 +400,11 @@ while tempNode:
 
 #%%
 #Here we estimate the area under. Start by excluding irrelevant values
-df_vitalsP = df_vitalsP.reset_index()
-df_vitalsP['icpSpike20to25'] = df_vitalsP['icp'].where((df_vitalsP['icp'] >= 20) & (df_vitalsP['icp'] <= 25))
-df_vitalsP['icpSpike25to30'] = df_vitalsP['icp'].where((df_vitalsP['icp'] >= 25) & (df_vitalsP['icp'] <= 30))
-df_vitalsP['icpSpike30to35'] = df_vitalsP['icp'].where((df_vitalsP['icp'] >= 30) & (df_vitalsP['icp'] <= 35))
-df_vitalsP['icpSpike35+'] = df_vitalsP['icp'].where(df_vitalsP['icp'] >= 30)
+# df_vitalsP = df_vitalsP.reset_index()
+# df_vitalsP['icpSpike20to25'] = df_vitalsP['icp'].where((df_vitalsP['icp'] >= 20) & (df_vitalsP['icp'] <= 25))
+# df_vitalsP['icpSpike25to30'] = df_vitalsP['icp'].where((df_vitalsP['icp'] >= 25) & (df_vitalsP['icp'] <= 30))
+# df_vitalsP['icpSpike30to35'] = df_vitalsP['icp'].where((df_vitalsP['icp'] >= 30) & (df_vitalsP['icp'] <= 35))
+# df_vitalsP['icpSpike35+'] = df_vitalsP['icp'].where(df_vitalsP['icp'] >= 35)
 # %%
 
 #%%
@@ -417,6 +418,7 @@ df_vitalsP.head()
 def process_icp_range(df_vitalsP, time_col, icp_col, min_icp, max_icp):
     # Create ICP range column
     range_col = f'icpSpike{min_icp}to{max_icp}'
+    
     df_vitalsP[range_col] = df_vitalsP[icp_col].where((df_vitalsP[icp_col] >= min_icp) & (df_vitalsP[icp_col] <= max_icp))
     
     # Prepare data
@@ -426,6 +428,7 @@ def process_icp_range(df_vitalsP, time_col, icp_col, min_icp, max_icp):
     icp_clean = df_clean[range_col].values
     
     # Calculate area
+    #!!!!!!!!!!!!!!!!!!!LOOK HERE!!!!!!!!!!!!!!!!!!
     area = np.trapz(icp_clean, time_clean)
     
     # Create plot
@@ -447,7 +450,7 @@ def process_icp_range(df_vitalsP, time_col, icp_col, min_icp, max_icp):
     return area, clean_points, total_points
 
 # Define ICP ranges
-icp_ranges = [(0, 20), (20, 25), (25, 30), (30, 40), (40, 50)]
+icp_ranges = [(0, 20), (20, 25), (25, 30), (30, 35), (35, 1000000000)]
 
 # Process each range
 results = []
@@ -463,7 +466,7 @@ for min_icp, max_icp in icp_ranges:
 
 # Print summary
 for result in results:
-    print(f"ICP Range {result['range']}:")
+    print(f"ICP Spike Range {result['range']}:")
     print(f"  Estimated area: {result['area']:.2f}")
     print(f"  Data points: {result['clean_points']}/{result['total_points']} ({result['percentage_used']:.2f}%)")
     print()
