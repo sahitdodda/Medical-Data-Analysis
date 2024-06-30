@@ -419,6 +419,7 @@ def process_icp_range(df_vitalsP, time_col, icp_col, min_icp, max_icp):
     # Create ICP range column
     range_col = f'icpSpike{min_icp}to{max_icp}'
     
+
     df_vitalsP[range_col] = df_vitalsP[icp_col].where((df_vitalsP[icp_col] >= min_icp) & (df_vitalsP[icp_col] <= max_icp))
     
     # Prepare data
@@ -428,24 +429,10 @@ def process_icp_range(df_vitalsP, time_col, icp_col, min_icp, max_icp):
     icp_clean = df_clean[range_col].values
     
     # Calculate area
+
+
     #!!!!!!!!!!!!!!!!!!!LOOK HERE!!!!!!!!!!!!!!!!!!
     area = np.trapz(icp_clean, time_clean)
-    
-    # Create plot
-    plt.figure(figsize=(10, 6))
-    plt.scatter(time_clean, icp_clean)
-    plt.xlabel('Time')
-    plt.ylabel(f'ICP ({min_icp}-{max_icp} range)')
-    plt.title(f'ICP values in {min_icp}-{max_icp} range')
-    
-    # Add area and data points info to plot
-    total_points = len(df_vitalsP)
-    clean_points = len(time_clean)
-    percentage_used = (clean_points / total_points) * 100
-    plt.text(0.05, 0.95, f'Area: {area:.2f}\nData points: {clean_points}/{total_points} ({percentage_used:.2f}%)', 
-             transform=plt.gca().transAxes, verticalalignment='top')
-    
-    plt.show()
     
     return area, clean_points, total_points
 
@@ -470,4 +457,30 @@ for result in results:
     print(f"  Estimated area: {result['area']:.2f}")
     print(f"  Data points: {result['clean_points']}/{result['total_points']} ({result['percentage_used']:.2f}%)")
     print()
+
+
+
+
+
+
+# %%
+
+
+df_icp_ranges = LL()
+
+for df_value in icp_ranges: 
+
+    min_icp = df_value[0]
+    max_icp = df_value[1]    
+
+    filtered_icp = df_vitalsP[icp_col].where((df_vitalsP[icp_col] >= min_icp) & (df_vitalsP[icp_col] <= max_icp))
+
+    # Filter corresponding time column based on the same condition
+    filtered_time = df_vitalsP.loc[(df_vitalsP[icp_col] >= min_icp) & (df_vitalsP[icp_col] <= max_icp), time_col]
+
+    # Create a new DataFrame with filtered data
+    df_filtered = pd.DataFrame({icp_col: filtered_icp.dropna(), time_col: filtered_time})    
+
+df_icp_ranges.head
+print(dfL_vitals.length())
 # %%
