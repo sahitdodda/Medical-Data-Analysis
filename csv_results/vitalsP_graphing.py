@@ -1,6 +1,10 @@
 # working on the final levels of visualization
 
-# %%
+
+
+
+
+# %% IMPORTING/READING
 import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt
@@ -10,6 +14,7 @@ from sklearn.linear_model import LinearRegression
 import missingno as mno
 from sklearn.preprocessing import MinMaxScaler
 from statsmodels.imputation.mice import MICEData
+from IPython.display import display
 
 import plotly.graph_objects as go
 import streamlit as st
@@ -23,14 +28,26 @@ df_diagP = pd.read_csv('diagP_results.csv')
 df_infs = pd.read_csv('infsP_results.csv')
 df_labsP = pd.read_csv('labsP_results.csv')
 df_examP = pd.read_csv('examP_results.csv')
+# %% (Pre-processing) dropping columns from df_vitalsP
 df_vitalsP = pd.read_csv('vitalsP.csv')
 
-icp_list = df_vitalsP['icp']
-time_list = df_vitalsP['Time']
-df_vitalsP.head()
-
 df_vitalsP = df_vitalsP.drop(columns=['Unnamed: 0', 'observationoffset', 'Day', 'Hour', 'systemicdiastolic', 'systemicsystolic'])
-# patient 1082792 literally has only one data point :) 
+#%% (FIX)(Pre-processing) imputation for vitalsP
+mno.matrix(df_vitalsP, figsize=(20, 6)) # displays NaN's in df_vitalsP
+df_vitalsP = df_vitalsP.fillna(method='ffill') #forward fill (not ideal)
+
+# %% (Pre-processing) multi-index vitalsP on id and time
+
+df_vitalsP = df_vitalsP.sort_values(by=['patientunitstayid', 'Time'])
+df_vitalCopy = df_vitalsP.copy() #Deep copy of df_vitalsP
+
+df_vitalsP = df_vitalsP.set_index(['patientunitstayid', 'Time']) #Setting the multiindex by patient_id and time
+
+display(df_vitalsP) #check if multiindex worked 
+
+# %% (Pre-processing) ensure vitalsP has correct patient ids
+
+# patient 1082792 has only a single data point
 # missing ids from og list but not in gen list {2782239}
 patient_list = [
     306989, 1130290, 1210520, 1555058, 1580984, 2375786, 2823473,
@@ -42,82 +59,19 @@ patient_list = [
     3217832, 3222024, 3245093, 3347750, 2782239 
 ]
 
-df_vitalsP = df_vitalsP.loc[df_vitalsP['patientunitstayid'].isin(patient_list)]
-df_vitalsP.head()
-
-# %% 
-# scatterplot of icp vs time 
-
-plt.figure() 
-plt.figure(figsize=(10,6))
-sns.lineplot(data = df_vitalsP, x = time_list, y = icp_list, palette='bright', hue = 'patientunitstayid', legend=False)
-plt.ylim(0, 50)
-
-
-
-
- # %%
-
-mno.matrix(df_vitalsP, figsize=(20, 6))
-
-# %%
-# median of the last 30 minutes in ICP 
-# df_vitalsP = df_vitalsP.fillna(df_vitalsP.median())
-# df_apache = df_apache.dropna()
-# df_infs = df_infs.dropna()
-print(df_vitalsP.dtypes)
-
-
-#%%
-df_vitalsP = df_vitalsP.fillna(method='ffill')
-
-#%%
-df_vitalsP.head()
-
-#%%
-mno.matrix(df_vitalsP, figsize=(20, 6))
-
-#%%
-#testing for data correlation between all variables
-missing_corr = df_vitalsP.isnull().corr()
-print(missing_corr)
-
-
-# %%
-mno.matrix(df_vitalsP, figsize=(20, 6))
-
-# %%
-
-# Now we make the giant linked list structure for um everything
-# df_vitalsP = df_vitalsP.sort_values(by=['patientunitstayid', 'Time'])
-
-
-df_vitalsP = df_vitalsP.sort_values(by=['patientunitstayid', 'Time'])
-
-df_vitalCopy = df_vitalsP
-
-df_vitalsP = df_vitalsP.set_index(['patientunitstayid', 'Time'])
-
-
-# %%
-
-# check that it worked 
-# df_vitalsP.loc[193629]
-
-# %%
-
+#retrieves patient ids from the now multiindexed df_vitalsP
 unique_patient_ids = df_vitalsP.index.get_level_values('patientunitstayid').unique()
-print(unique_patient_ids)
-print(len(unique_patient_ids))
 
-
+#find the missing id's
 orig_set = set(patient_list)
 gen_set = set(unique_patient_ids)
 missing_in_generated = orig_set - gen_set
 print(f"missing ids from og list but not in gen list {missing_in_generated}")
 
-# %% 
+# df_vitalsP now only retains the patient ids that are in patient_list
+df_vitalsP = df_vitalsP.index.get_level_values('patientunitstayid').isin(patient_list)
 
+# %%
 # with set_names we ensured that the dataframe has the correct index every time
 
 dfL_vitals = LL()
@@ -132,61 +86,6 @@ for patient_id in unique_patient_ids:
 dfL_vitals.display()
 print(dfL_vitals.length())
 
-
-
-# %%
-
-# This is the debugging print
-# tempNode = dfL_vitals.head
-# count = 0
-# while tempNode: 
-#     dt = tempNode.data
-#     print("Current index:", dt.index)
-#     print("Index names:", dt.index.names)
-#     print(f'The patient count is {count}')
-#     # print(dt.head())
-#     patient = dt.index.get_level_values('patientunitstayid').unique()[0]
-#     count += 1
-#     tempNode = tempNode.next
-
-# %%
-# ----- Actual graphs are below here -----
-
-# tempNode = dfL_vitals.head
-# count = 0
-
-# while tempNode:
-#     print(f"The count is {count}")
-#     dt = tempNode.data
-#     print(dt.index.get_level_values('Time'))
-    
-
-#     # there was a bracket 0 at the end for some reason
-#     patient = dt.index.get_level_values('patientunitstayid').unique()[0]
-    
-#     # Select only numeric columns
-#     numeric_columns = dt.select_dtypes(include=[np.number]).columns
-    
-#     # Create a bigger figure to accommodate multiple plots
-#     fig, ax = plt.subplots(figsize=(15, 10))
-#     plt.title(f"Patient ID: {patient}", fontsize=16)
-    
-#     # Plot each numeric column
-#     for column in numeric_columns:
-#         if column != 'Time':  # Exclude 'Time' as it's our x-axis
-#             sns.lineplot(data=dt, x='Time', y=column, label=column, ax=ax)
-
-#     if(dt.index.get_level_values('Time').max() > 72):
-#         plt.xlim(0, 72)
-#     plt.xlabel('Time', fontsize=12)
-#     plt.ylabel('Value', fontsize=12)
-#     plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-#     plt.tight_layout()
-#     plt.show()
-    
-    
-#     count += 1
-#     tempNode = tempNode.next
 
 # %%
 # ------------------- more important graphs -----------------------
@@ -205,31 +104,6 @@ alive_list = [193629, 263556, 272638, 621883, 799478, 1079428, 1082792,
 
 df_expired = df_vitalCopy[df_vitalCopy['patientunitstayid'].isin(expired_list)]
 df_alive = df_vitalCopy[df_vitalCopy['patientunitstayid'].isin(alive_list)]
-
-# plt.figure(figsize=(14, 6))
-
-# for patient_id in df_alive['patientunitstayid'].unique():
-#     patient_data = df_alive[df_alive['patientunitstayid'] == patient_id]
-#     # plt.plot(patient_data['Time'], patient_data['icp'], label=f'Patient {patient_id}')
-#     sns.lineplot(data = patient_data, x = 'Time', y = 'icp')
-# plt.ylim(5, 55)
-
-# plt.title('ICP Values of Alive Patients')
-# plt.xlabel('Time')
-# plt.ylabel('ICP Value')
-
-# # %%
-# # Graph for the expired patients 
-
-# plt.figure(figsize=(14, 6))
-
-# for patient_id in df_expired['patientunitstayid'].unique():
-#     patient_data = df_expired[df_expired['patientunitstayid'] == patient_id]
-#     plt.plot(patient_data['Time'], patient_data['icp'], label=f'Patient {patient_id}')
-# plt.ylim(5, 40)
-# plt.title('ICP Values of Expired Patients')
-# plt.xlabel('Time')
-# plt.ylabel('ICP Value')
 
 
 # %%
