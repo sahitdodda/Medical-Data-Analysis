@@ -430,7 +430,7 @@ def process_icp_range(df_vitalsP, time_col, icp_col, min_icp, max_icp):
     
     # Create plot
     plt.figure(figsize=(10, 6))
-    plt.plot(time_clean, icp_clean)
+    plt.scatter(time_clean, icp_clean)
     plt.xlabel('Time')
     plt.ylabel(f'ICP ({min_icp}-{max_icp} range)')
     plt.title(f'ICP values in {min_icp}-{max_icp} range')
