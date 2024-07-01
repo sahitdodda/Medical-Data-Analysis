@@ -461,7 +461,8 @@ for result in results:
 
 # %%
 maximum_icp = df_vitalCopy['icp'].max()
-icp_ranges = [(0, 20), (20, 25), (25, 30), (30, 35), (35,maximum_icp)]
+# before we added (35,maximum_icp)
+icp_ranges = [(0, 20), (20, 25), (25, 30), (30, 35), (35, maximum_icp)]
 # Using linked list code to make our lives easier 
 
 def func_icp_range(DF):
@@ -478,6 +479,8 @@ def func_icp_range(DF):
         df_icp_ranges.append(filtered_df)
     return df_icp_ranges
 
+df_vitalCopySORTED = df_vitalCopy.sort_values(by=['Time'])
+
 df_icp_ranges = func_icp_range(df_vitalCopy)
 df_icp_ranges.display()
 print(df_icp_ranges.length())
@@ -485,7 +488,7 @@ print(df_icp_ranges.length())
 
 # %%
 
-def range_traversal(df_icp_ranges, total_area):
+def range_traversal(df_icp_ranges):
     tempNode = df_icp_ranges.head
     count = 0
     sumTotal = 0
@@ -502,16 +505,12 @@ def range_traversal(df_icp_ranges, total_area):
         sumTotal += ipc_load
         
         print(f"For range {range_check }, frequency is {freq} and ipc_load is {ipc_load}")
-        if(total_area != 0 and ipc_load > 0):
-            print(f"The area % over total for this patient is {(ipc_load / total_area) * 100}%")
 
         count += 1
         tempNode = tempNode.next
     print(f"THE ACTUAL TOTALED SUM IS {sumTotal}")
 
-total_area = 0
-
-range_traversal(df_icp_ranges, total_area)
+range_traversal(df_icp_ranges)
 
 # %%
 
@@ -525,14 +524,14 @@ while tempNode:
     # time = dt.index.get_level_values('Time')
 
     dt = dt.reset_index()
-    total_ipc_area = np.trapz(dt['icp'], dt['Time'])    
+    # total_ipc_area = np.trapz(dt['icp'], dt['Time'])    
 
-    print(f'The total ipc area for this patient is {total_ipc_area}')
+    # print(f'The total ipc area for this patient is {total_ipc_area}')
     dt_linked_list = func_icp_range(dt)
 
     # This is our print function 
     print(f"For patient {patient}")
-    range_traversal(dt_linked_list, total_ipc_area)
+    range_traversal(dt_linked_list)
     print("\n")
 
     tempNode = tempNode.next
