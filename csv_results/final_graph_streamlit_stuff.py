@@ -413,32 +413,33 @@ df_vitalsP.head()
 
 
 # %%
-
-
 def process_icp_range(df_vitalsP, time_col, icp_col, min_icp, max_icp):
     # Create ICP range column
     range_col = f'icpSpike{min_icp}to{max_icp}'
-    
-
     df_vitalsP[range_col] = df_vitalsP[icp_col].where((df_vitalsP[icp_col] >= min_icp) & (df_vitalsP[icp_col] <= max_icp))
-    
     # Prepare data
     df_clean = df_vitalsP.reset_index()
     df_clean = df_clean[[time_col, range_col]].dropna().reset_index(drop=True)
     time_clean = df_clean[time_col].values
     icp_clean = df_clean[range_col].values
-    
     # Calculate area
-
-
-    #!!!!!!!!!!!!!!!!!!!LOOK HERE!!!!!!!!!!!!!!!!!!
     area = np.trapz(icp_clean, time_clean)
-    
+    # Create plot
+    plt.figure(figsize=(10, 6))
+    plt.plot(time_clean, icp_clean)
+    plt.xlabel('Time')
+    plt.ylabel(f'ICP ({min_icp}-{max_icp} range)')
+    plt.title(f'ICP values in {min_icp}-{max_icp} range')
+    # Add area and data points info to plot
+    total_points = len(df_vitalsP)
+    clean_points = len(time_clean)
+    percentage_used = (clean_points / total_points) * 100
+    plt.text(0.05, 0.95, f'Area: {area:.2f}\nData points: {clean_points}/{total_points} ({percentage_used:.2f}%)',
+             transform=plt.gca().transAxes, verticalalignment='top')
+    plt.show()
     return area, clean_points, total_points
-
 # Define ICP ranges
-icp_ranges = [(0, 20), (20, 25), (25, 30), (30, 35), (35, 1000000000)]
-
+icp_ranges = [(0, 20), (20, 25), (25, 30), (30, 40), (40, 50)]
 # Process each range
 results = []
 for min_icp, max_icp in icp_ranges:
@@ -450,43 +451,101 @@ for min_icp, max_icp in icp_ranges:
         'total_points': total_points,
         'percentage_used': (clean_points / total_points) * 100
     })
-
 # Print summary
 for result in results:
-    print(f"ICP Spike Range {result['range']}:")
+    print(f"ICP Range {result['range']}:")
     print(f"  Estimated area: {result['area']:.2f}")
     print(f"  Data points: {result['clean_points']}/{result['total_points']} ({result['percentage_used']:.2f}%)")
     print()
 
 
-
-
-
-
 # %%
+maximum_icp = df_vitalCopy['icp'].max()
+icp_ranges = [(0, 20), (20, 25), (25, 30), (30, 35), (35,maximum_icp)]
+# Using linked list code to make our lives easier 
 
+def func_icp_range(DF):
+    df_icp_ranges = LL()
+    for df_value in icp_ranges: 
 
-df_icp_ranges = LL()
+        min_icp = df_value[0]
+        max_icp = df_value[1]  
+        
+        # Filter corresponding time column based on the same condition
+        filtered_df = DF.loc[(DF['icp'] >= min_icp) & (DF['icp'] <= max_icp), ['icp', 'Time']]
 
-for df_value in icp_ranges: 
+        # Create a new DataFrame with filtered data
+        df_icp_ranges.append(filtered_df)
+    return df_icp_ranges
 
-    min_icp = df_value[0]
-    max_icp = df_value[1]  
-    
-    # Filter corresponding time column based on the same condition
-    filtered_df = df_vitalCopy.loc[(df_vitalCopy['icp'] >= min_icp) & (df_vitalCopy['icp'] <= max_icp), ['icp', 'Time']]
-
-    # Create a new DataFrame with filtered data
-    df_icp_ranges.append(filtered_df)
-
+df_icp_ranges = func_icp_range(df_vitalCopy)
 df_icp_ranges.display()
 print(df_icp_ranges.length())
 
 
 # %%
 
+def range_traversal(df_icp_ranges):
+    tempNode = df_icp_ranges.head
+    count = 0
+    while tempNode: 
+        dt = tempNode.data
+        
+        freq = dt['icp'].sum()
+        
+        range_check = icp_ranges[count]
+        
+        # y should be first for calculating area under the 
+        # curve. trapezoidal riemann
+        ipc_load = np.trapz(dt['icp'], dt['Time'])
+        
+        
+        print(f"For range {range_check }, frequency is {freq} and ipc_load is {ipc_load}")
+        
+
+        count += 1
+        tempNode = tempNode.next
+
+range_traversal(df_icp_ranges)
+
+# %%
+
+# use both functions for each patient! 
+
 tempNode = dfL_vitals.head
+
 while tempNode: 
     dt = tempNode.data
+    patient = dt.index.get_level_values('patientunitstayid').unique()[0]
+    # time = dt.index.get_level_values('Time')
     
+    dt = dt.reset_index()
+
+    dt_linked_list = func_icp_range(dt)
+
+    # This is our print function 
+    print(f"For patient {patient}")
+    range_traversal(dt_linked_list)
+    print("\n")
+
+    tempNode = tempNode.next
+
+# ----------------------------------------
+
+tempNode = dfL_vitals.head
+
+while tempNode: 
+    dt = tempNode.data
+    patient = dt.index.get_level_values('patientunitstayid').unique()[0]
+    # time = dt.index.get_level_values('Time')
+    
+    dt = dt.reset_index()
+
+    dt_linked_list = func_icp_range(dt)
+
+    # This is our print function 
+    print(f"For patient {patient}")
+    range_traversal(dt_linked_list)
+    print("\n")
+
     tempNode = tempNode.next
