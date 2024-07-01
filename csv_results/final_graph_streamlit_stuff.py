@@ -485,9 +485,10 @@ print(df_icp_ranges.length())
 
 # %%
 
-def range_traversal(df_icp_ranges):
+def range_traversal(df_icp_ranges, total_area):
     tempNode = df_icp_ranges.head
     count = 0
+    sumTotal = 0
     while tempNode: 
         dt = tempNode.data
         
@@ -498,15 +499,19 @@ def range_traversal(df_icp_ranges):
         # y should be first for calculating area under the 
         # curve. trapezoidal riemann
         ipc_load = np.trapz(dt['icp'], dt['Time'])
-        
+        sumTotal += ipc_load
         
         print(f"For range {range_check }, frequency is {freq} and ipc_load is {ipc_load}")
-        
+        if(total_area != 0 and ipc_load > 0):
+            print(f"The area % over total for this patient is {(ipc_load / total_area) * 100}%")
 
         count += 1
         tempNode = tempNode.next
+    print(f"THE ACTUAL TOTALED SUM IS {sumTotal}")
 
-range_traversal(df_icp_ranges)
+total_area = 0
+
+range_traversal(df_icp_ranges, total_area)
 
 # %%
 
@@ -518,34 +523,16 @@ while tempNode:
     dt = tempNode.data
     patient = dt.index.get_level_values('patientunitstayid').unique()[0]
     # time = dt.index.get_level_values('Time')
-    
-    dt = dt.reset_index()
 
+    dt = dt.reset_index()
+    total_ipc_area = np.trapz(dt['icp'], dt['Time'])    
+
+    print(f'The total ipc area for this patient is {total_ipc_area}')
     dt_linked_list = func_icp_range(dt)
 
     # This is our print function 
     print(f"For patient {patient}")
-    range_traversal(dt_linked_list)
-    print("\n")
-
-    tempNode = tempNode.next
-
-# ----------------------------------------
-
-tempNode = dfL_vitals.head
-
-while tempNode: 
-    dt = tempNode.data
-    patient = dt.index.get_level_values('patientunitstayid').unique()[0]
-    # time = dt.index.get_level_values('Time')
-    
-    dt = dt.reset_index()
-
-    dt_linked_list = func_icp_range(dt)
-
-    # This is our print function 
-    print(f"For patient {patient}")
-    range_traversal(dt_linked_list)
+    range_traversal(dt_linked_list, total_ipc_area)
     print("\n")
 
     tempNode = tempNode.next
