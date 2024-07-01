@@ -69,26 +69,23 @@ missing_in_generated = orig_set - gen_set
 print(f"missing ids from og list but not in gen list {missing_in_generated}")
 
 # df_vitalsP now only retains the patient ids that are in patient_list
-df_vitalsP = df_vitalsP.index.get_level_values('patientunitstayid').isin(patient_list)
+df_vitalsP = df_vitalsP.loc[df_vitalsP.index.get_level_values('patientunitstayid').isin(patient_list)]
+# %% (Pre-Visualization) Creating Linked List of vitalsP
 
-# %%
-# with set_names we ensured that the dataframe has the correct index every time
+dfL_vitals = LL() #LL object
 
-dfL_vitals = LL()
-
+# Each unique id is used to identify multi index objects
 for patient_id in unique_patient_ids: 
-    # dfIter = df_vitalsP.loc[patient_id]
-    # should get datframe for each patient
-    dfIter = df_vitalsP.xs(patient_id, level='patientunitstayid', drop_level=False)
-    # dfIter.index.set_names(['patientunitstayid', 'Time'], inplace=True)
-    dfL_vitals.append(dfIter)
+    # gets a multi index object of a specific id, appends to LL
+    df_multiobj = df_vitalsP[df_vitalsP.index.get_level_values('patientunitstayid') == patient_id]
+    dfL_vitals.append(df_multiobj)
 
 dfL_vitals.display()
 print(dfL_vitals.length())
 
 
-# %%
-# ------------------- more important graphs -----------------------
+# %% (Pre-Visualization) Prepare for graphing
+
 # note that for patient 1210520, there is a discrepancy between the two values 
 # we sure that we're ok with that? 
 
@@ -102,18 +99,25 @@ alive_list = [193629, 263556, 272638, 621883, 799478, 1079428, 1082792,
     2885054, 2890935, 2895083, 3064120, 3100062, 3210988, 3212405, 3214569,
     3217832, 3222024, 3245093, 3347750, 2782239]
 
+# Expired and Alive patient id's
 df_expired = df_vitalCopy[df_vitalCopy['patientunitstayid'].isin(expired_list)]
 df_alive = df_vitalCopy[df_vitalCopy['patientunitstayid'].isin(alive_list)]
 
+# method to print measurements
+def print_icp_counts(countAlive, count20_25, count25_30, count30_):
+    print("# of Alive Patients: ", countAlive)
+    print("# spikes w ICP 20-25: ", count20_25)
+    print("# spikes w ICP 25-30: ", count25_30)
+    print("# spikes w ICP 30+: ", count30_)
 
-# %%
 
+# %% (Visualization) STREAMLIT GRAPHS
 
 # ----------------------- ACTUAL STREAMLIT GRAPHS ------------------------------
 
 
 
-# %%
+# %% All ICP v Time
 
 st.title('All ICP values vs Time')
 fig = go.Figure()
@@ -127,8 +131,8 @@ fig.show()
 
 
 
-#HISTOGRAMS FOR ALIVE AND EXPIRED PATIENTS
-#  %%
+
+# %% Interactive ICP of Alive and expired patients, day 1-3 histogram
 
 st.title('Interactive ICP of Alive patients')
 
@@ -148,10 +152,8 @@ count25_30 = df_alive[(df_alive['icp'] >= 25) & (df_alive['icp'] <= 30)].shape[0
 count30_ = df_alive[(df_alive['icp'] >= 30)].shape[0]
 count20_25 = df_alive[(df_alive['icp'] >= 20) & (df_alive['icp'] <= 25)].shape[0]
 countAlive = df_alive['patientunitstayid'].unique().shape[0]
-print("# of Alive Patients: ", countAlive)
-print("# spikes w ICP 20-25: ", count20_25)
-print("# spikes w ICP 25-30: ", count25_30)
-print("# spikes w ICP 30+: ", count30_)
+
+print_icp_counts(countAlive, count20_25, count25_30, count30_)
 
 # Bell curve histogram 
 with st.expander(f'Day 1 ICP Histogram for Alive Patients'):
@@ -175,10 +177,8 @@ with st.expander(f'Day 1 ICP Histogram for Alive Patients'):
     count30_ = within_24h[(within_24h['icp'] >= 30)].shape[0]
     count20_25 = within_24h[(within_24h['icp'] >= 20) & (within_24h['icp'] <= 25)].shape[0]
     countAlive = within_24h['patientunitstayid'].unique().shape[0]
-    print("# of Alive Patients: ", countAlive)
-    print("# spikes w ICP 20-25: ", count20_25)
-    print("# spikes w ICP 25-30: ", count25_30)
-    print("# spikes w ICP 30+: ", count30_)
+    
+    print_icp_counts(countAlive, count20_25, count25_30, count30_)
 
 
 with st.expander(f'Day 2 ICP Histogram for Alive Patients'):
@@ -202,10 +202,8 @@ with st.expander(f'Day 2 ICP Histogram for Alive Patients'):
     count30_ = within_48h[(within_48h['icp'] >= 30)].shape[0]
     count20_25 = within_48h[(within_48h['icp'] >= 20) & (within_48h['icp'] <= 25)].shape[0]
     countAlive = within_48h['patientunitstayid'].unique().shape[0]
-    print("# of Alive Patients: ", countAlive)
-    print("# spikes w ICP 20-25: ", count20_25)
-    print("# spikes w ICP 25-30: ", count25_30)
-    print("# spikes w ICP 30+: ", count30_)
+    
+    print_icp_counts(countAlive, count20_25, count25_30, count30_)
 
 
 with st.expander(f'Day 3 ICP Histogram for Alive Patients'):
@@ -229,10 +227,8 @@ with st.expander(f'Day 3 ICP Histogram for Alive Patients'):
     count30_ = within_72h[(within_72h['icp'] >= 30)].shape[0]
     count20_25 = within_72h[(within_72h['icp'] >= 20) & (within_72h['icp'] <= 25)].shape[0]
     countAlive = within_72h['patientunitstayid'].unique().shape[0]
-    print("# of Alive Patients: ", countAlive)
-    print("# spikes w ICP 20-25: ", count20_25)
-    print("# spikes w ICP 25-30: ", count25_30)
-    print("# spikes w ICP 30+: ", count30_)
+    
+    print_icp_counts(countAlive, count20_25, count25_30, count30_)
 
 
 # Corrected code for filtering dataframes and using the correct variable for histogram data
@@ -257,10 +253,8 @@ count25_30 = df_expired[(df_expired['icp'] >= 25) & (df_expired['icp'] <= 30)].s
 count30_ = df_expired[(df_expired['icp'] >= 30)].shape[0]
 count20_25 = df_expired[(df_expired['icp'] >= 20) & (df_expired['icp'] <= 25)].shape[0]
 countAlive = df_expired['patientunitstayid'].unique().shape[0]
-print("# of Alive Patients: ", countAlive)
-print("# spikes w ICP 20-25: ", count20_25)
-print("# spikes w ICP 25-30: ", count25_30)
-print("# spikes w ICP 30+: ", count30_)
+
+print_icp_counts(countAlive, count20_25, count25_30, count30_)
 
 
 with st.expander(f'Day 1 ICP Histogram for Expired Patients'):
@@ -283,10 +277,8 @@ with st.expander(f'Day 1 ICP Histogram for Expired Patients'):
     count30_ = expired_within_24h[(expired_within_24h['icp'] >= 30)].shape[0]
     count20_25 = expired_within_24h[(expired_within_24h['icp'] >= 20) & (expired_within_24h['icp'] <= 25)].shape[0]
     countExpired = expired_within_24h['patientunitstayid'].unique().shape[0]
-    print("# of Alive Patients: ", countExpired)
-    print("# spikes w ICP 20-25: ", count20_25)
-    print("# spikes w ICP 25-30: ", count25_30)
-    print("# spikes w ICP 30+: ", count30_)
+    
+    print_icp_counts(countAlive, count20_25, count25_30, count30_)
 
 
 with st.expander(f'Day 2 ICP Histogram for Expired Patients'):
@@ -310,10 +302,8 @@ with st.expander(f'Day 2 ICP Histogram for Expired Patients'):
     count30_ = expired_within_48h[(expired_within_48h['icp'] >= 30)].shape[0]
     count20_25 = expired_within_48h[(expired_within_48h['icp'] >= 20) & (expired_within_48h['icp'] <= 25)].shape[0]
     countExpired = expired_within_48h['patientunitstayid'].unique().shape[0]
-    print("# of Alive Patients: ", countExpired)
-    print("# spikes w ICP 20-25: ", count20_25)
-    print("# spikes w ICP 25-30: ", count25_30)
-    print("# spikes w ICP 30+: ", count30_)
+    
+    print_icp_counts(countAlive, count20_25, count25_30, count30_)
 
 
 with st.expander(f'Day 3 ICP Histogram for Expired Patients'):
@@ -337,13 +327,10 @@ with st.expander(f'Day 3 ICP Histogram for Expired Patients'):
     count30_ = expired_within_72h[(expired_within_72h['icp'] >= 30)].shape[0]
     count20_25 = expired_within_72h[(expired_within_72h['icp'] >= 20) & (expired_within_72h['icp'] <= 25)].shape[0]
     countExpired = expired_within_72h['patientunitstayid'].unique().shape[0]
-    print("# of Alive Patients: ", countExpired)
-    print("# spikes w ICP 20-25: ", count20_25)
-    print("# spikes w ICP 25-30: ", count25_30)
-    print("# spikes w ICP 30+: ", count30_)
+    
+    print_icp_counts(countAlive, count20_25, count25_30, count30_)
 
-# %%
-
+# %% Vitals of each patient with ICP
 st.title('Vitals of Every Patient')
 
 tempNode = dfL_vitals.head
@@ -398,23 +385,17 @@ while tempNode:
 
 # ----------------very big line break ----------------------
 
-#%%
+#%% (prep code) AUC for ICP spikes
 #Here we estimate the area under. Start by excluding irrelevant values
 df_vitalsP = df_vitalsP.reset_index()
 df_vitalsP['icpSpike20to25'] = df_vitalsP['icp'].where((df_vitalsP['icp'] >= 20) & (df_vitalsP['icp'] <= 25))
 df_vitalsP['icpSpike25to30'] = df_vitalsP['icp'].where((df_vitalsP['icp'] >= 25) & (df_vitalsP['icp'] <= 30))
 df_vitalsP['icpSpike30to35'] = df_vitalsP['icp'].where((df_vitalsP['icp'] >= 30) & (df_vitalsP['icp'] <= 35))
 df_vitalsP['icpSpike35+'] = df_vitalsP['icp'].where(df_vitalsP['icp'] >= 30)
-# %%
 
-#%%
-df_vitalsP.head()
+# %% 
 
-
-
-# %%
-
-
+# method for area, plotting data points
 def process_icp_range(df_vitalsP, time_col, icp_col, min_icp, max_icp):
     # Create ICP range column
     range_col = f'icpSpike{min_icp}to{max_icp}'
