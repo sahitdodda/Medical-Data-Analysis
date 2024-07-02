@@ -535,3 +535,124 @@ while tempNode:
     print("\n")
 
     tempNode = tempNode.next
+
+
+
+
+# %%
+
+'''
+struggling parrots
+     _
+    /")   @, 
+   //)   /)
+==/{'==='%"===
+ /'     %
+        %              ejm   
+         %
+'''
+
+
+
+# %%
+
+
+'''
+            icp load for the first 7 days, if available
+| patient |  24 hr | 48 hr | .. 
+
+def : 
+    24 hour trapz 
+    48 hour trapz 
+
+'''
+
+
+time_ranges = [(0, 24), (24, 48), (48, 72), (72, 96), (96, 120), (120, 144), (144, 168)]
+# Using linked list code to make our lives easier 
+
+def day_icp_load(patient_df, patient):
+    df_time_ranges = LL()
+    df_icp_loads = LL()
+    for df_value in time_ranges: 
+
+        min_time = df_value[0]
+        max_time = df_value[1]  
+        
+        # Filter corresponding time column based on the same condition
+        df_day = patient_df.loc[(patient_df['Time'] >= min_time) & (patient_df['Time'] <= max_time), ['icp', 'Time']]     
+        
+        # plot icp against time 
+        plt.figure()
+        sns.lineplot(data = df_day, x = df_day['Time'], y = df_day['icp'])
+        plt.title(f'Patient {patient}')
+
+        # Create a new DataFrame with filtered data
+        df_time_ranges.append(df_day)
+    
+    # now use df_time_ranges
+
+    # icp_load = 0
+
+    # tempNode = df_time_ranges.head
+    # while tempNode:
+    #     dt = tempNode.data
+    #     icp_load = np.trapz(dt['Time'], dt['icp'])
+    #     # append to the actual linked list 
+    #     df_icp_loads.append(icp_load)
+    #     tempNode = tempNode.next
+
+    # return df_icp_loads
+
+
+# now traverse through linked list of patients and calcualte linked list of icp loads for each
+
+DF_DAYS = pd.DataFrame(columns=['patientunitstayid'])
+
+tempNode = dfL_vitals.head
+while tempNode: 
+    dt = tempNode.data
+    patient = dt.index.get_level_values('patientunitstayid').unique()[0]
+
+    DF_DAYS.loc[len(DF_DAYS), 'patientunitstayid'] = patient
+    # DF_DAYS['patientunitstayid'] = patient
+    time = dt.index.get_level_values('Time')
+    
+    dt = dt.reset_index()
+
+    # icp load list, then iterate through the linked list, adding each as its own column
+    print(f'Patient {patient}')
+    icp_load_list = LL()
+    icp_load_list = day_icp_load(dt, patient)
+
+    break
+    # tempNode_icp = icp_load_list.head
+    count = 1
+
+
+    # while tempNode_icp:
+    #     DF_DAYS.loc[len(DF_DAYS), f'Day {count}'] = tempNode_icp.data
+    #     # DF_DAYS[f'Day {count}'] = tempNode_icp.data
+    #     tempNode_icp = tempNode_icp.next
+    #     count += 1
+    
+    tempNode = tempNode.next
+
+
+# DF_DAYS.head()
+
+    
+
+# %%
+
+
+'''
+hopefully successful parrots
+     _
+    /")   @, 
+   //)   /)
+==/{'==='%"===
+ /'     %
+        %              ejm   
+         %
+'''
