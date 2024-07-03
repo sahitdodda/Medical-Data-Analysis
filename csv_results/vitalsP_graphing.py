@@ -15,7 +15,7 @@ import missingno as mno
 from sklearn.preprocessing import MinMaxScaler
 from statsmodels.imputation.mice import MICEData
 from IPython.display import display
-
+from datetime import timedelta
 import plotly.graph_objects as go
 import streamlit as st
 
@@ -34,7 +34,14 @@ df_vitalsP = pd.read_csv('vitalsP.csv')
 df_vitalsP = df_vitalsP.drop(columns=['Unnamed: 0', 'observationoffset', 'Day', 'Hour', 'systemicdiastolic', 'systemicsystolic'])
 #%% (FIX)(Pre-processing) imputation for vitalsP
 mno.matrix(df_vitalsP, figsize=(20, 6)) # displays NaN's in df_vitalsP
-df_vitalsP = df_vitalsP.fillna(method='ffill') #forward fill (not ideal)
+# Step 1: Separate the column you want to exclude
+systemicMean_column = df_vitalsP['systemicmean'].copy()
+
+# Step 2: Perform the forward fill on the modified DataFrame
+df_vitalsP.fillna(method='ffill', inplace=True)
+
+# Step 3: Reintegrate the excluded column
+df_vitalsP['systemicmean'] = systemicMean_column
 
 # %% (Pre-processing) multi-index vitalsP on id and time
 
@@ -71,7 +78,7 @@ print(f"missing ids from og list but not in gen list {missing_in_generated}")
 # df_vitalsP now only retains the patient ids that are in patient_list
 df_vitalsP = df_vitalsP.loc[df_vitalsP.index.get_level_values('patientunitstayid').isin(patient_list)]
 # %% (Pre-Visualization) Creating Linked List of vitalsP
-
+print("hello")
 dfL_vitals = LL() #LL object
 
 # Each unique id is used to identify multi index objects
@@ -336,7 +343,7 @@ st.title('Vitals of Every Patient')
 tempNode = dfL_vitals.head
 while tempNode: 
     dt = tempNode.data
-    patient = dt.index.get_level_values('patientunitstayid').unique()[0]
+    patient = dt.index.get_level_values('patientunitstayid').unique()
     time = dt.index.get_level_values('Time')
     with st.expander(f'Patient ID: {patient}'):
         fig = go.Figure()
@@ -450,3 +457,122 @@ for result in results:
     print(f"  Data points: {result['clean_points']}/{result['total_points']} ({result['percentage_used']:.2f}%)")
     print()
 # %%
+# %% part b(systemicmean)
+
+# Replace negative values with NaN
+df_vitalsP.loc[df_vitalsP['systemicmean'] < 0, 'systemicmean'] = np.nan
+
+
+df_vitalsP['meanBP'] = 0
+mno.matrix(df_vitalsP, figsize=(20, 6)) # displays NaN's in df_vitalsP
+
+#in hours
+
+countNot = 0
+nanRemove = 0
+bwd_Dist = 0
+bwd = 0
+fwd_Dist = 0
+fwd = 0
+print("nans left", df_vitalsP['systemicmean'].isna().sum())
+# Impute 
+tempNode = dfL_vitals.head
+while tempNode: 
+    tempNode = tempNode.next
+    dt = tempNode.data
+    # create time list, and missing time list
+    time = dt.index.get_level_values('Time').to_numpy()
+    timeMissingSysMean = time[dt['systemicmean'].isna()]
+    # All impute per patient
+    for spot in timeMissingSysMean:
+            # nothing to impute, skip
+            if(time.size == 0 or timeMissingSysMean.size == 0):
+                continue
+            # find index of spot to impute
+            spot_ind = np.where(time == spot)[0][0]
+            # if last index, default impute bwd
+            if(spot_ind+1 >= len(time)):
+                fwd = [spot_ind]
+                fwd_Dist = 6
+            else:
+                fwd = time[spot_ind+1]
+                fwdDist = fwd-spot
+            if(spot_ind-1 < 0):
+                bwd = time[spot_ind]
+                bwd_Dist = 6
+            else:
+                bwd = time[spot_ind-1]
+                bwdDist = spot-bwd
+
+            if(spot_ind+1 >= len(time) and spot_ind-1 < 0):
+                print("both")
+                print("fwd", fwd_Dist)
+                print("bwd", bwd_Dist)
+                print(" ")
+            if(spot_ind+1 < len(time) and spot_ind-1 < 0):
+                print("error bwd")
+                print("fwd", fwd_Dist)
+                print("bwd", bwd_Dist)
+                print(" ")
+            if(spot_ind+1 >= len(time) and spot_ind-1 >= 0):
+                print("error fwd")
+                print("fwd", fwd_Dist)
+                print("bwd", bwd_Dist)
+                print("")
+                
+            # go to next index value, if inside 5 hr, save the index pos
+            # fwd beyond 5 hours
+            if( (bwdDist)>5  and (fwdDist>5) ):
+                print("can't impute")
+                countNot+=1
+            elif(bwdDist>5 and fwd_Dist<5): # impute fwd ..................
+                print(2)
+                try:
+                    dt.loc[dt.index.get_level_values('Time') == spot, 
+                        'systemicmean'] = dt.loc[dt.index.get_level_values('Time') == fwd, 'systemicmean']
+                except:
+                    print("fwd", fwd)
+                nanRemove+=1
+            elif(fwdDist>5 and bwd_Dist<5): # impute bwd ..................
+                print(2)
+                try:
+                    dt.loc[dt.index.get_level_values('Time') == spot, 
+                        'systemicmean'] = dt.loc[dt.index.get_level_values('Time') == bwd, 'systemicmean']
+                except:
+                    print("bwd 2", bwd)
+                nanRemove+=1
+            elif(fwdDist<bwdDist): # impute fwd
+                try:
+                    dt.loc[dt.index.get_level_values('Time') == spot, 
+                        'systemicmean'] = dt.loc[dt.index.get_level_values('Time') == fwd, 'systemicmean']
+                except:
+                    print("fwd", fwd)
+                
+                nanRemove+=1
+            elif(fwdDist>bwdDist): # impute bwd 
+                # dt.loc[dt.index.get_level_values('Time') == spot, 
+                #     'systemicmean'] = dt.loc[dt.index.get_level_values('Time') == bwd, 'systemicmean'].values[0]
+                try:
+                    dt.loc[dt.index.get_level_values('Time') == spot, 
+                        'systemicmean'] = dt.loc[dt.index.get_level_values('Time') == bwd, 'systemicmean']
+                except:
+                    print("bwd 4", bwd)
+                    print("fdist, bdist", bwdDist, fwdDist)
+                    print("index bwd", dt.loc[dt.index.get_level_values('Time') == bwd])
+                    print("index spot", dt.loc[dt.index.get_level_values('Time') == spot])
+                    print(" ")
+                    print(dt)
+                    print(" ")
+                nanRemove+=1
+        
+            bwd_Dist = 0
+            bwd = 0
+            fwd_Dist = 0
+            fwd = 0
+    tempNode = tempNode.next
+
+print("nans left", df_vitalsP['systemicmean'].isna().sum())
+print("nans should've removed", nanRemove)
+
+mno.matrix(df_vitalsP, figsize=(20, 6)) # displays NaN's in df_vitalsP
+

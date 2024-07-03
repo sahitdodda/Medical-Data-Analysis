@@ -1,6 +1,15 @@
 # working on the final levels of visualization
 
 # %%
+
+df_apache = pd.read_csv('apache_results.csv')
+df_diagP = pd.read_csv('diagP_results.csv')
+df_infs = pd.read_csv('infsP_results.csv')
+df_labsP = pd.read_csv('labsP_results.csv')
+df_examP = pd.read_csv('examP_results.csv')
+
+df_vitalsP = pd.read_csv('vitalsP.csv')
+# %%
 import pandas as pd
 import numpy as np 
 import matplotlib.pyplot as plt
@@ -16,18 +25,6 @@ import sys
 sys.path.append('LinkedListClass.py')
 from LinkedListClass import Node, LL
 
-df_apache = pd.read_csv('apache_results.csv')
-df_diagP = pd.read_csv('diagP_results.csv')
-df_infs = pd.read_csv('infsP_results.csv')
-df_labsP = pd.read_csv('labsP_results.csv')
-df_examP = pd.read_csv('examP_results.csv')
-
-df_vitalsP = pd.read_csv('vitalsP.csv')
-
-
-icp_list = df_vitalsP['icp']
-time_list = df_vitalsP['Time']
-df_vitalsP.head()
 
 df_vitalsP = df_vitalsP.drop(columns=['Unnamed: 0', 'observationoffset', 'Day', 'Hour', 'systemicdiastolic', 'systemicsystolic'])
 # patient 1082792 literally has only one data point :) 
@@ -427,4 +424,7 @@ while tempNode:
     tempNode = tempNode.next
 
 print(f"Total patients plotted: {count}")
+
+
+
 # %%
