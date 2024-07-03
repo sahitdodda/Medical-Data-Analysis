@@ -565,8 +565,10 @@ def :
     24 hour trapz 
     48 hour trapz 
 
-'''
+Debugging statements: 
 
+There are issues with the way the calculations are made, staggered and being negative. 
+'''
 
 time_ranges = [(0, 24), (24, 48), (48, 72), (72, 96), (96, 120), (120, 144), (144, 168)]
 # Using linked list code to make our lives easier 
@@ -592,17 +594,18 @@ def day_icp_load(patient_df, patient):
     
     # now use df_time_ranges
 
-    # icp_load = 0
+    icp_load = 0
 
-    # tempNode = df_time_ranges.head
-    # while tempNode:
-    #     dt = tempNode.data
-    #     icp_load = np.trapz(dt['Time'], dt['icp'])
-    #     # append to the actual linked list 
-    #     df_icp_loads.append(icp_load)
-    #     tempNode = tempNode.next
+    tempNode = df_time_ranges.head
+    while tempNode:
+        dt = tempNode.data
+        dt = dt.sort_values(by='Time')
+        icp_load = np.trapz(dt['icp'], dt['Time'])
+        # append to the actual linked list 
+        df_icp_loads.append(icp_load)
+        tempNode = tempNode.next
 
-    # return df_icp_loads
+    return df_icp_loads
 
 
 # now traverse through linked list of patients and calcualte linked list of icp loads for each
@@ -621,25 +624,26 @@ while tempNode:
     dt = dt.reset_index()
 
     # icp load list, then iterate through the linked list, adding each as its own column
-    print(f'Patient {patient}')
+    # print(f'Patient {patient}')
     icp_load_list = LL()
     icp_load_list = day_icp_load(dt, patient)
 
-    break
-    # tempNode_icp = icp_load_list.head
+    tempNode_icp = icp_load_list.head
     count = 1
 
+    while tempNode_icp:
+        # this is probably the reason it staggers 
+        DF_DAYS.loc[len(DF_DAYS) - 1, f'Day {count}'] = tempNode_icp.data
+        # DF_DAYS[f'Day {count}'].append(tempNode_icp.data) 
 
-    # while tempNode_icp:
-    #     DF_DAYS.loc[len(DF_DAYS), f'Day {count}'] = tempNode_icp.data
-    #     # DF_DAYS[f'Day {count}'] = tempNode_icp.data
-    #     tempNode_icp = tempNode_icp.next
-    #     count += 1
-    
+        # DF_DAYS[f'Day {count}'] = tempNode_icp.data
+        tempNode_icp = tempNode_icp.next
+        count += 1
+
     tempNode = tempNode.next
 
 
-# DF_DAYS.head()
+DF_DAYS.head(100000000000000000)
 
     
 
