@@ -568,6 +568,9 @@ def :
 Debugging statements: 
 
 There are issues with the way the calculations are made, staggered and being negative. 
+
+Do not forget to drop those that are above 100 or something? ask about that again
+
 '''
 
 time_ranges = [(0, 24), (24, 48), (48, 72), (72, 96), (96, 120), (120, 144), (144, 168)]
@@ -585,9 +588,9 @@ def day_icp_load(patient_df, patient):
         df_day = patient_df.loc[(patient_df['Time'] >= min_time) & (patient_df['Time'] <= max_time), ['icp', 'Time']]     
         
         # plot icp against time 
-        plt.figure()
-        sns.lineplot(data = df_day, x = df_day['Time'], y = df_day['icp'])
-        plt.title(f'Patient {patient}')
+        # plt.figure()
+        # sns.lineplot(data = df_day, x = df_day['Time'], y = df_day['icp'])
+        # plt.title(f'Patient {patient}')
 
         # Create a new DataFrame with filtered data
         df_time_ranges.append(df_day)
@@ -651,7 +654,7 @@ DF_DAYS.head(100000000000000000)
 
 
 '''
-hopefully successful parrots
+other deliverables
      _
     /")   @, 
    //)   /)
@@ -660,3 +663,94 @@ hopefully successful parrots
         %              ejm   
          %
 '''
+
+
+# %%
+
+# now attempting for different icp spike ranges....
+
+'''
+ICP Spikes – We will define a spike as the portion of ICP curve 
+above a certain level (L) and between the time ICP goes above L 
+and the time it comes back down to below L. We will have four 
+distinct levels (L):  >20, > 25, >30, >35
+
+We can filter the time by the levels that go up to 35. 
+
+If we were to filter all the categories that go above 20, 
+    how do we grab the corresponding time variables? same filter system as before? 
+then do the trapezoidal function for each category, and add it for the patient.
+    
+=========
+
+Or is it better for a single patient to just iterate down through the whole dataframe with two time 
+variables? one is the default iter, and the other will activate once the default 
+iter reaches a certain point (above 20). 
+    record that time and make a while loop. iterate until we are below 20. 
+
+    now within this range we can record > 20, > 25 and > 35. calcualte and add to a 
+    rolling sum for each. 
+Once we're done, add to the patient column as we did before. 
+
+'''
+
+# attempting the filtration method, should be very similar to the one before 
+
+value_ranges = [20, 25, 30, 35]
+
+def day_icp_load(patient_df, patient):
+    df_icp_loads = LL()
+    df_icp_ranges = LL()
+
+    # note that the time values should already be sorte
+    for df_value in value_ranges:
+        min_time = df_value
+        df_range = patient_df.loc[(patient_df['icp'] >= min_time), ['icp', 'Time']]
+        df_icp_ranges.append(df_range)
+    
+    icp_range_load = 0
+
+    tempNode = df_icp_ranges.head
+    while tempNode:
+        dt = tempNode.data
+        dt = dt.sort_values(by='Time')
+        icp_range_load = np.trapz(dt['icp'], dt['Time'])
+        
+        df_icp_loads.append(icp_range_load)
+        tempNode = tempNode.next
+
+    return df_icp_loads
+
+DF_RANGE = pd.DataFrame(columns=['patientunitstayid'])
+
+tempNode = dfL_vitals.head
+while tempNode: 
+    dt = tempNode.data
+    patient = dt.index.get_level_values('patientunitstayid').unique()[0]
+
+    DF_RANGE.loc[len(DF_RANGE), 'patientunitstayid'] = patient
+    # DF_DAYS['patientunitstayid'] = patient
+    time = dt.index.get_level_values('Time')
+    
+    # for getting rid of extra indexing. don't need the stuff before. 
+    dt = dt.reset_index()
+    dt = dt.sort_values(by='Time')
+    # icp load list, useful in conjunction with the function
+    icp_load_list = LL()
+
+    # returns a list of the trapz values for each RANGE
+    icp_load_list = day_icp_load(dt, patient)
+
+    # iterating in the new list 
+    tempNode_icp = icp_load_list.head
+    count = 0
+    while tempNode_icp:
+        DF_RANGE.loc[len(DF_RANGE) - 1, f'Range >{value_ranges[count]}'] = tempNode_icp.data
+        tempNode_icp = tempNode_icp.next
+        count += 1
+
+    tempNode = tempNode.next
+
+
+DF_RANGE.head(1000000000000000000000)
+# %%
