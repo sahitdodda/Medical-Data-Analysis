@@ -248,11 +248,14 @@ st.title('All ICP values vs Time')
 fig = go.Figure()
 for patient_id in df_vitalCopy['patientunitstayid'].unique():
     patient_data = df_vitalCopy[df_vitalCopy['patientunitstayid'] == patient_id]
-    fig.add_trace(go.Scatter(x=patient_data['Time'], y=patient_data['icp'], mode='lines', name=f'Patient {patient_id}'))
+    fig.add_trace(go.Scatter(x=patient_data['Time'], y=patient_data['icp'], mode='markers', name=f'Patient {patient_id}'))
 
 fig.update_layout(title='All ICP values vs Time', xaxis_title='Time', yaxis_title='ICP Value', hovermode='closest')
 fig.update_yaxes(range=[0, 50])
 st.plotly_chart(fig)
+
+# fig.show()
+
 
 
 # %%
@@ -696,61 +699,168 @@ Once we're done, add to the patient column as we did before.
 
 # attempting the filtration method, should be very similar to the one before 
 
-value_ranges = [20, 25, 30, 35]
+# value_ranges = [20, 25, 30, 35]
 
-def day_icp_load(patient_df, patient):
-    df_icp_loads = LL()
-    df_icp_ranges = LL()
+# def day_icp_load(patient_df, patient):
+#     df_icp_loads = LL()
+#     df_icp_ranges = LL()
 
-    # note that the time values should already be sorte
-    for df_value in value_ranges:
-        min_time = df_value
-        df_range = patient_df.loc[(patient_df['icp'] >= min_time), ['icp', 'Time']]
-        df_icp_ranges.append(df_range)
+#     # note that the time values should already be sorte
+#     for df_value in value_ranges:
+#         min_time = df_value
+#         df_range = patient_df.loc[(patient_df['icp'] >= min_time), ['icp', 'Time']]
+
+#         plt.figure()
+#         sns.lineplot(data = df_range, x = df_range['Time'], y = df_range['icp'])
+#         plt.title(f'Patient {patient}')
+
+#         df_icp_ranges.append(df_range)
     
-    icp_range_load = 0
+#     icp_range_load = 0
 
-    tempNode = df_icp_ranges.head
-    while tempNode:
-        dt = tempNode.data
-        dt = dt.sort_values(by='Time')
-        icp_range_load = np.trapz(dt['icp'], dt['Time'])
+#     tempNode = df_icp_ranges.head
+#     while tempNode:
+#         dt = tempNode.data
+#         dt = dt.sort_values(by='Time')
+#         icp_range_load = np.trapz(dt['icp'], dt['Time'])
         
-        df_icp_loads.append(icp_range_load)
-        tempNode = tempNode.next
+#         df_icp_loads.append(icp_range_load)
+#         tempNode = tempNode.next
 
-    return df_icp_loads
+#     return df_icp_loads
 
-DF_RANGE = pd.DataFrame(columns=['patientunitstayid'])
+# DF_RANGE = pd.DataFrame(columns=['patientunitstayid'])
 
-tempNode = dfL_vitals.head
-while tempNode: 
-    dt = tempNode.data
-    patient = dt.index.get_level_values('patientunitstayid').unique()[0]
+# tempNode = dfL_vitals.head
+# while tempNode: 
+#     dt = tempNode.data
+#     patient = dt.index.get_level_values('patientunitstayid').unique()[0]
 
-    DF_RANGE.loc[len(DF_RANGE), 'patientunitstayid'] = patient
-    # DF_DAYS['patientunitstayid'] = patient
-    time = dt.index.get_level_values('Time')
+#     DF_RANGE.loc[len(DF_RANGE), 'patientunitstayid'] = patient
+#     # DF_DAYS['patientunitstayid'] = patient
+#     time = dt.index.get_level_values('Time')
     
-    # for getting rid of extra indexing. don't need the stuff before. 
-    dt = dt.reset_index()
-    dt = dt.sort_values(by='Time')
-    # icp load list, useful in conjunction with the function
-    icp_load_list = LL()
+#     # for getting rid of extra indexing. don't need the stuff before. 
+#     dt = dt.reset_index()
+#     dt = dt.sort_values(by='Time')
+#     # icp load list, useful in conjunction with the function
+#     icp_load_list = LL()
 
-    # returns a list of the trapz values for each RANGE
-    icp_load_list = day_icp_load(dt, patient)
+#     # returns a list of the trapz values for each RANGE
+#     icp_load_list = day_icp_load(dt, patient)
 
-    # iterating in the new list 
-    tempNode_icp = icp_load_list.head
-    count = 0
-    while tempNode_icp:
-        DF_RANGE.loc[len(DF_RANGE) - 1, f'Range >{value_ranges[count]}'] = tempNode_icp.data
-        tempNode_icp = tempNode_icp.next
-        count += 1
+#     # iterating in the new list 
+#     tempNode_icp = icp_load_list.head
+#     count = 0
+#     while tempNode_icp:
+#         DF_RANGE.loc[len(DF_RANGE) - 1, f'Range >{value_ranges[count]}'] = tempNode_icp.data
+#         tempNode_icp = tempNode_icp.next
+#         count += 1
 
-    tempNode = tempNode.next
+#     tempNode = tempNode.next
 
 
-DF_RANGE.head(1000000000000000000000)
+# DF_RANGE.head(1000000000000000000000)
+
+
+# %%
+
+# setting up time structure
+'''
+For loop that iterates through all points
+    line = Makeline(point1, point2)
+    For thresholdvalues in line
+           Make new point
+           Add point to df
+'''
+df_Vitals_Inter = df_vitalCopy
+
+thresholds = [20, 25, 30, 35]
+
+DF_RANGE = pd.DataFrame(columns=['patientunitstayid', 'icp', 'Time'])
+
+# grabbing specific row : 
+    # df.iloc[nth_row]
+
+# def Makeline(x, y, x_new):
+#     return np.interp(x_new, x, y)
+
+# The 3rd grade formula at its best 
+def calculate_slope(x1, y1, x2, y2):
+    if x1 == x2:
+        raise ValueError("The slope is undefined for a vertical line.")
+    return (y2 - y1) / (x2 - x1)
+
+# makes an actual list of the x and y points
+def generate_points(x1, y1, x2, y2):
+    slope = calculate_slope(x1, y1, x2, y2)
+    intercept = y1 - slope * x1
+    
+    points = []
+    for x in range(x1, x2 + 1):
+        y = slope * x + intercept
+        points.append((x, y))
+    
+    return points
+
+
+# finds a specific y point, if exists then returns the corresponding x value. if not, doesn't exist
+def find_x_for_y(points, y_value):
+    for x, y in points:
+        if y == y_value:
+            return x
+    return None
+
+
+# -----------------------------------------------------------------------------------------
+
+# keeping this code block for later just in case append does not work as expected 
+# DF_RANGE.loc[len(DF_RANGE) - 1, 'patientunitstayid'] = patient
+#     DF_RANGE.loc[len(DF_RANGE) - 1, 'icp'] = range
+#     DF_RANGE.loc[len(DF_RANGE) - 1, 'Time'] = check
+
+for i in range(len(df_vitalCopy) - 1):
+    patient = df_vitalCopy['patientunitstayid'].iloc[i]
+    
+    # chunk 1 -> add the current row immediately. 
+    new_row = pd.DataFrame([{
+        'patientunitstayid': patient, 
+        'icp': df_vitalCopy['icp'].iloc[i], 
+        'Time': df_vitalCopy['Time'].iloc[i]
+    }])
+    DF_RANGE = pd.concat([DF_RANGE, new_row], ignore_index=True)
+
+
+    # chunk 2 -> check if the current is already in the range OR the next one.  
+    if(df_vitalCopy['icp'].iloc[i] in thresholds or df_vitalCopy['icp'].iloc[i+1] in thresholds):
+        # e.g. if current is 20, skip line calculation. If next is 20, also skip line calculation. 
+        continue
+
+    # chunk 3: add the next possible interpolated point. 
+    inter_line = generate_points(df_vitalCopy['Time'].iloc[i], df_vitalCopy['icp'].iloc[i], df_vitalCopy['Time'].iloc[i + 1], df_vitalCopy['icp'].iloc[i + 1])
+    
+    for threshold in thresholds:
+        check = find_x_for_y(inter_line, threshold)
+        if check is not None:
+            new_row = pd.DataFrame([{
+                'patientunitstayid': patient, 
+                'icp': threshold, 
+                'Time': check
+            }])
+            DF_RANGE = pd.concat([DF_RANGE, new_row], ignore_index=True)
+
+
+# outside of for loop; 
+# may be necessary for adding the last row to DF_RANGE (as always looking one ahead)? would be obvious in the dataframe if not the case. 
+
+new_row = pd.DataFrame([{
+    'patientunitstayid': df_vitalCopy['patientunitstayid'].iloc[-1], 
+    'icp': df_vitalCopy['icp'].iloc[-1], 
+    'Time': df_vitalCopy['Time'].iloc[-1]
+}])
+DF_RANGE = pd.concat([DF_RANGE, new_row], ignore_index=True)
+
+
+DF_RANGE.head(1000000000000000000000000000000)
+
 # %%
