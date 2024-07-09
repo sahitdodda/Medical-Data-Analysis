@@ -248,7 +248,7 @@ st.title('All ICP values vs Time')
 fig = go.Figure()
 for patient_id in df_vitalCopy['patientunitstayid'].unique():
     patient_data = df_vitalCopy[df_vitalCopy['patientunitstayid'] == patient_id]
-    fig.add_trace(go.Scatter(x=patient_data['Time'], y=patient_data['icp'], mode='markers', name=f'Patient {patient_id}'))
+    fig.add_trace(go.Scatter(x=patient_data['Time'], y=patient_data['icp'], mode='lines+markers', name=f'Patient {patient_id}'))
 
 fig.update_layout(title='All ICP values vs Time', xaxis_title='Time', yaxis_title='ICP Value', hovermode='closest')
 fig.update_yaxes(range=[0, 50])
@@ -761,6 +761,406 @@ Once we're done, add to the patient column as we did before.
 
 
 # DF_RANGE.head(1000000000000000000000)
+
+
+# %%
+
+import numpy as np
+
+# other lists
+
+patient_list = []
+icp_list = []
+time_list = []
+
+
+# creates a list of a list of each patient's icp points
+plotPoints_List = []
+for patient_id in unique_patient_ids: 
+    # holds original set of points
+    if df_vitalCopy.loc[df_vitalCopy['patientunitstayid'] == patient_id, ['patientunitstayid', 'Time', 'icp']].empty:
+        continue
+    plotPoints = df_vitalCopy.loc[df_vitalCopy['patientunitstayid'] == patient_id, ['patientunitstayid', 'Time', 'icp']]
+    plotPoints_List.append(plotPoints)
+
+
+# creates a list of a list of each patient's NEW icp points
+plotPointsNew_List = []
+now = None
+next = None
+thresholds = [20, 25, 30, 35] # threshold list
+t20 = False
+t25 = False
+t30 = False
+t35 = False
+t_cond = [t20, t25, t30, t35] # conditions
+
+# trying list methodology 
+
+# iterate through graphs
+for pointsList in plotPoints_List: 
+    plotPointsNew = []
+    for i in range(len(pointsList)-1):
+        # goes through each graph's points indiv., appends the list in order
+        now = {'Time': pointsList['Time'].iloc[i], 'icp': pointsList['icp'].iloc[i]}
+
+
+        patient_list.append(pointsList['patientunitstayid'].iloc[i])
+        icp_list.append(pointsList['icp'].iloc[i])
+        time_list.append(pointsList['Time'].iloc[i])
+
+        # plotPointsNew = pd.concat([pointsList, new_row], ignore_index=True)
+        # plotPointsNew.append(now) # add the next point to the list
+
+        next = {'Time': pointsList['Time'].iloc[i+1], 'icp': pointsList['icp'].iloc[i+1]}
+
+# df_vitalCopy['icp'].iloc[-1],
+
+        # takes care if a point goes over multiple thresholds
+        for i in range(len(thresholds)):
+            if((now['icp'] < thresholds[i] and thresholds[i] < next['icp']) or (now['icp'] > thresholds[i] and thresholds[i] > next['Time'])): # only counts points if NOT exactly threshold
+                t_cond[i] = True
+                # print('set condition')
+        
+        # positive or negative slope 
+        slope = (next['icp'] - now['icp']) / (next['Time'] - now['Time']) # pos. or neg. slope
+
+        # crosses 20
+        if(t_cond[0]):
+            x = ((20-now['icp'])/slope) + now['Time'] # time where it crosses threshold
+            
+            patient_list.append(pointsList['patientunitstayid'].iloc[i])
+            icp_list.append(20)
+            time_list.append(x)
+
+            
+            # print(f"20 with the now icp: {now['icp']} and the next icp: {next['icp']}")
+            # plotPointsNew[i].append({'Time': x, 'icp': 20})
+        # crosses 25
+        if(t_cond[1]):
+            x = ((25-now['icp'])/slope) + now['Time'] # time where it crosses threshold
+            patient_list.append(pointsList['patientunitstayid'].iloc[i])
+            icp_list.append(25)
+            time_list.append(x)
+        # crosses 30
+        if(t_cond[2]):
+            x = ((30-now['icp'])/slope) + now['Time'] # time where it crosses threshold
+            patient_list.append(pointsList['patientunitstayid'].iloc[i])
+            icp_list.append(30)
+            time_list.append(x)
+            # plotPointsNew[i].append({'Time': x, 'icp': 30})
+        # crosses 35
+        if(t_cond[3]):
+            x = ((35-now['icp'])/slope) + now['Time'] # time where it crosses threshold
+            patient_list.append(pointsList['patientunitstayid'].iloc[i])
+            icp_list.append(35)
+            time_list.append(x)
+            # plotPointsNew[i].append({'Time': x, 'icp': 35})
+
+        # reset condiitons
+        t_cond[0] = False
+        t_cond[1] = False
+        t_cond[2] = False
+        t_cond[3] = False
+        
+        data = {
+            'patientunitstayid' : patient_list, 
+            'icp' : icp_list,
+            'Time' : time_list,
+        }
+        plotPointsNew = pd.DataFrame(data)
+
+        plotPointsNew_List.append(plotPointsNew)
+
+# print
+for plotPointsNew in plotPointsNew_List:
+    print(plotPointsNew.head())
+
+
+# %% 
+# Print muthu code
+
+for df in plotPointsNew_List:
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=df['Time'], y= df['icp'], mode = 'lines+markers'))
+    fig.update_layout(title = 'printing muthu code', xaxis_title = 'Time', yaxis_title = 'Value')
+    st.plotly_chart(fig)
+    break
+    
+
+
+
+# %%
+
+# calculating area under the curve for each dataframe in plotpointsnewlist
+
+
+# icp ranges 
+thresholds = [20, 25, 30, 35]
+
+
+def calc_auc(df):
+    results = []
+    for threshold in thresholds: 
+        data_above_threshold = df.loc[(df['Time'] >= threshold), ['icp', 'Time']] 
+
+        if not data_above_threshold.empty:
+            x = data_above_threshold['Time'].values
+            y = data_above_threshold['icp'].values
+            area = np.trapz(y,x)
+            results.append(area)
+        else:
+            results.append(0)
+    return results
+
+patient_list = []
+
+auc_list = [[], [], [], []]
+
+for df in plotPointsNew_List:
+    # there's an empty list for some reason in here. 
+    if isinstance(df, pd.DataFrame):
+        # print(df['patientunitstayid'].unique())
+        patient_id = df['patientunitstayid'].iloc[0]
+        # print(f'Patient {patient_id}')
+
+        # append to the list         
+        patient_list.append(patient_id)
+
+        auc_result = calc_auc(df)
+        for i, threshold in enumerate(thresholds):
+            # print(f'AUC for ICP > {threshold}: {auc_result[i]:.2f}')
+            # instead of printing, save to the corresponding label
+            auc_list[i].append(auc_result[i])
+
+# now create the dataframe using lists 
+
+print(patient_list)
+
+data = {
+    'patientunitstayid' : patient_list, 
+    '>20' : auc_list[0],
+    '>25' : auc_list[1],
+    '>30' : auc_list[2],
+    '>35' : auc_list[3]
+}
+
+df_auc_ranges = pd.DataFrame(data)
+
+print(len(plotPointsNew_List))
+
+df_auc_ranges = df_auc_ranges.sort_values(by='patientunitstayid')
+df_auc_ranges.head(10000000000000000000000000000000000000000000000000000000)
+
+
+
+
+# %%
+
+'''
+---------------------------------------SAHIT----------------------------------------------  
+
+sahit edited code, go until the IGNORE CODE BELOW block 
+'''
+df_Vitals_Inter = df_vitalCopy
+
+thresholds = [20, 25, 30, 35]
+
+DF_RANGE = pd.DataFrame(columns=['patientunitstayid', 'icp', 'Time'])
+
+# grabbing specific row : 
+    # df.iloc[nth_row]
+
+# def Makeline(x, y, x_new):
+#     return np.interp(x_new, x, y)
+
+# The 3rd grade formula at its best 
+def calculate_slope(x1, y1, x2, y2):
+    if x1 == x2:
+        raise ValueError("The slope is undefined for a vertical line.")
+    return (y2 - y1) / (x2 - x1)
+
+# makes an actual list of the x and y points
+def generate_points(x1, y1, x2, y2, num_points=100):
+    x = np.linspace(x1, x2, num_points)
+    slope = calculate_slope(x1, y1, x2, y2)
+    intercept = y1 - slope * x1
+    y = slope * x + intercept
+    return list(zip(x, y))
+
+
+# finds a specific y point, if exists then returns the corresponding x value. if not, doesn't exist
+def find_x_for_y(points, y_value):
+    for x, y in points:
+        if y == y_value:
+            return x
+    return None
+
+
+# -----------------------------------------------------------------------------------------
+
+# keeping this code block for later just in case append does not work as expected 
+# DF_RANGE.loc[len(DF_RANGE) - 1, 'patientunitstayid'] = patient
+#     DF_RANGE.loc[len(DF_RANGE) - 1, 'icp'] = range
+#     DF_RANGE.loc[len(DF_RANGE) - 1, 'Time'] = check
+
+for i in range(len(df_vitalCopy) - 1):
+    patient = df_vitalCopy['patientunitstayid'].iloc[i]
+    
+    # chunk 1 -> add the current row immediately. 
+    new_row = pd.DataFrame([{
+        'patientunitstayid': patient, 
+        'icp': df_vitalCopy['icp'].iloc[i], 
+        'Time': df_vitalCopy['Time'].iloc[i]
+    }])
+    DF_RANGE = pd.concat([DF_RANGE, new_row], ignore_index=True)
+
+
+    # chunk 2 -> check if the current is already in the range OR the next one.  
+    if(df_vitalCopy['icp'].iloc[i] in thresholds or df_vitalCopy['icp'].iloc[i+1] in thresholds):
+        # e.g. if current is 20, skip line calculation. If next is 20, also skip line calculation. 
+        continue
+
+    # chunk 3: add the next possible interpolated point. 
+    inter_line = generate_points(df_vitalCopy['Time'].iloc[i], df_vitalCopy['icp'].iloc[i], df_vitalCopy['Time'].iloc[i + 1], df_vitalCopy['icp'].iloc[i + 1])
+    
+    for threshold in thresholds:
+        check = find_x_for_y(inter_line, threshold)
+        if check is not None:
+            new_row = pd.DataFrame([{
+                'patientunitstayid': patient, 
+                'icp': threshold, 
+                'Time': check
+            }])
+            DF_RANGE = pd.concat([DF_RANGE, new_row], ignore_index=True)
+
+
+# outside of for loop; 
+# may be necessary for adding the last row to DF_RANGE (as always looking one ahead)? would be obvious in the dataframe if not the case. 
+
+new_row = pd.DataFrame([{
+    'patientunitstayid': df_vitalCopy['patientunitstayid'].iloc[-1], 
+    'icp': df_vitalCopy['icp'].iloc[-1], 
+    'Time': df_vitalCopy['Time'].iloc[-1]
+}])
+DF_RANGE = pd.concat([DF_RANGE, new_row], ignore_index=True)
+
+
+DF_RANGE.head(1000000000000000000000000000000)
+
+
+# %% 
+
+DF_RANGE_INDEX = DF_RANGE.set_index(['patientunitstayid'])
+df_sahit = DF_RANGE_INDEX.loc[193629]
+
+df_sahit = df_sahit.reset_index()
+
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=df_sahit['Time'], y = df_sahit['icp'], mode = 'lines+markers'))
+fig.update_layout(title='Sahit graph')
+st.plotly_chart(fig)
+
+# %%
+
+
+def calculate_areas_by_patient(df, thresholds):
+    results = {}
+    
+    # Get unique patient IDs
+    patient_ids = df['patientunitstayid'].unique()
+    
+    for patient_id in patient_ids:
+        patient_data = df[df['patientunitstayid'] == patient_id].sort_values('Time')
+        patient_results = {'total_area': 0}
+        
+        # Calculate total area under the curve
+        total_area = np.trapz(patient_data['icp'], patient_data['Time'])
+        patient_results['total_area'] = total_area
+        
+        for threshold in thresholds:
+            # Create a mask for values above the threshold
+            mask = patient_data['icp'] > threshold
+            
+            # If there are no values above the threshold, area is 0
+            if not mask.any():
+                patient_results[f'area_above_{threshold}'] = 0
+                continue
+            
+            # Calculate area above threshold
+            icp_above_threshold = np.maximum(patient_data['icp'] - threshold, 0)
+            area_above = np.trapz(icp_above_threshold, patient_data['Time'])
+            patient_results[f'area_above_{threshold}'] = area_above
+        
+        results[patient_id] = patient_results
+    
+    return results
+
+# Assuming DF_RANGE is your DataFrame and thresholds is your list of thresholds
+thresholds = [20, 25, 30, 35]
+
+# Calculate areas for each patient
+areas_by_patient = calculate_areas_by_patient(DF_RANGE, thresholds)
+
+# Print results
+for patient_id, patient_areas in areas_by_patient.items():
+    print(f"\nPatient {patient_id}:")
+    print(f"  Total area under ICP curve: {patient_areas['total_area']:.2f}")
+    for threshold in thresholds:
+        print(f"  Area above ICP = {threshold}: {patient_areas[f'area_above_{threshold}']:.2f}")
+
+# %%
+
+
+# graphs to compare things
+
+
+
+
+
+
+
+
+
+
+# %%
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!IGNORE CODE BELOW HERE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+# iterate through LL, grab patient and patient's time/icp values. 
+
+
+
+tempNode = dfL_vitals.head
+while tempNode: 
+    dt = tempNode.data
+    patient = dt.index.get_level_values('patientunitstayid').unique()[0]
+
+    DF_RANGE.loc[len(DF_RANGE), 'patientunitstayid'] = patient
+    # DF_DAYS['patientunitstayid'] = patient
+    time = dt.index.get_level_values('Time')
+    
+    # for getting rid of extra indexing. don't need the stuff before. 
+    dt = dt.reset_index()
+    dt = dt.sort_values(by='Time')
+    # icp load list, useful in conjunction with the function
+    icp_load_list = LL()
+
+    # returns a list of the trapz values for each RANGE
+    icp_load_list = day_icp_load(dt, patient)
+
+    # iterating in the new list 
+    tempNode_icp = icp_load_list.head
+    count = 0
+    while tempNode_icp:
+        DF_RANGE.loc[len(DF_RANGE) - 1, f'Range >{value_ranges[count]}'] = tempNode_icp.data
+        tempNode_icp = tempNode_icp.next
+        count += 1
+
+#     tempNode = tempNode.next
+
+
 
 
 # %%
