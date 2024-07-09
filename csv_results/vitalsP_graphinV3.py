@@ -101,93 +101,93 @@ def print_icp_counts(countAlive, count20_25, count25_30, count30_):
 
 # %% systemicmeanImpute
 
-def systemicmeanImpute(vitalsP_DF):
+# def systemicmeanImpute(vitalsP_DF):
 
-    # Replace negative values with NaN
-    vitalsP_DF.loc[vitalsP_DF['systemicmean'] < 0, 'systemicmean'] = np.nan
-    # create imputation variable
-    vitalsP_DF['meanBP'] = 0
-    mno.matrix(vitalsP_DF, figsize=(20, 6)) # displays NaN's in df_vitalsP
+#     # Replace negative values with NaN
+#     vitalsP_DF.loc[vitalsP_DF['systemicmean'] < 0, 'systemicmean'] = np.nan
+#     # create imputation variable
+#     vitalsP_DF['meanBP'] = 0
+#     mno.matrix(vitalsP_DF, figsize=(20, 6)) # displays NaN's in df_vitalsP
 
-    fwd = 0
-    bwd = 0
-    fwdDist = 0
-    bwdDist = 0
-    nanRemove = 0
-    booleanBwd = True
-    booleanFwd = True
-    # (Pre-processing) imputation for vitalsP (set final 75 nan's)
-    tempNode = vitalsP_LL.head
-    impVitals = LL()
-    print("nans left", vitalsP_DF['systemicmean'].isna().sum())
+#     fwd = 0
+#     bwd = 0
+#     fwdDist = 0
+#     bwdDist = 0
+#     nanRemove = 0
+#     booleanBwd = True
+#     booleanFwd = True
+#     # (Pre-processing) imputation for vitalsP (set final 75 nan's)
+#     tempNode = vitalsP_LL.head
+#     impVitals = LL()
+#     print("nans left", vitalsP_DF['systemicmean'].isna().sum())
 
-    while tempNode:
-        dt = tempNode.data
-        time = dt.index.get_level_values('Time').to_numpy()
-        timeMissingSysMean = time[dt['systemicmean'].isna()]
+#     while tempNode:
+#         dt = tempNode.data
+#         time = dt.index.get_level_values('Time').to_numpy()
+#         timeMissingSysMean = time[dt['systemicmean'].isna()]
 
-        print(dt.index.get_level_values('systemicmean').tolist())
-        # All impute per patient
-        for spot in timeMissingSysMean:
-                # reset boolean values
-                booleanBwd = True
-                booleanFwd = True
-            # if empty data frame, skip imputation
-                if(time.size == 0 or timeMissingSysMean.size == 0):
-                    print("nothing to impute")
-                    continue
-                # time index of 'spot' to impute missing value
-                spot_ind = np.where(time == spot)[0][0]
-
-
-                # set fwd/bwd dist and values, see direction of imputation
-                # Check forward imputation possibility
-                if spot_ind + 1 >= len(time):
-                    booleanFwd = False
-                else:
-                    fwd = time[spot_ind + 1]
-                    fwdDist = fwd - time[spot_ind]
-                # Check backward imputation possibility
-                if spot_ind - 1 < 0:
-                    booleanBwd = False
-                else:
-                    bwd = time[spot_ind - 1]
-                    bwdDist = time[spot_ind] - bwd
+#         print(dt.index.get_level_values('systemicmean').tolist())
+#         # All impute per patient
+#         for spot in timeMissingSysMean:
+#                 # reset boolean values
+#                 booleanBwd = True
+#                 booleanFwd = True
+#             # if empty data frame, skip imputation
+#                 if(time.size == 0 or timeMissingSysMean.size == 0):
+#                     print("nothing to impute")
+#                     continue
+#                 # time index of 'spot' to impute missing value
+#                 spot_ind = np.where(time == spot)[0][0]
 
 
-                if(bwdDist > 5):
-                    booleanBwd = False
-                if(fwdDist > 5):
-                    booleanFwd = False
-                # conditions for imputation
-                if not booleanBwd and not booleanFwd:
-                    print("can't impute")
-                elif booleanFwd and not booleanBwd:
-                    dt.loc[dt.index.get_level_values('Time') == spot, 'systemicmean'] = dt.loc[dt.index.get_level_values('Time') == fwd, 'systemicmean']
-                    nanRemove += 1
-                elif not booleanFwd and booleanBwd:
-                    dt.loc[dt.index.get_level_values('Time') == spot, 'systemicmean'] = dt.loc[dt.index.get_level_values('Time') == bwd, 'systemicmean']
-                    nanRemove += 1
-                elif fwdDist < bwdDist:
-                    dt.loc[dt.index.get_level_values('Time') == spot, 'systemicmean'] = dt.loc[dt.index.get_level_values('Time') == fwd, 'systemicmean']
-                    nanRemove += 1
-                elif fwdDist > bwdDist:
-                    dt.loc[dt.index.get_level_values('Time') == spot, 'systemicmean'] = dt.loc[dt.index.get_level_values('Time') == bwd, 'systemicmean']
-                    nanRemove += 1
-                elif fwdDist == bwdDist:
-                    dt.loc[dt.index.get_level_values('Time') == spot, 'systemicmean'] = dt.loc[dt.index.get_level_values('Time') == fwd, 'systemicmean']
-                    nanRemove += 1
+#                 # set fwd/bwd dist and values, see direction of imputation
+#                 # Check forward imputation possibility
+#                 if spot_ind + 1 >= len(time):
+#                     booleanFwd = False
+#                 else:
+#                     fwd = time[spot_ind + 1]
+#                     fwdDist = fwd - time[spot_ind]
+#                 # Check backward imputation possibility
+#                 if spot_ind - 1 < 0:
+#                     booleanBwd = False
+#                 else:
+#                     bwd = time[spot_ind - 1]
+#                     bwdDist = time[spot_ind] - bwd
 
-        print(nanRemove)
-        nanRemove = 0
+
+#                 if(bwdDist > 5):
+#                     booleanBwd = False
+#                 if(fwdDist > 5):
+#                     booleanFwd = False
+#                 # conditions for imputation
+#                 if not booleanBwd and not booleanFwd:
+#                     print("can't impute")
+#                 elif booleanFwd and not booleanBwd:
+#                     dt.loc[dt.index.get_level_values('Time') == spot, 'systemicmean'] = dt.loc[dt.index.get_level_values('Time') == fwd, 'systemicmean']
+#                     nanRemove += 1
+#                 elif not booleanFwd and booleanBwd:
+#                     dt.loc[dt.index.get_level_values('Time') == spot, 'systemicmean'] = dt.loc[dt.index.get_level_values('Time') == bwd, 'systemicmean']
+#                     nanRemove += 1
+#                 elif fwdDist < bwdDist:
+#                     dt.loc[dt.index.get_level_values('Time') == spot, 'systemicmean'] = dt.loc[dt.index.get_level_values('Time') == fwd, 'systemicmean']
+#                     nanRemove += 1
+#                 elif fwdDist > bwdDist:
+#                     dt.loc[dt.index.get_level_values('Time') == spot, 'systemicmean'] = dt.loc[dt.index.get_level_values('Time') == bwd, 'systemicmean']
+#                     nanRemove += 1
+#                 elif fwdDist == bwdDist:
+#                     dt.loc[dt.index.get_level_values('Time') == spot, 'systemicmean'] = dt.loc[dt.index.get_level_values('Time') == fwd, 'systemicmean']
+#                     nanRemove += 1
+
+#         print(nanRemove)
+#         nanRemove = 0
             
 
-        tempNode = tempNode.next
+#         tempNode = tempNode.next
 
-    impVitals.append(dt)
+#     impVitals.append(dt)
 # %% (imputation)
 
-systemicmeanImpute(vitalsP_DF)
+# systemicmeanImpute(vitalsP_DF)
 # systemicsystoic
 # heartrate
 # respiration
@@ -355,8 +355,7 @@ vitalsP_DF['icpSpike25to30'] = vitalsP_DF['icp'].where((vitalsP_DF['icp'] >= 25)
 vitalsP_DF['icpSpike30to35'] = vitalsP_DF['icp'].where((vitalsP_DF['icp'] >= 30) & (vitalsP_DF['icp'] <= 35))
 vitalsP_DF['icpSpike35+'] = vitalsP_DF['icp'].where(vitalsP_DF['icp'] >= 30)
 
-# %%
-# method for area, plotting data points
+# %% method for area, plotting data points
 def process_icp_range(vitalsP_DF, time_col, icp_col, min_icp, max_icp):
     # Create ICP range column
     range_col = f'icpSpike{min_icp}to{max_icp}'
