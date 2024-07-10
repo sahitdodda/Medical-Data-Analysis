@@ -43,6 +43,10 @@ total_patient_list =  [
     2885054, 2890935, 2895083, 3064120, 3100062, 3210988, 3212405, 3214569,
     3217832, 3222024, 3245093, 3347750, 2782239
 ]
+
+vitalsP_DF = vitalsP_DF.loc[vitalsP_DF['patientunitstayid'].isin(total_patient_list)]
+
+
 # list of unique id's
 vitalsP_DF_patientIDs = vitalsP_MultiIndex.index.get_level_values('patientunitstayid').unique()
 # find missing id's from total list
@@ -63,12 +67,16 @@ vitalsP_LL = LL()
 # each pateint ID makes a mutli index object, of which is stored in the linked list 
 for patient_id in vitalsP_DF_patientIDs:
     # creates a multii index object by patient id
-    df_multiobj = vitalsP_MultiIndex[vitalsP_MultiIndex.index.get_level_values('patientunitstayid') == patient_id]
+    # df_multiobj = vitalsP_MultiIndex[vitalsP_MultiIndex.index.get_level_values('patientunitstayid') == patient_id]
+    dfIter = vitalsP_MultiIndex.xs(patient_id, level='patientunitstayid', drop_level=False)
     # adds to LL
-    vitalsP_LL.append(df_multiobj)
+    vitalsP_LL.append(dfIter)
 # check if linked list is working
 vitalsP_LL.display()
 print(vitalsP_LL.length())
+
+# %% 
+
 
 #            ---------- SPLIT vitalsP INTO EXPIRED AND ALIVE GROUPS ----------
 
@@ -412,3 +420,23 @@ for result in results:
 # %% VARIABLE LIST
 
 vitalsP_DF = vitalsP_DF # original data set, fully cleaned
+vitalsP_DF_patientIDs = vitalsP_DF_patientIDs # unique patient id list 
+vitalsP_LL = vitalsP_LL # vitalsP linked list 
+vitalsP_MultiIndex = vitalsP_MultiIndex # vitalsP multi index 
+
+
+# %% 
+
+'''
+     (\          
+    (  \  /(o)\       
+    (   \/  ()/ /)      Everything underneath here represents 
+     (   `;.))'".)          the new code for the final deliverable. 
+      `(/////.-'
+   =====))=))===()
+     ///'      
+    //   PjP/ejm
+   '    
+'''
+
+
