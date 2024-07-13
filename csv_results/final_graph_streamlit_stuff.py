@@ -800,6 +800,9 @@ for plotPointsNew in plotPointsNew_List:
 
 # %%
 
+
+
+
 # Thresholds for ICP ranges
 thresholds = [20, 25, 30, 35]
 less_20_list = []
@@ -867,3 +870,22 @@ df_auc_ranges = pd.DataFrame(data)
 print(f"Number of plot points: {len(plotPointsNew_List)}")
 df_auc_ranges.head(10000000000000000000000000000000000000000)
 
+# %%
+
+
+
+
+
+# %% 
+
+
+# ------------------ EXPERIMENTS -----------------
+# export vitalsPcopy and this threshold. drop temperature for now. 
+ 
+df_vitalCopy.head()
+
+print(df_vitalCopy.isna().sum())
+
+df_vitalCopy.to_csv('EXPERIMENTS_AAHH.csv')
+df_auc_ranges.to_csv('EXPERIMENTS_AUC_RANGES.csv')
+df_range.to_csv('EXPERIMENTS_RANGE.csv')
