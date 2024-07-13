@@ -139,162 +139,59 @@ mno.matrix(vitalsP_DF, figsize=(20, 6)) # displays NaN's in df_vitalsP
 
 # Assuming vitalsP_DF is already defined and reset_index() is applied
 
-def imputeClosest_systemicmean(df, timeCol, icpCol, window):
+def imputeClosest_systemicmean(df, window):
     # Ensure 'Time' column is datetime
-    df = df[df[icpCol] >= 0]
+    df = df[df['systemicmean'] >= 0]
 
-    df[timeCol] = pd.to_datetime(df[timeCol])
+    df['Time'] = pd.to_datetime(df['Time'])
 
-    for i in df[df[icpCol].isna()].index:
-        current_time = df.at[i, timeCol]
+    for i in df[df['systemicmean'].isna()].index:
+        current_time = df.at[i, 'Time']
         time_window = pd.Timedelta(hours=window)
 
-        mask = ((df[timeCol] >= current_time - time_window) & (df[timeCol] <= current_time + time_window))
-        candidates = df.loc[mask & df[icpCol].notna(), icpCol]
+        mask = ((df['Time'] >= current_time - time_window) & (df['Time'] <= current_time + time_window))
+        candidates = df.loc[mask & df['systemicmean'].notna(), 'systemicmean']
 
         if not candidates.empty:
-            closest_index = (df.loc[candidates.index, timeCol] - current_time).abs().idxmin()
-            closest_value = df.at[closest_index, icpCol]
+            closest_index = (df.loc[candidates.index, 'Time'] - current_time).abs().idxmin()
+            closest_value = df.at[closest_index, 'systemicmean']
             df.at[i, icpCol] = closest_value
     return df
 
 # Correct usage: Pass column names as strings
-imputedcrap = imputeClosest_systemicmean(vitalsP_DF, 'Time', 'systemicmean', 5)
+imputedcrap = imputeClosest_systemicmean(vitalsP_DF, 5)
 print(imputedcrap)
 #check status stuff
 
 #%%
 imputedcrap.head()
-# %% Imputation
-count = 0 
 
-# noticed that for the current column, I want the systemic metric for that time
-list.append(dt['systemticMetric'].iloc[count])
+#%%
+# Process each node in the linked list, impute missing values, and store the results in a new linked list
+tempNode = vitalsP_LL.head
+vitalsP_imputed_LL = LL()
 
+while tempNode:
+    dt = tempNode.data
+    dt = dt.reset_index()
+    dt.loc[:, 'Time'] = pd.to_datetime(dt['Time'])  # Use .loc to avoid SettingWithCopyWarning
+    dt_imputed = imputeClosest_systemicmean(dt, 5)
+    vitalsP_imputed_LL.append(dt_imputed)
+    tempNode = tempNode.next
 
+# Concatenate all dataframes from the imputed linked list into a single dataframe
+tempNode = vitalsP_imputed_LL.head
+vitalsP_imputed_DF = pd.DataFrame()
 
-count += 1
+while tempNode:
+    dt = tempNode.data
+    dt = dt.reset_index()
+    dt.loc[:, 'Time'] = pd.to_datetime(dt['Time'])  # Use .loc to avoid SettingWithCopyWarning
+    vitalsP_imputed_DF = pd.concat([vitalsP_imputed_DF, dt], ignore_index=True)
+    tempNode = tempNode.next
 
-
-#               -------------- Set variables --------------
-
-
-fwd = 0 # time @ next systemicmean value
-bwd = 0 # time # prev systemicmean value
-fwdDist = 0 # dist. from current point to fwd time
-bwdDist = 0 # dist. from current point to bwd time
-nanRemove = 0 # total # of nan's removed
-booleanBwd = True # whether or not to check if we backwards
-booleanFwd = True # whether or not to check if we forwards
-
-node = vitalsP_nodeList[0].data # orig dataframe
-dt = node # copy of node where the imputed values will be entered
-
-time = node.index.get_level_values('Time') # list of systemicmean times
-timeMissingSysMean = time[node['systemicmean'].isna()] # list of times where systemicmean is missing
-
-
-# note that only this is being printed 
-print(node.to_string()) # print orig dataframe
-print("systemicmean left", dt['systemicmean'].isna().sum()) # num. of nan's left in systemicmean
+# Display the final concatenated dataframe
+vitalsP_imputed_DF.head()
 
 
-#              -------------- Imputation --------------
-
-
-# iterate through each the missing times with variable 'spot' -> look fwd/bwd -> impute based on conditions
-for spot in timeMissingSysMean:
-            # reset variables
-                booleanBwd = True
-                booleanFwd = True
-            # if empty data frame, skip imputation
-                if(time.size == 0 or timeMissingSysMean.size == 0):
-                    print("nothing to impute")
-                    continue
-                # time index of 'spot' to impute missing value
-                spot_ind = np.where(time == spot)[0][0]
-                fwd, bwd = time[spot_ind], time[spot_ind]
-
-                # Check forward imputation possibility
-                if spot_ind + 1 >= len(time):
-                    booleanFwd = False
-                else:
-                    i = 0
-                    # keep going fwd until a systemicmean value is found
-                    while np.isnan(node.loc[(node.index.get_level_values('Time') == fwd), 'systemicmean'].values):
-                        i+= 1
-                        if spot_ind + i >= len(time):
-                            booleanFwd = False
-                            break
-                        fwd = time[spot_ind + i] # save the time the systemicmean value was found
-                        fwdDist = fwd - time[spot_ind] # dist from spot to fwd
-                        # if the dist is greater than 5 hrs, don't impute
-                        if(fwdDist > 5):
-                            booleanFwd = False
-                # Check backward imputation possibility
-                if spot_ind - 1 < 0:
-                    booleanBwd = False
-                else:
-                    i = 0
-                    # keep going bwd until a systemicmean value is found
-                    while np.isnan(node.loc[(node.index.get_level_values('Time') == bwd), 'systemicmean'].values):
-                        i-= 1
-                        if spot_ind - i < 0:
-                            booleanFwd = False
-                            break
-                        bwd = time[spot_ind + i] # save the time the systemicmean value was found
-                        bwdDist = time[spot_ind] - bwd # dist from spot to fwd
-                        # if the dist is greater than 5 hrs, don't impute
-                        if(bwdDist > 5):
-                            booleanBwd = False
-
-
-                # conditions to impute
-                if not booleanBwd and not booleanFwd: # if both fwd and bwd are not possible, don't impute
-                    print("can't impute")
-                elif booleanFwd and not booleanBwd: # if only fwd is possible, impute with fwd
-                    MeanBP_val = node.loc[(node.index.get_level_values('Time') == fwd), 'systemicmean'].values[0] # imputed value
-                    print(f"spot: {spot}, fwd: {fwd}, MeanBP_val: {MeanBP_val}") # testing code by outputting values
-
-                    dt.loc[(dt.index.get_level_values('Time') == spot), 'MeanBP'].values[0] = MeanBP_val # adding to dataframe
-                    print("replace", dt.loc[(dt.index.get_level_values('Time') == spot), 'MeanBP'].values[0]) # testing if the dataframe had the new values
-
-                    nanRemove += 1 # increment nanRemove counter
-                elif not booleanFwd and booleanBwd: # if only bwd is possible, impute with bwd
-                    MeanBP_val = node.loc[(node.index.get_level_values('Time') == bwd), 'systemicmean'].values[0] # imputed value
-                    print(f"spot: {spot}, bwd: {bwd}, MeanBP_val: {MeanBP_val}") # testing code by outputting values
-
-                    dt.loc[(dt.index.get_level_values('Time') == spot), 'MeanBP'].values[0] = MeanBP_val # adding to dataframe
-                    print("replace", dt.loc[(dt.index.get_level_values('Time') == spot), 'MeanBP'].values[0]) # testing if the dataframe had the new values
-
-                    nanRemove += 1 # increment nanRemove counter
-                elif fwdDist < bwdDist: # if fwd is closer than bwd, impute with fwd
-                    MeanBP_val = node.loc[(node.index.get_level_values('Time') == fwd), 'systemicmean'].values[0] # imputed value
-                    print(f"spot: {spot}, fwd: {fwd}, MeanBP_val: {MeanBP_val}") # testing code by outputting values
-
-                    dt.loc[(dt.index.get_level_values('Time') == spot), 'MeanBP'].values[0] = MeanBP_val # adding to dataframe
-                    print("replace", dt.loc[(dt.index.get_level_values('Time') == spot), 'MeanBP'].values[0]) # testing if the dataframe had the new values
-
-                    nanRemove += 1 # increment nanRemove counter
-                elif fwdDist > bwdDist: # if bwd is closer than fwd, impute with bwd
-                    MeanBP_val = node.loc[(node.index.get_level_values('Time') == bwd), 'systemicmean'].values[0] # imputed value
-                    print(f"spot: {spot}, bwd: {bwd}, MeanBP_val: {MeanBP_val}") # testing code by outputting values
-
-                    dt.loc[(dt.index.get_level_values('Time') == spot), 'MeanBP'].values[0] = MeanBP_val # adding to dataframe
-                    print("replace", dt.loc[(dt.index.get_level_values('Time') == spot), 'MeanBP'].values[0]) # testing if the dataframe had the new values
-
-                    nanRemove += 1 # increment nanRemove counter
-                elif fwdDist == bwdDist: # if both are equidistant, impute with fwd
-                    MeanBP_val = node.loc[(node.index.get_level_values('Time') == fwd), 'systemicmean'].values[0] # imputed value
-                    print(f"spot: {spot}, fwd: {fwd}, MeanBP_val: {MeanBP_val}") # testing code by outputting values
-
-                    dt.loc[(dt.index.get_level_values('Time') == spot), 'MeanBP'].values[0] = MeanBP_val # adding to dataframe
-                    print("replace", dt.loc[(dt.index.get_level_values('Time') == spot), 'MeanBP'].values[0]) # testing if the dataframe had the new values
-
-                    nanRemove += 1 # increment nanRemove counter
-                
-
-print(nanRemove) # prints nanRemove counter
-print(dt.to_string()) # prints the updated dataframe
-nanRemove = 0 # resets nanRemoval
 
