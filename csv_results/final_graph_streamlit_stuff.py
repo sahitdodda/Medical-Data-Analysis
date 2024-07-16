@@ -800,9 +800,6 @@ for plotPointsNew in plotPointsNew_List:
 
 # %%
 
-
-
-
 # Thresholds for ICP ranges
 thresholds = [20, 25, 30, 35]
 less_20_list = []
