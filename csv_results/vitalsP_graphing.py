@@ -610,5 +610,25 @@ df_patient_STATS.head(100000000000000)
 
 # That above code block was to check things, try and make some of the stuff horizontal. 
 
+examP_DF = pd.read_csv('examP_results.csv')
+examP_DF = examP_DF.set_index('patientunitstayid')
+examP_DF = examP_DF.drop(columns=['Unnamed: 0'])
+examP_DF = examP_DF.pivot(columns='physicalexampath', values='physicalexamvalue')
+print(examP_DF)
 
 
+
+# examP_DF = examP_DF.drop_duplicates(subset=['patientunitstayid', 'physicalexampath'])
+# examP_DF = examP_DF.reset_index()
+
+
+# %%
+
+labsP_DF = pd.read_csv('labsP_results.csv')
+lab_list = ['sodium', 'BUN', 'creatinine', 'glucose']
+
+labsP_DF = labsP_DF[labsP_DF['labname'].isin(lab_list)]
+
+print(labsP_DF)
+
+labsP_DF.to_csv('labsP_filtered_results.csv')
