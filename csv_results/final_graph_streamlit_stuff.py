@@ -71,7 +71,7 @@ print(df_vitalsP.dtypes)
 
 
 #%%
-df_vitalsP = df_vitalsP.fillna(method='ffill')
+# df_vitalsP = df_vitalsP.fillna(method='ffill')
 
 
 #%%

@@ -221,7 +221,7 @@ while tempNode:
         no_sys_list.append(patient)
     if(dt['systemicmean'].isnull().sum() == len(dt)):
         no_mean_list.append(patient)
-    # print(mno.matrix(dt, figsize = (20,6)))
+    print(mno.matrix(dt, figsize = (20,6)))
     count += 1
     tempNode = tempNode.next    
     
@@ -600,7 +600,15 @@ diag_DF = pd.read_csv('diagP_results.csv')
 
 df_patient_STATS = pd.merge( df_auc_ranges, df_range, on='patientunitstayid')
 df_patient_STATS = pd.merge(df_patient_STATS, apache_DF, on='patientunitstayid')
+df_patient_STATS = pd.merge(df_patient_STATS, diag_DF, on='patientunitstayid')
 
 # df_patient_STATS['spike_Count'] = spikeCount_List
 
 df_patient_STATS.head(100000000000000)
+
+# %%
+
+# That above code block was to check things, try and make some of the stuff horizontal. 
+
+
+
