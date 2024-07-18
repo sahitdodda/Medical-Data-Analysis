@@ -598,7 +598,7 @@ mrf|_|
 apache_DF = pd.read_csv('apache_results.csv')
 diag_DF = pd.read_csv('diagP_results.csv')
 
-df_patient_STATS = pd.merge( df_auc_ranges, df_range, on='patientunitstayid')
+df_patient_STATS = pd.merge(df_auc_ranges, df_range, on='patientunitstayid')
 df_patient_STATS = pd.merge(df_patient_STATS, apache_DF, on='patientunitstayid')
 df_patient_STATS = pd.merge(df_patient_STATS, diag_DF, on='patientunitstayid')
 
@@ -632,3 +632,8 @@ labsP_DF = labsP_DF[labsP_DF['labname'].isin(lab_list)]
 print(labsP_DF)
 
 labsP_DF.to_csv('labsP_filtered_results.csv')
+
+
+# %%
+
+df_patient_STATS.to_csv('PATIENT_STATS.csv')
