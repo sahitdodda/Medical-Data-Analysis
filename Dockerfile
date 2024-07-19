@@ -26,4 +26,4 @@ EXPOSE 8000
 RUN apt-get install -y procps
 
 # Run the command from the Procfile
-CMD ["sh", "-c", "$(cat /app/Procfile | grep web | cut -d ' ' -f 2-)"]
+CMD ["streamlit", "run", "csv_results/final_graph_streamlit_stuff.py", "--server.port=8000"]
