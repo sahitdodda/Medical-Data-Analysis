@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-COPY final_graph_streamlit_stuff.py /var/home/sahitdodda/hospit/Medical-Data-Analysis/csv_results/final_graph_streamlit_stuff.py
+COPY ./path/to/vitalsP_graphing.py csv_results/vitalsP_graphing.py
 
 RUN pip install --upgrade pip
 
