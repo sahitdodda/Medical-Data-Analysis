@@ -6,6 +6,6 @@ tzdata==2024.1
 streamlit==1.36.0
 matplotlib==3.9.1 
 seaborn==0.13.2
-#scikit-learn==
+scikit-learn==1.5.1
 missingno==0.5.2 
 plotly==5.22.0
