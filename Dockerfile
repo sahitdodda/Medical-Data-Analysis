@@ -17,3 +17,5 @@ RUN pip3 install --upgrade pip
 RUN pip3 install -r requirements.txt
 
 # Add any other necessary commands here
+
+EXPOSE 8000
