@@ -19,6 +19,7 @@ grouped = ['albumin', 'ALT (SGPT)', 'AST (SGOT)',
            'lactate', 'O2 sat (%)', 'paCO2', 'paO2', 'Peak Airway/Pressure', 'PEEP', 'pH', 'platelets x 1000', 'PT – INR', 
            'Respiratory Rate', 'sodium', 'Spontaneous Rate', 'Vent Rate']
 
+grouped = ['glucose', 'BCU', 'creatinine', 'sodium']
 
 df = df[df['labname'].isin(grouped)]
 df.head(100000000)
