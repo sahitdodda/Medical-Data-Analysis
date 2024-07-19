@@ -51,10 +51,10 @@ pyzfs==2.2.4
 regex==2024.4.16
 requests==2.28.2
 rpm==4.19.1.1
-selinux @ file:///builddir/build/BUILD/libselinux-3.5/src
-sepolicy @ file:///builddir/build/BUILD/selinux-3.5/python/sepolicy
+#selinux @ file:///builddir/build/BUILD/libselinux-3.5/src
+#sepolicy @ file:///builddir/build/BUILD/selinux-3.5/python/sepolicy
 setools==4.4.3
-setroubleshoot @ file:///builddir/build/BUILD/setroubleshoot-3.3.33/src
+#setroubleshoot @ file:///builddir/build/BUILD/setroubleshoot-3.3.33/src
 setuptools==67.7.2
 simpleaudio==1.0.4
 six==1.16.0
@@ -63,7 +63,7 @@ sos==4.6.0
 systemd-python==235
 topgrade==14.0.1
 typing_extensions==4.8.0
-ublue-update==1.0.0
+#ublue-update==1.0.0
 udica==0.2.7
 urllib3==1.26.19
 wcwidth==0.2.5
