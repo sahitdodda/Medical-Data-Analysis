@@ -224,5 +224,26 @@ while tempNode:
     count += 1
     tempNode = tempNode.next
 
+# %%
 
 
+tempNode = dfList.head
+count = 0
+while tempNode:
+    # do stuff
+    #tempNode.data.sort_values('labresultoffset')
+    dt = tempNode.data
+    means = dt['labresult'].groupby([dt['labresultoffset'], dt['labname']]).mean()
+    # print(f"patient {count}")
+    
+    means = means.reset_index()
+
+    labresultoffset = means['labresultoffset']
+    values = means['labresult']
+
+    plt.figure()
+    sns.lineplot(data=means, x='labresultoffset', y='labresult', hue='labname', marker='o')
+    
+    # print(tempNode.data.head(1000000000000000))
+    count += 1
+    tempNode = tempNode.next
