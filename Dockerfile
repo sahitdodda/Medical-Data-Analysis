@@ -1,6 +1,6 @@
 FROM ubuntu:20.04
 
-COPY vitalsP_graphing.py csv_results/vitalsP_graphing.py
+COPY final_graph_streamlit_stuff.py csv_results/final_graph_streamlit_stuff.py
 
 RUN pip install --upgrade pip
 
