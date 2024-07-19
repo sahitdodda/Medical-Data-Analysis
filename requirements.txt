@@ -3,7 +3,7 @@ Brlapi==0.8.5
 cffi==1.15.1
 charset-normalizer==3.2.0
 click==8.1.3
-cockpit @ file:///builddir/build/BUILD/cockpit-320/tmp/wheel/cockpit-320-py3-none-any.whl#sha256=666777fae8893493cb619958fd3f5997d4df511406b6bdea48ba8c782db0a121
+#cockpit @ file:///builddir/build/BUILD/cockpit-320/tmp/wheel/cockpit-320-py3-none-any.whl#sha256=666777fae8893493cb619958fd3f5997d4df511406b6bdea48ba8c782db0a121
 cupshelpers==1.0
 dasbus==1.7
 dbus-python==1.3.2
