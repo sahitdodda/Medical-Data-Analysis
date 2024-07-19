@@ -1,5 +1,7 @@
 FROM ubuntu:20.04
 
+FROM python:3.9
+
 # Copy the entire csv_results directory
 COPY csv_results /app/csv_results
 
