@@ -886,3 +886,5 @@ print(df_vitalCopy.isna().sum())
 df_vitalCopy.to_csv('EXPERIMENTS_AAHH.csv')
 df_auc_ranges.to_csv('EXPERIMENTS_AUC_RANGES.csv')
 df_range.to_csv('EXPERIMENTS_RANGE.csv')
+
+#%%
