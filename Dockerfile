@@ -1,11 +1,19 @@
 FROM ubuntu:20.04
 
-COPY ./path/to/vitalsP_graphing.py csv_results/vitalsP_graphing.py
+# Copy the entire csv_results directory
+COPY csv_results /app/csv_results
 
-RUN pip install --upgrade pip
+# Copy other necessary files
+COPY requirements.txt /app/requirements.txt
 
-RUN pip install --no-cacher-dir -r requirements.txt
+# Set the working directory
+WORKDIR /app
 
-RUN pip install streamlit
+# Install pip and upgrade it
+RUN apt-get update && apt-get install -y python3-pip
+RUN pip3 install --upgrade pip
 
-RUN pip install --upgrade pip setuptools
+# Install requirements
+RUN pip3 install -r requirements.txt
+
+# Add any other necessary commands here
