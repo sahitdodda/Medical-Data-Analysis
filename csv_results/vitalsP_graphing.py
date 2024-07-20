@@ -587,34 +587,34 @@ df_auc_ranges.head(10000000000000000000000000000000000000000)
 '''
    .-.
   /'v'\    - START MERGING DATASETS UNDER HERE
- (/   \)
+ (/   \)             ONLY WORRYING THE SECOND OF THOSE TWO 
 ='="="===< 
 mrf|_|
 '''
 
 # %%
-# append spikeCountList as a column afterwards
+# # append spikeCountList as a column afterwards
 
-apache_DF = pd.read_csv('apache_results.csv')
-diag_DF = pd.read_csv('diagP_results.csv')
+# apache_DF = pd.read_csv('apache_results.csv')
+# diag_DF = pd.read_csv('diagP_results.csv')
 
-df_patient_STATS = pd.merge(df_auc_ranges, df_range, on='patientunitstayid')
-df_patient_STATS = pd.merge(df_patient_STATS, apache_DF, on='patientunitstayid')
-df_patient_STATS = pd.merge(df_patient_STATS, diag_DF, on='patientunitstayid')
+# df_patient_STATS = pd.merge(df_auc_ranges, df_range, on='patientunitstayid')
+# df_patient_STATS = pd.merge(df_patient_STATS, apache_DF, on='patientunitstayid')
+# df_patient_STATS = pd.merge(df_patient_STATS, diag_DF, on='patientunitstayid')
 
-# df_patient_STATS['spike_Count'] = spikeCount_List
+# # df_patient_STATS['spike_Count'] = spikeCount_List
 
-df_patient_STATS.head(100000000000000)
+# df_patient_STATS.head(100000000000000)
 
-# %%
+# # %%
 
-# That above code block was to check things, try and make some of the stuff horizontal. 
+# # That above code block was to check things, try and make some of the stuff horizontal. 
 
-examP_DF = pd.read_csv('examP_results.csv')
-examP_DF = examP_DF.set_index('patientunitstayid')
-examP_DF = examP_DF.drop(columns=['Unnamed: 0'])
-examP_DF = examP_DF.pivot(columns='physicalexampath', values='physicalexamvalue')
-print(examP_DF)
+# examP_DF = pd.read_csv('examP_results.csv')
+# examP_DF = examP_DF.set_index('patientunitstayid')
+# examP_DF = examP_DF.drop(columns=['Unnamed: 0'])
+# examP_DF = examP_DF.pivot(columns='physicalexampath', values='physicalexamvalue')
+# print(examP_DF)
 
 
 
@@ -624,16 +624,13 @@ print(examP_DF)
 
 # %%
 
-labsP_DF = pd.read_csv('labsP_results.csv')
-lab_list = ['sodium', 'BUN', 'creatinine', 'glucose']
+# labsP_DF = pd.read_csv('labsP_results.csv')
+# lab_list = ['sodium', 'BUN', 'creatinine', 'glucose']
 
-labsP_DF = labsP_DF[labsP_DF['labname'].isin(lab_list)]
+# labsP_DF = labsP_DF[labsP_DF['labname'].isin(lab_list)]
 
-print(labsP_DF)
-
-labsP_DF.to_csv('labsP_filtered_results.csv')
 
 
 # %%
 
-df_patient_STATS.to_csv('PATIENT_STATS.csv')
+# chop off everything else that isn't patientunitstayid and the first 3 days for day icp loads
