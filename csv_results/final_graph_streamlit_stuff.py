@@ -26,6 +26,8 @@ df_examP = pd.read_csv('/app/csv_results/examP_results.csv')
 df_vitalsP = pd.read_csv('/app/csv_results/vitalsP.csv')
 
 
+
+
 icp_list = df_vitalsP['icp']
 time_list = df_vitalsP['Time']
 df_vitalsP.head()
