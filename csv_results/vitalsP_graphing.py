@@ -517,107 +517,107 @@ df_range.head(100000000000000000000000000000000000000)
 # repeat 
 
 
-icp_threshold = [20, 25, 30, 35, None]
-t_cond_icp = [False for _ in range(len(icp_threshold))]
-Day_threshold = [24, 48, 72, 96, 120, 144, 168, None]
-t_cond_Day = [False for _ in range(len(Day_threshold))]
+# icp_threshold = [20, 25, 30, 35, None]
+# t_cond_icp = [False for _ in range(len(icp_threshold))]
+# Day_threshold = [24, 48, 72, 96, 120, 144, 168, None]
+# t_cond_Day = [False for _ in range(len(Day_threshold))]
 
-all_thresholds = [
-    (('icp', 'Time'), icp_threshold), 
-    (('Time', 'icp'), Day_threshold)
-]
+# all_thresholds = [
+#     (('icp', 'Time'), icp_threshold), 
+#     (('Time', 'icp'), Day_threshold)
+# ]
 
-def calc_thresh_val(y1, y2, x1, x2, threshold): # chose refers to icp or Time 
-    ydiff = y2-y1
-    xdiff = x2-x1
-    if xdiff == 0:
-        return y1, x1    
-    slope = ydiff/xdiff
+# def calc_thresh_val(y1, y2, x1, x2, threshold): # chose refers to icp or Time 
+#     ydiff = y2-y1
+#     xdiff = x2-x1
+#     if xdiff == 0:
+#         return y1, x1    
+#     slope = ydiff/xdiff
 
-    new_value = (threshold-y1)/slope + x1
-    return new_value, threshold
+#     new_value = (threshold-y1)/slope + x1
+#     return new_value, threshold
 
 
-# assumes you are iterating through the larger list that is created with a df 
-# of each patient. 
-def find_thresholds(patient_df, thresholds, columnMajor, columnMinor, patient_list, icp_list, time_list):
-    for i in range(len(patient_df) - 1):
+# # assumes you are iterating through the larger list that is created with a df 
+# # of each patient. 
+# def find_thresholds(patient_df, thresholds, columnMajor, columnMinor, patient_list, icp_list, time_list):
+#     for i in range(len(patient_df) - 1):
         
-        # for example, valueMajor may be icp. generic version of now and next 
-        valueMajor = patient_df['patientunitstayid'].iloc[i]
-        nextValueMajor = patient_df[valueMajor].iloc[i]
+#         # for example, valueMajor may be icp. generic version of now and next 
+#         valueMajor = patient_df['patientunitstayid'].iloc[i]
+#         nextValueMajor = patient_df[valueMajor].iloc[i]
 
-        valueMinor = patient_df[valueMinor].iloc[i + 1]
-        nextValueMinor = patient_df[valueMinor].iloc[i + 1]
+#         valueMinor = patient_df[valueMinor].iloc[i + 1]
+#         nextValueMinor = patient_df[valueMinor].iloc[i + 1]
 
-        patient = patient_df['patientunitstayid'].iloc[i]
-        patient_list.append(patient)
-        icp_list.append(patient_df['icp'].iloc[i])
-        time_list.append(patient_df['Time'].iloc[i])
+#         patient = patient_df['patientunitstayid'].iloc[i]
+#         patient_list.append(patient)
+#         icp_list.append(patient_df['icp'].iloc[i])
+#         time_list.append(patient_df['Time'].iloc[i])
 
-        if(valueMajor == nextValueMajor):
-            continue
+#         if(valueMajor == nextValueMajor):
+#             continue
         
 
-        for i in range(len(thresholds)):
-            if(valueMajor < thresholds[i] and thresholds[i] > nextValueMajor) or (valueMajor > thresholds[i] and thresholds[i] < nextValueMajor):
-                if(columnMajor == 'icp'):
-                    t_cond_icp[i] = True
-                else: 
-                    t_cond_Day[i]
+#         for i in range(len(thresholds)):
+#             if(valueMajor < thresholds[i] and thresholds[i] > nextValueMajor) or (valueMajor > thresholds[i] and thresholds[i] < nextValueMajor):
+#                 if(columnMajor == 'icp'):
+#                     t_cond_icp[i] = True
+#                 else: 
+#                     t_cond_Day[i]
 
         
-        for i, threshold in enumerate(thresholds):
+#         for i, threshold in enumerate(thresholds):
 
-            # same thing for either branch
-            if columnMajor == 'icp':
-                if t_cond_icp[i]:
-                    major_value, minor_value = calc_thresh_val(valueMajor, nextValueMajor, valueMinor, nextValueMinor, threshold)
-                    patient_list.append(patient_df['patientunitstayid'].iloc[0])
-                    if columnMajor == 'icp':
-                        icp_list.append(minor_value)
-                        time_list.append(major_value)
-                    else:
-                        icp_list.append(major_value)
-                        time_list.append(minor_value)
-            else:
-                if t_cond_Day[i]:
-                    major_value, minor_value = calc_thresh_val(valueMajor, nextValueMajor, valueMinor, nextValueMinor, threshold)
-                    patient_list.append(patient_df['patientunitstayid'].iloc[0])
-                    if columnMajor == 'icp':
-                        icp_list.append(minor_value)
-                        time_list.append(major_value)
-                    else:
-                        icp_list.append(major_value)
-                        time_list.append(minor_value)
+#             # same thing for either branch
+#             if columnMajor == 'icp':
+#                 if t_cond_icp[i]:
+#                     major_value, minor_value = calc_thresh_val(valueMajor, nextValueMajor, valueMinor, nextValueMinor, threshold)
+#                     patient_list.append(patient_df['patientunitstayid'].iloc[0])
+#                     if columnMajor == 'icp':
+#                         icp_list.append(minor_value)
+#                         time_list.append(major_value)
+#                     else:
+#                         icp_list.append(major_value)
+#                         time_list.append(minor_value)
+#             else:
+#                 if t_cond_Day[i]:
+#                     major_value, minor_value = calc_thresh_val(valueMajor, nextValueMajor, valueMinor, nextValueMinor, threshold)
+#                     patient_list.append(patient_df['patientunitstayid'].iloc[0])
+#                     if columnMajor == 'icp':
+#                         icp_list.append(minor_value)
+#                         time_list.append(major_value)
+#                     else:
+#                         icp_list.append(major_value)
+#                         time_list.append(minor_value)
 
-        # now reset conditions
+#         # now reset conditions
 
-        t_cond_icp = [False for _ in range(len(t_cond_icp))]
-        t_cond_Day = [False for _ in range(len(t_cond_Day))]
+#         t_cond_icp = [False for _ in range(len(t_cond_icp))]
+#         t_cond_Day = [False for _ in range(len(t_cond_Day))]
 
-    # data = {
-    #     'patientunitstayid' : patient_list,
-    #     'icp' : icp_list, 
-    #     'Time' : time_list 
-    # }
+#     # data = {
+#     #     'patientunitstayid' : patient_list,
+#     #     'icp' : icp_list, 
+#     #     'Time' : time_list 
+#     # }
 
-    # new_patient_df = pd.DataFrame(data)
+#     # new_patient_df = pd.DataFrame(data)
 
-    return patient_list, icp_list, time_list 
+#     return patient_list, icp_list, time_list 
 
 
-data_sample = {
-    'patientunitstayid' : [1, 1, 1, 1, 1],
-    'icp' : [17, 19, 31, 1, 3],
-    'Time' : [2, 4, 16, 32, 18]
-}
-data_sample = pd.DataFrame(data_sample)
+# data_sample = {
+#     'patientunitstayid' : [1, 1, 1, 1, 1],
+#     'icp' : [17, 19, 31, 1, 3],
+#     'Time' : [2, 4, 16, 32, 18]
+# }
+# data_sample = pd.DataFrame(data_sample)
 
-a = []
-b = []
-c = []
-patient_list, icp_list, time_list = find_thresholds(data_sample, icp_threshold,  'icp', 'Time', a, b, c)
+# a = []
+# b = []
+# c = []
+# patient_list, icp_list, time_list = find_thresholds(data_sample, icp_threshold,  'icp', 'Time', a, b, c)
 
 
 
@@ -643,48 +643,32 @@ def calc_thresh_val(y1, y2, x1, x2, threshold): # chose refers to icp or Time
     new_value = (threshold-y1)/slope + x1
     return new_value, threshold
 
+# for major ICP
+calculated, threshold_value = calc_thresh_val(19, 31, 2, 4, 20)
+print(f'CALCULATED imputation: {calculated}')
+print(f'threshold used! {threshold_value}')
 
-# def find_thresholds_with_mask(patient_df, thresholds, columnMajor, columnMinor, patient_list, icp_list, time_list):
-#     previous_value = None
+print('------------now using time as the major value ----------------')
 
-#     for index, row in patient_df.iterrows():
-#         current_value = row[columnMajor]
-        
-#         if previous_value is not None:
-#             for threshold in thresholds:
-#                 if (previous_value < threshold <= current_value) or (previous_value > threshold >= current_value):
-#                     patient_list.append(row['patientunitstayid'])
-#                     icp_list.append(threshold)
-#                     time_list.append(row['Time'])
-        
-#         # Always add the current value
-#         patient_list.append(row['patientunitstayid'])
-#         icp_list.append(current_value)
-#         time_list.append(row['Time'])
-        
-#         previous_value = current_value
-    
-#     return patient_list, icp_list, time_list
+# for major ICP
+calculated, threshold_value = calc_thresh_val(20, 25, 19, 31, 24)
+print(f'CALCULATED imputation: {calculated}')
+print(f'threshold used! {threshold_value}')
 
+# %%
 
-# 'icp' : [17, 19, 31, 1, 3],
-
-def find_thresholds_with_mask(patient_df, thresholds, columnMajor, columnMinor, patient_list, icp_list, time_list):
+def find_thresholds(patient_df, thresholds, columnMajor, columnMinor, patient_list, l1, l2):
     previous_value = None
+    previous_minor = None
     for index, row in patient_df.iterrows():
         current_value = row[columnMajor]
-        
-        # Skip this iteration if current_value is None
-        if current_value is None:
-            continue
+        current_minor = row[columnMinor]
         
         if previous_value is not None:
             crossed_thresholds = []
             for threshold in thresholds:
-                # Skip this threshold if it's None
                 if threshold is None:
                     continue
-                
                 if (previous_value < threshold <= current_value) or (previous_value > threshold >= current_value):
                     crossed_thresholds.append(threshold)
             
@@ -693,100 +677,516 @@ def find_thresholds_with_mask(patient_df, thresholds, columnMajor, columnMinor, 
             
             # Add crossed thresholds in the correct order
             for threshold in crossed_thresholds:
+                calculated, threshold_value = calc_thresh_val(
+                    previous_value, current_value,
+                    previous_minor, current_minor,
+                    threshold
+                )
                 patient_list.append(row['patientunitstayid'])
-                icp_list.append(threshold)
-                time_list.append(row['Time'])
+                l1.append(threshold_value)
+                l2.append(calculated)
         
         # Always add the current value
         patient_list.append(row['patientunitstayid'])
-        icp_list.append(current_value)
-        time_list.append(row['Time'])
+        l1.append(current_value)
+        l2.append(current_minor)
+        
         previous_value = current_value
+        previous_minor = current_minor
     
-    return patient_list, icp_list, time_list
-#TODO: Timme (probably just minor) is wrong.
+    return patient_list, l1, l2
+
 data_sample = {
-    'patientunitstayid' : [1, 1, 1, 1, 1],
-    'icp' : [17, 19, 31, 1, 3],
-    'Time' : [2, 4, 16, 32, 18]
+    'patientunitstayid' : [1, 1],
+    'icp' : [19, 21],
+    'Time' : [22.1, 26.5]
 }
 data_sample = pd.DataFrame(data_sample)
+#%%
+# debugging print for proof of concept. 
 
 a = []
 b = []
 c = []
-patient_list, icp_list, time_list = find_thresholds_with_mask(data_sample, icp_threshold, 'icp', 'Time', a, b, c)
+# patient_list, icp_list, time_list = find_thresholds(data_sample, icp_threshold, 'icp', 'Time', a, b, c)
+# print("time list 1:")
+# print(time_list)
+# print("icp list 1")
+# print(icp_list)
 
+# # print('-----------------------------------------------------------')
+
+# IMPORTANT NOTE: IT ONLY RETAINS ORDER IF YOU KEEP EVERYTHING IN THE SAME ORDER 
+# BUT CAHNGE THE THRESHOLD AND THE MAJOR/MINOR VALUES. MAY NOT BE CONSISTENT FOR 3 ITERATIONS, BUT IS 
+# CONSISTENT FOR 2 ITERATIONS. 
+
+# IF YOU WANT TO DO IT ONLY ONE TIME, THEN THE ORDER DOES MATTER. IF YOU WANT TO DO IT TWICE, THE ORDER 
+# NO LONGER MATTERS AS LONG AS IT IS CONSISTENT. 
+
+# patient_list, icp_list, time_list  = find_thresholds(data_sample, icp_threshold, 'icp', 'Time',  a, b, c)
+# print("time list 2:")
+# print(time_list)
+# print("icp list 2")
+# print(icp_list)
+# print(f'patient {patient_list}')
+# print('----------------')
+
+patient_list, time_list, icp_list  = find_thresholds(data_sample, Day_threshold, 'Time', 'icp', a, b, c)
+print("time list 2:")
 print(time_list)
-#%%
-def ll_traversal(ll_list, all_thresholds): # major indicates the type bc of the convention we are using. 
-    if not all_thresholds:
-        return None
-    
-    temp_df_list = []
+print("icp list 2")
+print(icp_list)
+print(f'patient {patient_list}')
 
+#%%
+def ll_traversal(ll_list): # major indicates the type bc of the convention we are using. 
+    # runs through icp and time twice. 
+
+    temp_df_list = []
+    final_df_list = []
     for patient_id in ll_list:
         patient_list = []
         icp_list = []
         time_list = []
-        type_tuple, thresholds = all_thresholds.pop(0)
-        columnMajor, columnMinor = type_tuple
-        patient_list, icp_list, time_list = find_thresholds(patient_id, thresholds, columnMajor, columnMinor, patient_list, icp_list, time_list)
+        # major is icp and minor is Time, therefore the order is icp_list and time_list 
+        patient_list, icp_list, time_list = find_thresholds(patient_id, icp_threshold, 'icp', 'Time', patient_list, icp_list, time_list)
+        # patient_list, icp_list, time_list = find_thresholds(patient_id, Day_threshold, 'Time',  'icp', patient_list, icp_list, time_list)
         data = {
             'patientunitstayid' : patient_list, 
             'icp' : icp_list, 
             'Time' : time_list
         }
         temp_DF = pd.DataFrame(data)
+        # print(temp_DF.head())
         temp_df_list.append(temp_DF)
+
+    # do another for loop yayyyyyyy
+    for patient_id in temp_df_list:
+        patient_list = []
+        icp_list = []
+        time_list = []
+        # major is Time and minor is icp, therefore the order is time_list and icp_list 
+        patient_list, time_list, icp_list = find_thresholds(patient_id, Day_threshold, 'Time', 'icp', patient_list, icp_list, time_list)
+        data = {
+            'patientunitstayid' : patient_list, 
+            'icp' : icp_list, 
+            'Time' : time_list
+        }
+        temp_DF = pd.DataFrame(data)
+        print(temp_DF.head()) # debug statement to make sure things don't swap incorrectly. 
+        final_df_list.append(temp_DF)
     
-    ll_list = ll_traversal(temp_df_list, all_thresholds)
+    return final_df_list
+
 
 
 # creates a list of a list of each patient's icp points
-plotPoints_List = [] # list is the default list of patient dataframes
-plotPointsNew_List = []
-
+plotPointsNew_list = []
 for patient_id in vitalsP_DF_patientIDs: 
     # holds original set of points
     if vitalsP_imputed_DF_copy.loc[vitalsP_imputed_DF_copy['patientunitstayid'] == patient_id, ['patientunitstayid', 'Time', 'icp']].empty:
         continue
     plotPoints = vitalsP_imputed_DF_copy.loc[vitalsP_imputed_DF_copy['patientunitstayid'] == patient_id, ['patientunitstayid', 'Time', 'icp']]
-    plotPoints_List.append(plotPoints)
+    plotPointsNew_list.append(plotPoints)
 
-plotPointsNew_List = ll_traversal(plotPoints_List, all_thresholds)
+plotPointsNew_List = ll_traversal(plotPointsNew_list)
+
+
+
+# %% Plotting ICP thresholds to prepare for AUC
+list = [0,0,0]
+for i in range(len(list)):
+    print(i)
+
 
 # %%
 
-# find the time values where the spikes occur (save into a list)
-# split the graph into 7 days (from one total df to 7 df's)
-# loop through each patient
-    # calculate the AUC for each of the 7 days
-    # loop through each day
-        # find the first ICP/time and last ICP/time
-        # calculate the TOTAL AUC using the time vals (trap. rule)
-        # calculate the AUC for each threshold (20, 25, 30, 35)
-            # make a list of threshold times for each threshold (20-35)
-            # with that list, use the traps function between every 'threshold pair') ex. (3,6) and (10,15)
-            # sum this to get the AUC for each threshold
-    
 
 
-# %% 
-# now append all spike df's in the list to a new dataframe 
 
-spike_StatsDF = pd.concat(spikeStats_List, ignore_index=True)
-print(spike_StatsDF)
-print('\n\n\n\n')
-
-print(f'Spike count list {spikeCount_List}')
-print(f'Spike count list length {len(spikeCount_List)}')
 # %%
 
-# Thresholds for ICP ranges
+# -------------------------------------- Pseudocode --------------------------------------
+
+# all patients (node in vitalsP_LL)
+    # each patient (node.data (vitalsP for that ID))
+        # each day (create 7 days from node.data)
+            # each point (find new points, spike count, spike times, spike durations)
+
+                # save new points, spike count, spike times, spike durations into a dataframe
+                # save dataframe into a totalDay_List (day 1-7)
+                # reset variables for next day
+            # save totalDay_list into a totalPatient_list (in same order as vitalsP_LL)
+
+
+# thresholds
 thresholds = [20, 25, 30, 35]
-less_20_list = []
+t20 = False
+t25 = False
+t30 = False
+t35 = False
+t_cond = [t20, t25, t30, t35]
 
+
+# all patients (node in vitalsP_LL)
+    # each patient (node.data (vitalsP for that ID))
+        # each day (create 7 days from node.data)
+            # each point (find new points, spike count, spike times, spike durations)
+
+                # save new points, spike count, spike times into a list
+                # save dataframe into a totalDay_List (day 1-7)
+                # reset variables for next day
+            # save totalDay_list into a totalPatient_list (in same order as vitalsP_LL)
+
+
+spikeStats_All = []
+newGraph_All = []
+
+
+node = vitalsP_imputed_LL.head
+numNode = 0
+while node: # by patient
+    print(f'Node {numNode}')
+    df = node.data # datafarame per ID 
+    ID = df['patientunitstayid'].iloc[0] # patient ID
+    # saves OG points (day 1-7)
+    day1_Graph = df.loc[df['Time'] < 24]
+    day2_Graph = df.loc[(df['Time'] >= 24) & (df['Time'] < 48)]
+    day3_Graph = df.loc[(df['Time'] >= 48) & (df['Time'] < 72)]
+    day4_Graph = df.loc[(df['Time'] >= 72) & (df['Time'] < 96)]
+    day5_Graph = df.loc[(df['Time'] >= 96) & (df['Time'] < 120)]
+    day6_Graph = df.loc[(df['Time'] >= 120) & (df['Time'] < 144)]
+    day7_Graph = df.loc[(df['Time'] >= 144) & (df['Time'] < 168)]
+    # saves into a list
+    DPList = [day1_Graph, day2_Graph, day3_Graph, day4_Graph, day5_Graph, day6_Graph, day7_Graph]
+    # reset day for next patient
+    day = 0
+    newGraph_Patient = []
+    spikeStats_Patient = []
+
+    lastDay = 0
+    lastHour = 0
+    first = False
+
+    for graph in DPList: # each graph, by day
+        day += 1
+        newGraph = pd.DataFrame(columns=['patientunitstayid', 'Day', 'Time', 'icp']) # holds points
+        spikeStats = pd.DataFrame(columns=['patientunitstayid', 'Day', 'lastDay', 'spikes', 'spikeStarts', 'spikeEnds']) # holds lists
+        
+        spike_Count20, spike_Count25, spike_Count30, spike_Count35 = 0, 0, 0, 0
+        start20, start25, start30, start35 = [], [], [], []
+        end20, end25, end30, end35 = [], [], [], []
+        
+        start = [start20, start25, start30, start35]
+        spikes = [spike_Count20, spike_Count25, spike_Count30, spike_Count35]
+        end = [end20, end25, end30, end35]
+
+        for i in range(len(graph)-1): # each point in graph
+            
+            # sets current and next point (used for conditions)
+            nT = graph['Time'].iloc[i]
+            nI = graph['icp'].iloc[i]
+            nxT = graph['Time'].iloc[i+1]
+            nxI = graph['icp'].iloc[i+1]
+            
+            # append the current point to graph
+            newRow = pd.DataFrame({'patientunitstayid': ID, 'Day': day, 'Time': nT, 'icp': nI}, index=[0])
+            # Check if newRow is not empty or all-NA before concatenation
+            if not newRow.isna().all(axis=None):
+                newGraph = pd.concat([newGraph, newRow], ignore_index=True)
+
+
+            # sets threshold conditions
+            if(nI == nxI): # skips if equal icp's
+                continue
+            for i in range(len(thresholds)): # when threshold is crossed, set condition
+                if((nI < thresholds[i] and thresholds[i] < nxI) or (nI > thresholds[i] and thresholds[i] > nxI)):
+                    t_cond[i] = True
+            
+            # finds slope
+            slope = (nxI - nI) / (nxT - nT)
+
+            # if passing threshold conditions
+            # crosses 20
+            if(t_cond[0]):
+                x = ((20-nI)/slope) + nT
+                
+                # add new point to graph
+                newRow = pd.DataFrame({'patientunitstayid': ID, 'Day': day, 'Time': x, 'icp': 20}, index=[0])
+                if not newRow.isna().all(axis=None):
+                    newGraph = pd.concat([newGraph, newRow], ignore_index=True)
+
+                # starting/ending spikes
+                if(slope > 0): # if slope is positive and goes thru threshold, it starts a spike
+                    spike_Count20 += 1
+                    start20.append(x)
+                if(slope < 0): # if slope is negative and goes thru threshold, it ends a spike
+                    end20.append(x)
+            # crosses 25
+            if(t_cond[1]):
+                x = ((25-nI)/slope) + nT
+                
+                # add new point to graph
+                newRow = pd.DataFrame({'patientunitstayid': ID, 'Day': day, 'Time': x, 'icp': 25}, index=[0])
+                if not newRow.isna().all(axis=None):
+                    newGraph = pd.concat([newGraph, newRow], ignore_index=True)
+
+                if(slope > 0): # if slope is positive and goes thru threshold, it starts a spike
+                    spike_Count25 += 1
+                    start25.append(x)
+                if(slope < 0): # if slope is negative and goes thru threshold, it ends a spike
+                    end25.append(x)
+            # crosses 30
+            if(t_cond[2]):
+                x = ((30-nI)/slope) + nT
+
+                # add new point to graph
+                newRow = pd.DataFrame({'patientunitstayid': ID, 'Day': day, 'Time': x, 'icp': 30}, index=[0])
+                if not newRow.isna().all(axis=None):
+                    newGraph = pd.concat([newGraph, newRow], ignore_index=True)
+                
+                if(slope > 0): # if slope is positive and goes thru threshold, it starts a spike
+                    spike_Count30 += 1
+                    start30.append(x)
+                if(slope < 0): # if slope is negative and goes thru threshold, it ends a spike
+                    end30.append(x)
+            # crosses 35
+            if(t_cond[3]):
+                x = ((35-nI)/slope) + nT
+
+                # add new point to graph
+                newRow = pd.DataFrame({'patientunitstayid': ID, 'Day': day, 'Time': x, 'icp': 35}, index=[0])
+                if not newRow.isna().all(axis=None):
+                    newGraph = pd.concat([newGraph, newRow], ignore_index=True)
+
+                if(slope > 0): # if slope is positive and goes thru threshold, it starts a spike
+                    spike_Count35 += 1
+                    start35.append(x)
+                if(slope < 0): # if slope is negative and goes thru threshold, it ends a spike
+                    end35.append(x)
+
+
+            
+            # if threshold is passed starting at threshold (runs when the other conditionals aren't ran. Ensured that we don't get too many values))
+            
+            if( (nI == 20 and nxI > 20) ): # start at 20, go 20+
+                spike_Count20 += 1
+                start20.append(x)
+            if( (nI > 20 and nxI == 20) ): # start 20+, go to 20
+                end20.append(x)
+            
+            if( (nI == 25 and nxI > 25) ): # start at 20, go 20+
+                spike_Count25 += 1
+                start25.append(x)
+            if( (nI > 25 and nxI == 25) ): # start 20+, go to 20
+                end25.append(x)
+            
+            if( (nI == 30 and nxI > 30) ): # start at 20, go 20+
+                spike_Count30 += 1
+                start30.append(x)
+            if( (nI > 30 and nxI == 30) ): # start 20+, go to 20
+                end30.append(x)
+            
+            if( (nI == 35 and nxI > 35) ): # start at 20, go 20+
+                spike_Count35 += 1
+                start35.append(x)
+            if( (nI > 35 and nxI == 35) ): # start 20+, go to 20
+                end35.append(x)
+
+            # append the last point to graph
+            if(i == len(graph)-2):
+                newRow = pd.DataFrame({'patientunitstayid': ID, 'Day': day, 'Time': nxT, 'icp': nxI}, index=[0])
+                # Check if newRow is not empty or all-NA before concatenation
+                if not newRow.isna().all(axis=None):
+                    newGraph = pd.concat([newGraph, newRow], ignore_index=True)
+
+
+                # manually count when the graphs crosses a 
+                # threshold AND include values 
+                # where the current point is on the 
+                # threshold and passes into the threshol
+
+            # reset condiitons to prep for next point
+            t_cond[0] = False
+            t_cond[1] = False
+            t_cond[2] = False
+            t_cond[3] = False
+    
+        # append newGraph to total Patient list
+        newGraph_Patient.append(newGraph)
+        if(newGraph.empty and first == False):
+            lastDay = day
+            lastHour = (df['Time'].iloc[-1]) % 24
+            first = True
+
+        # WE ONL WANT STATS SPIKES 
+
+        # append statsList to total Patient list
+        spikes = [spike_Count20, spike_Count25, spike_Count30, spike_Count35]
+        start = [start20, start25, start30, start35]
+        end = [end20, end25, end30, end35]
+
+        spikeStats = pd.DataFrame({'patientunitstayid': ID, 'Day': day, 'spikes': spikes, 'lastDay': lastDay, 'lastHour': lastHour, 'spikeStarts': start, 'spikeEnds': end})
+        spikeStats_Patient.append(spikeStats)
+
+
+
+# Graph code to show later. 
+
+# ------------------------------------------------- PRINTING VALUES BY DAY PER PATIENT -------------------------------------------------
+
+        # print('spike count 20:', spike_Count20)
+        # print('spike count 25:', spike_Count25)
+        # print('spike count 30:', spike_Count30)
+        # print('spike count 35:', spike_Count35)
+        # print('start 20:', start20)
+        # print('end 20:', end20)
+        # print('start 25:', start25)
+        # print('end 25:', end25)
+        # print('start 30:', start30)
+        # print('end 30:', end30)
+        # print('start 35:', start35)
+        # print('end 35:', end35)
+
+# ------------------------------------------------- GRAPHING BY DAY PER PATIENT -------------------------------------------------
+
+        plt.figure(figsize=(10, 6))
+        # Plotting the graph
+        plt.plot(newGraph['Time'], newGraph['icp'], marker='o', linestyle='-')
+        # Adding horizontal lines at specific icp values
+        plt.axhline(y=20, color='r', linestyle='--', label='Threshold 20')
+        plt.axhline(y=25, color='g', linestyle='--', label='Threshold 25')
+        plt.axhline(y=30, color='b', linestyle='--', label='Threshold 30')
+        plt.axhline(y=35, color='y', linestyle='--', label='Threshold 35')
+        # Adding title and labels
+        plt.title(f'{ID}, Day {day}: ICP vs Time')
+        plt.xlabel('Time')
+        plt.ylabel('ICP')
+        # Adding legend
+        plt.legend()
+        # Display the plot
+        plt.show()
+
+        print(f'Number of days: {len(spikeStats_Patient)}')
+        print(f'Number of days: {len(newGraph_Patient)}')
+
+        # reset conditions for next day
+        spike_Count20, spike_Count25, spike_Count30, spike_Count35 = 0, 0, 0, 0
+        start20, start25, start30, start35 = [], [], [], []
+        end20, end25, end30, end35 = [], [], [], []
+
+
+    spikeStats_All.append(spikeStats_Patient)
+    newGraph_All.append(newGraph_Patient)
+    lastDay = 0
+    first = False
+
+    numNode += 1
+    node = node.next
+
+
+# ------------------------------------------------- PRINTING ALL VALUES -------------------------------------------------
+
+print(f'Number of patients: {len(spikeStats_All)}')
+print(f'Number of patients: {len(newGraph_All)}')
+
+# %%
+# we have plotPointsList and spikeStats_ALL 
+
+# in spike stats all, we have what per patient list :
+    # spike count, spike start time, spike end time, and for eahc of the 7 days. 
+
+# index 0: first day 
+# # index 1: 
+
+# spikeStats_All (list that holds all 53 patient’s stats)
+
+# spikeStats_Patient (list that has spike info for the 7 days in a patient)
+
+# spikeStats (a single dataframe that has all the spike info)
+
+# spikes (a list that has the spike counts from 20-35)
+
+#  patient  | time period | total time icp was measured |  total auc for the time period | !!!spike 20 auc for time period !!!... | !!spike 20 num for time period!!  | 
+#  19                                                                           
+
+# with this, I want to make a dataframe of length 53:
+
+# patient | time period | num spike 20 | num spike 25 | 
+# 19369      day 1           9               2 
+# 19369      day 2           8               3 
+
+# one patient spike dataframe
+patient_list = []
+time_period = []
+icp_period = []
+num_spike_20 = []
+num_spike_25 = []
+num_spike_30 = []
+num_spike_35 = []
+
+
+
+icp_time = 8
+
+
+for list in spikeStats_All: # cycles through each patient
+    
+    for i in range(len(list)): # cycles through each day
+
+        # patientID
+        patientID = list[i]['patientunitstayid'].iloc[0]
+        # time period
+        day = i+1
+        # total time icp was measured
+        if(day < list[i]['lastDay'].values[0]):
+            icp_time = 24 # rdoesn't run
+        if(day == list[i]['lastDay'].values[0]):
+            icp_time = list[i]['lastHour'].values[0] # good
+        if(day > list[i]['lastDay'].values[0]):
+            icp_time = 0
+        # spike stats
+        spike_Count20 = list[i]['spikes'][0]
+        spike_Count25 = list[i]['spikes'][1]
+        spike_Count30 = list[i]['spikes'][2]
+        spike_Count35 = list[i]['spikes'][3]
+        # append to the list
+        patient_list.append(patientID)
+        time_period.append(day)
+        icp_period.append(icp_time)
+        num_spike_20.append(spike_Count20)
+        num_spike_25.append(spike_Count25)
+        num_spike_30.append(spike_Count30)
+        num_spike_35.append(spike_Count35)
+
+        
+
+data = {
+    'patientunitstayid' : patient_list, 
+    'Day' : time_period, 
+    'icp_period' : icp_period,
+    'num_spike_20' : num_spike_20, 
+    'num_spike_25' : num_spike_25,
+    'num_spike_30' : num_spike_30,
+    'num_spike_35' : num_spike_35
+}
+
+megaStats_DF = pd.DataFrame(data)
+
+megaStats_DF.head(1000000000000000000000000000000000000)
+
+
+ # %%
+
+#  -------------------- CALCULATING AUC, CORRECT VERSION FOR DAYS  ---------------------
+
+tuple_day_threshold = [(0, 24), (24, 48), (48, 72), (72, 96), (96, 120), (120, 144), (144, 168)]
+
+patient_list2 = []
+day2 = []
+total_AUC = []
+
+less_20_list = [] 
 
 # Function to shift ICP values
 def shift_icp_values(df, shift_amount):
@@ -801,7 +1201,7 @@ def less20_area(df):
 # Function to calculate AUC for given thresholds
 def calc_auc(df):
     results = []
-    for threshold in thresholds: 
+    for threshold in icp_threshold: 
         data_above_threshold = df.loc[df['icp'] >= threshold, ['icp', 'Time']]
         data_above_threshold = shift_icp_values(data_above_threshold, threshold)
         if not data_above_threshold.empty:
@@ -813,43 +1213,63 @@ def calc_auc(df):
             results.append(0)
     return results
 
-patient_list = []
-auc_list = [[] for _ in range(len(thresholds))]
+# patient_list = []
+auc_list = [[] for _ in range(len(icp_threshold))]
 test_list = []
 
-for df in plotPointsNew_List:
+for patient_df in plotPointsNew_List:
     # Ensure df is not a Series and not empty
-    if not isinstance(df, pd.Series) and (len(df) != 0):
-        patient_id = df['patientunitstayid'].iloc[0]
+    if not isinstance(patient_df, pd.Series) and (len(patient_df) != 0):
+        count = 0
+        patient_id = patient_df['patientunitstayid'].iloc[0]
         
-        # Append to the list         
-        patient_list.append(patient_id)
+        patient_df = patient_df.loc[patient_df['Time'] >= 0]
+        patient_df = patient_df.sort_values(by=['Time'])
+        for min_time, max_time in tuple_day_threshold:
+            day_df = patient_df.loc[(patient_df['Time'] >= min_time) & (patient_df['Time'] < max_time)]
+            
+            # now that day df is working with the current day; 
+            if(day_df.empty):
+                patient_list2.append(patient_id)
+                # all values in auc_list[i] append 0 
+                for i in range(len(auc_list)):
+                    auc_list[i].append(0)
+                count += 1
+                day2.append(count)
+                test_list.append(0)
+                less_20_list.append(0)
+                continue
 
-        auc_result = calc_auc(df)
+            # Append to the list         
+            patient_list2.append(patient_id)
+            auc_result = calc_auc(day_df)
 
-        for i in range(len(thresholds)):
-            auc_list[i].append(auc_result[i])
-        test_list.append(np.trapz(df['icp'], df['Time']))
+            for i in range(len(icp_threshold)):
+                auc_list[i].append(auc_result[i])
+            test_list.append(np.trapz(day_df['icp'], day_df['Time']))
 
-        test_area = less20_area(df)
-        less_20_list.append(np.trapz(test_area['icp'], test_area['Time']))
+            test_area = less20_area(day_df)
+            less_20_list.append(np.trapz(test_area['icp'], test_area['Time']))
+
+            count += 1
+            day2.append(count)
         
+
 # Create the DataFrame
+
 data = {
-    'patientunitstayid': patient_list, 
-    '>20': auc_list[0],
-    '>25': auc_list[1],
-    '>30': auc_list[2],
-    '>35': auc_list[3], 
+    'patientunitstayid': patient_list2, 
+    'Day' : day2,
+    '>20 auc': auc_list[0],
+    '>25 auc': auc_list[1],
+    '>30 auc': auc_list[2],
+    '>35 auc': auc_list[3], 
     'Total (tested)': test_list,
     '<20' : less_20_list
 }
 
-df_auc_ranges = pd.DataFrame(data)
-
-print(f"Number of plot points: {len(plotPointsNew_List)}")
-df_auc_ranges.head(10000000000000000000000000000000000000000)
-
+megaAUC_DF = pd.DataFrame(data)
+megaAUC_DF.head(1000000000000000000000000000000000000)
 
 # %%
 '''
@@ -858,47 +1278,29 @@ df_auc_ranges.head(10000000000000000000000000000000000000000)
  (/   \)             ONLY WORRYING THE SECOND OF THOSE TWO 
 ='="="===< 
 mrf|_|
+
 '''
 
 # %%
-# # append spikeCountList as a column afterwards
 
-# apache_DF = pd.read_csv('apache_results.csv')
-# diag_DF = pd.read_csv('diagP_results.csv')
+# Now create the final dataframe woooo 
+data = {
+    'patientunitstayid': patient_list2, 
+    'Day' : day2,
+    'icp_period' : icp_period,
+    'Total AUC for Day': test_list,
+    '>20 auc': auc_list[0],
+    '>25 auc': auc_list[1],
+    '>30 auc': auc_list[2],
+    '>35 auc': auc_list[3], 
+    # '<20' : less_20_list,
+    'num_spike_20' : num_spike_20,
+    'num_spike_25' : num_spike_25,
+    'num_spike_30' : num_spike_30,
+    'num_spike_35' : num_spike_35
+}
 
-# df_patient_STATS = pd.merge(df_auc_ranges, df_range, on='patientunitstayid')
-# df_patient_STATS = pd.merge(df_patient_STATS, apache_DF, on='patientunitstayid')
-# df_patient_STATS = pd.merge(df_patient_STATS, diag_DF, on='patientunitstayid')
+AUC_RESULTS = pd.DataFrame(data)
+AUC_RESULTS.head(1000000000000000000000000000000000000)
 
-# # df_patient_STATS['spike_Count'] = spikeCount_List
-
-# df_patient_STATS.head(100000000000000)
-
-# # %%
-
-# # That above code block was to check things, try and make some of the stuff horizontal. 
-
-# examP_DF = pd.read_csv('examP_results.csv')
-# examP_DF = examP_DF.set_index('patientunitstayid')
-# examP_DF = examP_DF.drop(columns=['Unnamed: 0'])
-# examP_DF = examP_DF.pivot(columns='physicalexampath', values='physicalexamvalue')
-# print(examP_DF)
-
-
-
-# examP_DF = examP_DF.drop_duplicates(subset=['patientunitstayid', 'physicalexampath'])
-# examP_DF = examP_DF.reset_index()
-
-
-# %%
-
-# labsP_DF = pd.read_csv('labsP_results.csv')
-# lab_list = ['sodium', 'BUN', 'creatinine', 'glucose']
-
-# labsP_DF = labsP_DF[labsP_DF['labname'].isin(lab_list)]
-
-
-
-# %%
-
-# chop off everything else that isn't patientunitstayid and the first 3 days for day icp loads
+AUC_RESULTS.to_csv('AUC_RESULTS.csv')
