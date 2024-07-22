@@ -9,7 +9,7 @@ import re
 from sklearn.linear_model import LinearRegression
 import missingno as mno
 from sklearn.preprocessing import MinMaxScaler
-from statsmodels.imputation.mice import MICEData
+#from statsmodels.imputation.mice import MICEData
 
 import plotly.graph_objects as go
 import streamlit as st
@@ -18,13 +18,14 @@ import sys
 sys.path.append('LinkedListClass.py')
 from LinkedListClass import Node, LL
 
-df_apache = pd.read_csv('apache_results.csv')
-df_diagP = pd.read_csv('diagP_results.csv')
-df_infs = pd.read_csv('infsP_results.csv')
-df_labsP = pd.read_csv('labsP_results.csv')
-df_examP = pd.read_csv('examP_results.csv')
+df_apache = pd.read_csv('/app/csv_results/apache_results.csv')
+df_diagP = pd.read_csv('/app/csv_results/diagP_results.csv')
+df_infs = pd.read_csv('/app/csv_results/infsP_results.csv')
+df_labsP = pd.read_csv('/app/csv_results/labsP_results.csv')
+df_examP = pd.read_csv('/app/csv_results/examP_results.csv')
+df_vitalsP = pd.read_csv('/app/csv_results/vitalsP.csv')
 
-df_vitalsP = pd.read_csv('vitalsP.csv')
+
 
 
 icp_list = df_vitalsP['icp']
