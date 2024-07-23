@@ -26,7 +26,7 @@ from sklearn.impute import KNNImputer
 
 vitalsP_DF = pd.read_csv('vitalsP.csv')
 vitalsP_DF = vitalsP_DF.drop(columns=['Unnamed: 0', 'observationoffset', 'Day', 'Hour', 'systemicdiastolic'])
-
+vitalsP_DF = vitalsP_DF[vitalsP_DF['patientunitstayid'] != 1082792]
 # within 7 days (168 hr)
 vitalsP_DF = vitalsP_DF[vitalsP_DF['Time'] <= 168]
 
@@ -512,7 +512,7 @@ def ll_traversal(ll_list): # major indicates the type bc of the convention we ar
         icp_list = []
         time_list = []
         # major is Time and minor is icp, therefore the order is time_list and icp_list 
-        patient_list, time_list, icp_list = find_thresholds(patient_id, Day_threshold, 'Time', 'icp', patient_list, icp_list, time_list)
+        patient_list, time_list, icp_list = find_thresholds(patient_id, hour_threshold, 'Time', 'icp', patient_list, icp_list, time_list)
         data = {
             'patientunitstayid' : patient_list, 
             'icp' : icp_list, 
@@ -537,6 +537,7 @@ for patient_id in vitalsP_DF_patientIDs:
 
 plotPointsNew_List = ll_traversal(plotPointsNew_list)
 
+ 
 # %%
 
 # -------------------------------------- Pseudocode --------------------------------------
@@ -595,6 +596,10 @@ while node: # by patient
     print(f'Node {numNode}')
     df = node.data # datafarame per ID 
     ID = df['patientunitstayid'].iloc[0] # patient ID
+
+    # DEBUG PRINT STATEMENT
+    print(ID)
+
     # saves OG points (hour 0-167) into a list
     HP_List = [df.loc[(df['Time'] >= i) & (df['Time'] < i + 1)] for i in range(168)]
 
@@ -611,8 +616,8 @@ while node: # by patient
 
         hour += 1
 
-        newGraph = pd.DataFrame(columns=['patientunitstayid', 'Day', 'Time', 'icp']) # holds points
-        spikeStats = pd.DataFrame(columns=['patientunitstayid', 'Day', 'lastDay', 'spikes', 'spikeStarts', 'spikeEnds']) # holds lists
+        newGraph = pd.DataFrame(columns=['patientunitstayid', 'Time', 'icp']) # holds points
+        spikeStats = pd.DataFrame(columns=['patientunitstayid', 'lastDay', 'spikes', 'spikeStarts', 'spikeEnds']) # holds lists
         
         spike_Count20, spike_Count25, spike_Count30, spike_Count35 = 0, 0, 0, 0
         start20, start25, start30, start35 = [], [], [], []
@@ -764,7 +769,6 @@ while node: # by patient
         spikeStats_Patient.append(spikeStats)
 
 
-
 # Graph code to show later. 
 
 # ------------------------------------------------- PRINTING VALUES BY DAY PER PATIENT -------------------------------------------------
@@ -815,11 +819,6 @@ while node: # by patient
     numNode += 1
     node = node.next
 
-
-# ------------------------------------------------- PRINTING ALL VALUES -------------------------------------------------
-
-print(f'Number of patients: {len(spikeStats_All)}')
-print(f'Number of patients: {len(newGraph_All)}')
 
 # %%
 # we have plotPointsList and spikeStats_ALL 
@@ -897,9 +896,141 @@ megaStats_DF = pd.DataFrame(data)
 # for debugging in the first 24 hours; is correct as we have 7 num20 spikes 
 megaStats_DF.head(10000000000000000000)
 
+
  # %%
 
+# #  -------------------- CALCULATING AUC, CORRECT VERSION FOR DAYS  ---------------------
+
+
+# # spikeStats_All (holds the 53 patients)
+#     # spikeStats_Patient (holds 168 hours)
+#         # spikeStats (has the info for each hour)
+
+
+
+# # tuple_day_threshold = [(0, 24), (24, 48), (48, 72), (72, 96), (96, 120), (120, 144), (144, 168)]
+# tuple_hourly = [(i, i+1) for i in range(0, 168)]
+# # tuple_hourly = [() for _ len()]
+# patient_list2 = []
+# hour2 = []
+# total_AUC = []
+
+# less_20_list = [] 
+
+# # Function to shift ICP values
+# def shift_icp_values(df, shift_amount):
+#     df['icp'] = df['icp'] - shift_amount
+#     df = df[df['icp'] >= 0]
+#     return df
+
+# def less20_area(df):
+#     df = df.loc[df['icp'] <= 20, ['icp', 'Hour']]
+#     return df
+
+# # Function to calculate AUC for given thresholds
+# def calc_auc(df):
+#     results = []
+#     for threshold in icp_threshold: 
+#         data_above_threshold = df.loc[df['icp'] >= threshold, ['icp', 'Hour']]
+#         data_above_threshold = shift_icp_values(data_above_threshold, threshold)
+#         if not data_above_threshold.empty:
+#             x = data_above_threshold['Hour'].values
+#             y = data_above_threshold['icp'].values
+#             area = np.trapz(y, x)
+#             results.append(area)
+#         else:
+#             results.append(0)
+#     return results
+
+# # patient_list = []
+# auc_list = [[] for _ in range(len(icp_threshold))]
+# test_list = []
+
+# for patient_df in plotPointsNew_List:
+#     # Ensure df is not a Series and not empty
+#     if not isinstance(patient_df, pd.Series) and (len(patient_df) != 0):
+#         count = 0
+#         patient_id = patient_df['patientunitstayid'].iloc[0].values
+        
+#         patient_df = patient_df.loc[patient_df['Hour'] >= 0]
+#         patient_df = patient_df.sort_values(by=['Hour'])
+#         for min_time, max_time in tuple_hourly:
+#             day_df = patient_df.loc[(patient_df['Hour'] >= min_time) & (patient_df['Hour'] < max_time)]
+            
+#             # now that day df is working with the current day; 
+#             if(day_df.empty):
+#                 patient_list2.append(patient_id)
+#                 # all values in auc_list[i] append 0 
+#                 for i in range(len(auc_list)):
+#                     auc_list[i].append(0)
+#                 count += 1
+#                 hour2.append(count)
+#                 test_list.append(0)
+#                 less_20_list.append(0)
+#                 continue
+
+#             # Append to the list         
+#             patient_list2.append(patient_id)
+#             auc_result = calc_auc(day_df)
+
+#             for i in range(len(icp_threshold)):
+#                 auc_list[i].append(auc_result[i])
+#             test_list.append(np.trapz(day_df['icp'], day_df['Hour']))
+
+#             test_area = less20_area(day_df)
+#             less_20_list.append(np.trapz(test_area['icp'], test_area['Hour']))
+
+#             count += 1
+#             hour2.append(count)
+        
+
+# # Create the DataFrame
+
+# data = {
+#     'patientunitstayid': patient_list2, 
+#     'Hour' : hour2,
+#     '>20 auc': auc_list[0],
+#     '>25 auc': auc_list[1],
+#     '>30 auc': auc_list[2],
+#     '>35 auc': auc_list[3], 
+#     'Total (tested)': test_list,
+#     '<20' : less_20_list
+# }
+
+# megaAUC_DF = pd.DataFrame(data)
+# megaAUC_DF.head(100000000000000000000000000000)
+
+# %%
+
+# newGraph_All (holds the 53 patients)
+    # newGraph_Patient (holds 168 dataframes for each hour)
+        # newGraph (single dataframe for one hour)'
+
+# newGraph_All (holds the 53 patients)
+    # newGraph_Patient (holds 168 hours as a single dataframe)
+
+
+newGraph_AllFinal = []
+for patient in newGraph_All: # loop through 53 patients
+
+    # create an empty patient dataframe to house 168 hours as signle dataframe 
+    newGraph_PatientList = [] 
+
+    for graph in patient: # loop through each hourly dataframe
+        newGraph_PatientList.append(graph)# combine each hour dataframe into single dataframe
+    # append newGraph_PatientFinal (single dataframe) to list of each patient
+    PatientFinal = pd.concat(newGraph_PatientList, ignore_index=True)
+    newGraph_AllFinal.append(PatientFinal)
+
+for patient in newGraph_AllFinal:
+    print(patient)
+
+    
+# %% 
+# better version for now : 
+
 #  -------------------- CALCULATING AUC, CORRECT VERSION FOR DAYS  ---------------------
+
 
 # tuple_day_threshold = [(0, 24), (24, 48), (48, 72), (72, 96), (96, 120), (120, 144), (144, 168)]
 tuple_hourly = [(i, i+1) for i in range(0, 168)]
@@ -939,7 +1070,12 @@ def calc_auc(df):
 auc_list = [[] for _ in range(len(icp_threshold))]
 test_list = []
 
-for patient_df in plotPointsNew_List:
+
+# combine newGraph dataframe for each patient (newGraph_All will sitll have 
+# 53 patients, but each patient represents 168 hours as one dataframe, 
+# not 168 dataframes representing hours
+
+for patient_df in newGraph_AllFinal:
     # Ensure df is not a Series and not empty
     if not isinstance(patient_df, pd.Series) and (len(patient_df) != 0):
         count = 0
@@ -991,7 +1127,7 @@ data = {
 }
 
 megaAUC_DF = pd.DataFrame(data)
-megaAUC_DF.head(100000000000000000000000000000)
+megaAUC_DF.head(1000000000000000000000000000000000000000000000000)
 
 
 #%% finding the mean/median for hr 1-24
@@ -1001,14 +1137,11 @@ df_24h = megaAUC_DF[megaAUC_DF['Hour'] <= 24]
 df_24h_sum_auc = df_24h.groupby('patientunitstayid')['Total (tested)'].sum().reset_index()
 df_24h_sum_auc.rename(columns={'Total (tested)': 'sum_auc_24h'}, index=str, inplace=True)
 
-# Filter df_24h to include only rows where icp is 0
+
 df_24h_nonzero_auc = df_24h[df_24h['Total (tested)'] != 0]
 df_24h_nonzero_hours = df_24h_nonzero_auc.groupby('patientunitstayid')['Hour'].count().reset_index()
 df_24h_nonzero_hours.rename(columns={'Hour': 'nonzero_hours_24h'}, inplace=True)
 
-df_24h_nonzero_hours.head(100000000000)
-
-# %%
 
 df_24h_nonzero_median = df_24h_nonzero_auc.groupby('patientunitstayid')['Total (tested)'].median().reset_index()
 df_24h_nonzero_median.rename(columns={'Total (tested)': 'Median first 24 hours'}, inplace=True)
@@ -1021,13 +1154,17 @@ df_merged = df_merged.drop(columns=['sum_auc_24h'], axis=1)
 df_merged = df_merged.drop(columns=['nonzero_hours_24h'], axis=1)
 
 df_merged.head(100000000000)
-
 # %%
 
-list1 = set(df_24h_sum_auc['patientunitstayid'].unique())
-list2 = set(df_merged['patientunitstayid'].unique())
+ids_to_add = [3222024, 3212405]
+new_rows = pd.DataFrame({
+    'patientunitstayid': ids_to_add,
+    'Baseline ICP': np.nan,
+    'Median first 24 hours': np.nan
+})
 
-print(list1 - list2)
+df_merged = pd.concat([df_merged, new_rows], ignore_index=True)
+df_merged = df_merged.sort_values(by='patientunitstayid').reset_index(drop=True)
 
 # %%
 '''
