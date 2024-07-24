@@ -1166,6 +1166,15 @@ new_rows = pd.DataFrame({
 df_merged = pd.concat([df_merged, new_rows], ignore_index=True)
 df_merged = df_merged.sort_values(by='patientunitstayid').reset_index(drop=True)
 
+df_merged.head(1000000)
+
+
+# %%
+
+print(df_merged['patientunitstayid'].unique())
+print(megaStats_DF['patientunitstayid'].unique())
+
+print(set(megaAUC_DF['patientunitstayid'].unique()) - set(megaStats_DF['patientunitstayid'].unique()))
 # %%
 '''
    .-.
@@ -1201,12 +1210,20 @@ cols_to_move = ['Baseline ICP', 'Median first 24 hours']
 new_order = cols_to_move + [col for col in AUC_RESULTS.columns if col not in cols_to_move]
 AUC_RESULTS = AUC_RESULTS[new_order]
 
+AUC_RESULTS = AUC_RESULTS.drop(columns=['Median first 24 hours'])
 
 cols_to_move = ['patientunitstayid', 'Hour']
 new_order = cols_to_move + [col for col in AUC_RESULTS.columns if col not in cols_to_move]
 AUC_RESULTS = AUC_RESULTS[new_order]
 
-
 AUC_RESULTS.head(1000000000000000000000000000000000000)
 
-# AUC_RESULTS.to_csv('AUC_RESULTS.csv')
+# %%
+AUC_RESULTS = AUC_RESULTS[(AUC_RESULTS['Hour'] >= 24) & (AUC_RESULTS['Hour'] <= 72)]
+
+AUC_RESULTS.head(10000000)
+# %%
+AUC_RESULTS.to_csv('AUC_RESULTS_hourly.csv')
+
+# %%
+
