@@ -25,10 +25,15 @@ from sklearn.impute import KNNImputer
 #               ---------- BASIC CLEANING ------------
 
 vitalsP_DF = pd.read_csv('vitalsP.csv')
+
+
 vitalsP_DF = vitalsP_DF.drop(columns=['Unnamed: 0', 'observationoffset', 'Day', 'Hour', 'systemicdiastolic'])
 vitalsP_DF = vitalsP_DF[vitalsP_DF['patientunitstayid'] != 1082792]
 # within 7 days (168 hr)
 vitalsP_DF = vitalsP_DF[vitalsP_DF['Time'] <= 168]
+
+
+
 
 #               ---------- CREATING A MULTI-INDEX ----------
 
@@ -69,6 +74,60 @@ vitalsP_DF = vitalsP_DF[vitalsP_DF['patientunitstayid'] != 1082792]
 vitalsP_MultiIndex = vitalsP_MultiIndex.loc[vitalsP_MultiIndex.index.
                      get_level_values('patientunitstayid').isin(total_patient_list)]
 
+
+# %%
+
+print(len(vitalsP_DF['patientunitstayid'].unique()))
+
+# %%
+
+# BEFORE WORKING WITH ANY OF THE HEAVY STUFF IN THE FILE, CALCULATE AVERAGES FOR THE FIRST 24 HRS 
+
+vitalsP_DF_calc = vitalsP_DF.copy()
+
+vitalsP_DF_calc = vitalsP_DF_calc[vitalsP_DF_calc['Time'] <= 24]
+vitalsP_DF_calc = vitalsP_DF_calc[vitalsP_DF_calc['icp'] != 0]
+
+# Group by patient_id and calculate the mean total_auc for the first 24 hours
+calc_obj_sum = vitalsP_DF_calc.groupby('patientunitstayid')['icp'].sum().reset_index()
+calc_obj_sum.rename(columns={'icp': 'sum_icp_24hrs'}, index=str, inplace=True)
+
+calc_obj_num = vitalsP_DF_calc.groupby('patientunitstayid')['icp'].count().reset_index()
+calc_obj_num.rename(columns={'icp': 'count_nonzero'}, index=str, inplace=True)
+
+calc_merged = pd.merge(calc_obj_sum, calc_obj_num, on='patientunitstayid')
+calc_merged['average'] = calc_merged['sum_icp_24hrs'] / calc_merged['count_nonzero']
+
+
+# add missing patients with NaN values 
+ids_to_add = [3222024, 3212405]
+new_rows = pd.DataFrame({
+    'patientunitstayid': ids_to_add,
+    'sum_icp_24hrs': np.nan,
+    'count_nonzero': np.nan,
+    'average': np.nan
+})
+
+calc_merged = pd.concat([calc_merged, new_rows], ignore_index=True)
+calc_merged = calc_merged.sort_values(by='patientunitstayid').reset_index(drop=True)
+
+calc_merged.head(1000000)
+
+# calc_merged.head()
+
+calc_merged.to_csv('icp_first_24.csv')
+
+# %%
+
+# for 24 to 72; do average hourly icp 
+
+
+# %%
+
+difference = set(vitalsP_DF['patientunitstayid'].unique()) - set(calc_merged['patientunitstayid'].unique())
+print(difference)
+
+# %%
 
 #            ---------- CREATING A LINKED LIST ----------
 
@@ -1131,6 +1190,8 @@ megaAUC_DF.head(1000000000000000000000000000000000000000000000000)
 
 
 #%% finding the mean/median for hr 1-24
+# REPLACE HOW WE CALCULATE AVG USING AUC
+
 df_24h = megaAUC_DF[megaAUC_DF['Hour'] <= 24]
 
 # Group by patient_id and calculate the mean total_auc for the first 24 hours
@@ -1226,4 +1287,7 @@ AUC_RESULTS.head(10000000)
 AUC_RESULTS.to_csv('AUC_RESULTS_hourly.csv')
 
 # %%
+
+# add up numbers for first 24 hours and divide by values we have 
+# use the actual vitalsP dataframe, don't waste time with LL 
 
