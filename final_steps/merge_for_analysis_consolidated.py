@@ -42,11 +42,60 @@ wce_merged.head(10000000)
 
 # %%
 
-columns_filter = ['patientunitstayid', 'Hour', 'End Hour', 'predModel', 'actualicumortality', 'actualiculos', 'AdmGCS', 'CompOutcome', 'Total AUC for Hour', 'num_spike_20']
+columns_filter = ['patientunitstayid', 'Hour', 'End Hour', 'predModel', 'actualicumortality', 'actualiculos', 'AdmGCS', 'CompOutcome', 'Total AUC for Hour', 'num_spike_20', "AgeGr", "Female"]
 
 # main thing we will be working with 
 wce_merged_model = wce_merged[columns_filter]
+# print(wce_merged_model)
 
+
+pList = wce_merged_model['patientunitstayid'].unique()
+newList = []
+
+# set all of the patient compoutcome to 0, set last row to 1
+for p in pList:
+    patient = wce_merged_model[wce_merged_model['patientunitstayid'] == p]
+    if patient.iloc[0]['CompOutcome'] == 1: # iloc for selection, loc for assignment
+        patient.loc[:, 'CompOutcome'] = 0
+        patient.loc[patient.index[-1], 'CompOutcome'] = 1
+    newList.append(patient)
+wce_merged_model_NEW = pd.concat(newList) # adjusted row values
+
+# --------------------------------------------------------------------------------------------
+
+pList = wce_merged_model_NEW['patientunitstayid'].unique()
+newList = []
+
+
+# iterate through each patient
+for p in pList:
+    patient = wce_merged_model[wce_merged_model['patientunitstayid'] == p]
+    print(patient)
+    i = len(patient) - 1
+    # loop backwards until we find the 'end' row
+    while i >= 0 and patient.iloc[i]['Total AUC for Hour'] == 0:
+        i -= 1
+
+    print(i)
+    # save only the rows until 'end row'
+    newList.append(patient.iloc[:i+1])
+    print(patient)
+    break
+
+# comp_outcome_counts = wce_merged_model_NEW['CompOutcome'].value_counts()
+# print("Number of 0's:", comp_outcome_counts.get(0, 0))
+# print("Number of 1's:", comp_outcome_counts.get(1, 0))
+
+
+# %%
+
+
+# # save new dataframe
+# wce_merged_edited_NEW = pd.concat(newList) # deleted rows
+
+# print(wce_merged_edited_NEW)
+
+# %%
 
 # grab predictedoutcome from wce_merged_FINAL.csv
 wce_pred_outcome = pd.read_csv('wce_merged_FINAL.csv')
@@ -55,49 +104,4 @@ wce_pred_outcome = wce_pred_outcome.drop_duplicates(subset='patientunitstayid')
 wce_pred_outcome = wce_pred_outcome.loc[wce_pred_outcome.index.repeat(145)].reset_index(drop=True)
 
 print(len(wce_pred_outcome))
-# wce_pred_outcome.head(10000)
-
-
-# %%
-# stitch before filtering later 
-
-
-# %%
-# find the patient who has one for the value of compoutcome
-pList = wce_merged_model['patientunitstayid'].unique()
-newList = []
-# set all of the patient compoutcome to 0, set last row to 1
-for p in pList:
-    rows = wce_merged_model[wce_merged_model['patientunitstayid'] == p]
-    if rows['CompOutcome'].iloc[0] == 1:
-        rows['CompOutcome'] = 0 # set all to 0
-        rows['CompOutcome'].iloc[len(rows)-1] = 1 # manually set last row to 1
-    newList.append(rows)
-
-wce_merged_model_NEW = pd.concat(newList) # adjusted row values
-
-wce_merged_model_NEW.head()
-# %%
-
-# --------------------------------------------------------------------------------------------
-pList = wce_merged_model['patientunitstayid'].unique()
-newList = []
-# iterate through each patient
-count = 1
-for p in pList:
-    rows = wce_merged_model[wce_merged_model['patientunitstayid'] == p]
-    print(count)
-    # print(rows)
-    count += 1
-    i = len(rows) - 1
-
-    end = 0
-    # loop backwards until we find the 'end' row
-    while rows['Total AUC for Hour'].iloc[i] == 0:
-        i-=1
-    # save only the rows until 'end row'
-    newList.append(rows.iloc[:i+1])
-
-# save new dataframe
-wce_merged_edited_NEW = pd.concat(newList) # deleted rows
-wce_merged_edited_NEW.head()
+print(wce_merged_edited_NEW)
