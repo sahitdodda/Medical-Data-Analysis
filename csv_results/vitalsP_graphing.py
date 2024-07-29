@@ -1280,11 +1280,12 @@ AUC_RESULTS = AUC_RESULTS[new_order]
 AUC_RESULTS.head(1000000000000000000000000000000000000)
 
 # %%
-AUC_RESULTS = AUC_RESULTS[(AUC_RESULTS['Hour'] >= 24) & (AUC_RESULTS['Hour'] <= 72)]
+# Used to be filtered from 24 to 72 hours, then filtered from 24 to 168 hours. 
+AUC_RESULTS = AUC_RESULTS[(AUC_RESULTS['Hour'] >= 24) & (AUC_RESULTS['Hour'] <= 168)]
 
 AUC_RESULTS.head(10000000)
 # %%
-AUC_RESULTS.to_csv('AUC_RESULTS_hourly.csv')
+AUC_RESULTS.to_csv('AUC_RESULTS_hourly_168.csv')
 
 # %%
 
