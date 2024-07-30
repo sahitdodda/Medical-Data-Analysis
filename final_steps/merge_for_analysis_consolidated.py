@@ -42,28 +42,15 @@ wce_merged.head(10000000)
 
 # %%
 
-columns_filter = ['patientunitstayid', 'Hour', 'End Hour', 'predModel', 'actualicumortality', 'actualiculos', 'AdmGCS', 'CompOutcome', 'Total AUC for Hour', 'num_spike_20', "AgeGr", "Female"]
+columns_filter = ['patientunitstayid', 'Hour', 'End Hour', 'predModel', 'predictedicumortality', 'actualicumortality', 'actualiculos', 'AdmGCS', 'CompOutcome', 'AgeGr', 'Female', 'ISS', 'Total AUC for Hour','>20 auc','>25 auc','>30 auc','>35 auc','num_spike_20','num_spike_25','num_spike_30','num_spike_35']
 
 # main thing we will be working with 
 wce_merged_model = wce_merged[columns_filter]
 # print(wce_merged_model)
-
-
-pList = wce_merged_model['patientunitstayid'].unique()
-newList = []
-
-# set all of the patient compoutcome to 0, set last row to 1
-for p in pList:
-    patient = wce_merged_model[wce_merged_model['patientunitstayid'] == p]
-    if patient.iloc[0]['CompOutcome'] == 1: # iloc for selection, loc for assignment
-        patient.loc[:, 'CompOutcome'] = 0
-        patient.loc[patient.index[-1], 'CompOutcome'] = 1
-    newList.append(patient)
-wce_merged_model_NEW = pd.concat(newList) # adjusted row values
-
+# %%
 # --------------------------------------------------------------------------------------------
 
-pList = wce_merged_model_NEW['patientunitstayid'].unique()
+pList = wce_merged_model['patientunitstayid'].unique()
 newList = []
 
 # iterate through each patient
@@ -78,7 +65,20 @@ for p in pList:
     newList.append(patient)
 
 wce_merged_model_NEW = pd.concat(newList)
+
+# %%
+
+def adjust_comp_outcome(patient_df):
+    if patient_df.iloc[0]['CompOutcome'] == 1:
+        patient_df['CompOutcome'] = 0
+        patient_df.loc[patient_df.index[-1], 'CompOutcome'] = 1
+    return patient_df
+
+# Group by 'patientunitstayid' and apply the adjustment function to each group
+wce_merged_model_NEW = wce_merged_model_NEW.groupby('patientunitstayid').apply(adjust_comp_outcome).reset_index(drop=True)
+
+
 # %%
 
 # Save the final dataframe to a csv file
-wce_merged_model_NEW.to_csv('wce_merged_model_FINAL_FINAL.csv')
+wce_merged_model_NEW.to_csv('FINAL_wce_merged_model.csv')
