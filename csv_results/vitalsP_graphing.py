@@ -26,8 +26,8 @@ from sklearn.impute import KNNImputer
 
 vitalsP_DF = pd.read_csv('vitalsP.csv')
 
-
-vitalsP_DF = vitalsP_DF.drop(columns=['Unnamed: 0', 'observationoffset', 'Day', 'Hour', 'systemicdiastolic'])
+# NOTE: before, dropped the Hour. keeping for convenience sake. 
+vitalsP_DF = vitalsP_DF.drop(columns=['Unnamed: 0', 'observationoffset', 'Day', 'systemicdiastolic'])
 vitalsP_DF = vitalsP_DF[vitalsP_DF['patientunitstayid'] != 1082792]
 # within 7 days (168 hr)
 vitalsP_DF = vitalsP_DF[vitalsP_DF['Time'] <= 168]
@@ -310,9 +310,9 @@ vitalsP_imputed_DF_copy = vitalsP_imputed_DF.copy()
 # for i in range(len(list)):
 #     vitalsP_imputed_DF_copy = imputeClosest(vitalsP_imputed_DF_copy, list[i], 5)
 
-imputer = KNNImputer(n_neighbors=5)
+# imputer = KNNImputer(n_neighbors=5)
 
-vitalsP_imputed_DF_copy = pd.DataFrame(imputer.fit_transform(vitalsP_imputed_DF_copy), columns=vitalsP_imputed_DF_copy.columns)
+# vitalsP_imputed_DF_copy = pd.DataFrame(imputer.fit_transform(vitalsP_imputed_DF_copy), columns=vitalsP_imputed_DF_copy.columns)
 
 mno.matrix(vitalsP_imputed_DF_copy, figsize=(20, 6)) 
 
@@ -671,12 +671,12 @@ while node: # by patient
     lastHour = 0
     first = False
 
-    for graph in HP_List: # each day
+    for graph in HP_List: # each hour
 
         hour += 1
 
-        newGraph = pd.DataFrame(columns=['patientunitstayid', 'Time', 'icp']) # holds points
-        spikeStats = pd.DataFrame(columns=['patientunitstayid', 'lastDay', 'spikes', 'spikeStarts', 'spikeEnds']) # holds lists
+        newGraph = pd.DataFrame(columns=['patientunitstayid', 'Time', 'icp', 'systemicmean', 'systemcsystolic']) # holds points
+        spikeStats = pd.DataFrame(columns=['patientunitstayid', 'lastDay', 'spikes', 'spikeStarts', 'spikeEnds']) # holds lists 
         
         spike_Count20, spike_Count25, spike_Count30, spike_Count35 = 0, 0, 0, 0
         start20, start25, start30, start35 = [], [], [], []
@@ -690,12 +690,16 @@ while node: # by patient
             
             # sets current and next point (used for conditions)
             nT = graph['Time'].iloc[i]
-            nI = graph['icp'].iloc[i]
             nxT = graph['Time'].iloc[i+1]
+            nI = graph['icp'].iloc[i]
             nxI = graph['icp'].iloc[i+1]
+            smT = graph['systemicmean'].iloc[i]
+            smxT = graph['systemicmean'].iloc[i+1]
+            ssT = graph['systemicsystolic'].iloc[i]
+            ssxT = graph['systemicsystolic'].iloc[i+1]
             
             # append the current point to graph
-            newRow = pd.DataFrame({'patientunitstayid': ID, 'Hour': hour, 'Time': nT, 'icp': nI}, index=[0])
+            newRow = pd.DataFrame({'patientunitstayid': ID, 'Hour': hour, 'Time': nT, 'icp': nI, 'systemicmean': smT, 'systemcsystolic': ssT}, index=[0])
             # Check if newRow is not empty or all-NA before concatenation
             if not newRow.isna().all(axis=None):
                 newGraph = pd.concat([newGraph, newRow], ignore_index=True)
@@ -710,14 +714,21 @@ while node: # by patient
             
             # finds slope
             slope = (nxI - nI) / (nxT - nT)
+            slopeMean = (smxT - smT) / (nxT - nT)
+            slopeSys = (ssxT - ssT) / (nxT - nT)
 
             # if passing threshold conditions
             # crosses 20
             if(t_cond[0]):
+
+                # find values
                 x = ((20-nI)/slope) + nT
-                
+                timeDiff = x - nT
+                sysMean = slopeMean * timeDiff + smT
+                sysSys = slopeSys * timeDiff + ssT
+
                 # add new point to graph
-                newRow = pd.DataFrame({'patientunitstayid': ID, 'Hour': hour, 'Time': x, 'icp': 20}, index=[0])
+                newRow = pd.DataFrame({'patientunitstayid': ID, 'Hour': hour, 'Time': x, 'icp': 20, 'systemicmean': sysMean, 'systemicsystolic': sysSys}, index=[0])
                 if not newRow.isna().all(axis=None):
                     newGraph = pd.concat([newGraph, newRow], ignore_index=True)
 
@@ -729,10 +740,15 @@ while node: # by patient
                     end20.append(x)
             # crosses 25
             if(t_cond[1]):
-                x = ((25-nI)/slope) + nT
                 
+                # find values
+                x = ((25-nI)/slope) + nT
+                timeDiff = x - nT
+                sysMean = slopeMean * timeDiff + smT
+                sysSys = slopeSys * timeDiff + ssT
+
                 # add new point to graph
-                newRow = pd.DataFrame({'patientunitstayid': ID, 'Hour': hour, 'Time': x, 'icp': 25}, index=[0])
+                newRow = pd.DataFrame({'patientunitstayid': ID, 'Hour': hour, 'Time': x, 'icp': 25, 'systemicmean': sysMean, 'systemicsystolic': sysSys}, index=[0])
                 if not newRow.isna().all(axis=None):
                     newGraph = pd.concat([newGraph, newRow], ignore_index=True)
 
@@ -743,10 +759,15 @@ while node: # by patient
                     end25.append(x)
             # crosses 30
             if(t_cond[2]):
+                
+                # find values
                 x = ((30-nI)/slope) + nT
+                timeDiff = x - nT
+                sysMean = slopeMean * timeDiff + smT
+                sysSys = slopeSys * timeDiff + ssT
 
                 # add new point to graph
-                newRow = pd.DataFrame({'patientunitstayid': ID, 'Hour': hour, 'Time': x, 'icp': 30}, index=[0])
+                newRow = pd.DataFrame({'patientunitstayid': ID, 'Hour': hour, 'Time': x, 'icp': 30, 'systemicmean': sysMean, 'systemicsystolic': sysSys}, index=[0])
                 if not newRow.isna().all(axis=None):
                     newGraph = pd.concat([newGraph, newRow], ignore_index=True)
                 
@@ -757,10 +778,15 @@ while node: # by patient
                     end30.append(x)
             # crosses 35
             if(t_cond[3]):
+                
+                # find values
                 x = ((35-nI)/slope) + nT
+                timeDiff = x - nT
+                sysMean = slopeMean * timeDiff + smT
+                sysSys = slopeSys * timeDiff + ssT
 
                 # add new point to graph
-                newRow = pd.DataFrame({'patientunitstayid': ID, 'Hour': hour, 'Time': x, 'icp': 35}, index=[0])
+                newRow = pd.DataFrame({'patientunitstayid': ID, 'Hour': hour, 'Time': x, 'icp': 35, 'systemicmean': sysMean, 'systemicsystolic': sysSys}, index=[0])
                 if not newRow.isna().all(axis=None):
                     newGraph = pd.concat([newGraph, newRow], ignore_index=True)
 
@@ -800,7 +826,7 @@ while node: # by patient
 
             # append the last point to graph
             if(i == len(graph)-2):
-                newRow = pd.DataFrame({'patientunitstayid': ID, 'Hour': hour, 'Time': nxT, 'icp': nxI}, index=[0])
+                newRow = pd.DataFrame({'patientunitstayid': ID, 'Hour': hour, 'Time': nxT, 'icp': nxI, 'systemicmean': smxT, 'systemicsystolic': ssxT}, index=[0])
                 # Check if newRow is not empty or all-NA before concatenation
                 if not newRow.isna().all(axis=None):
                     newGraph = pd.concat([newGraph, newRow], ignore_index=True)
@@ -914,8 +940,12 @@ num_spike_25 = []
 num_spike_30 = []
 num_spike_35 = []
 
+systemicmean_list = []
+systemicsystolic = []
+
 hour = 1
 sum_icp = 0
+
 
 
 for list in spikeStats_All: # cycles through each patient
@@ -924,8 +954,10 @@ for list in spikeStats_All: # cycles through each patient
 
         # patientID
         patientID = list[i]['patientunitstayid'].iloc[0]
+        
         # time period
         hour = i+1
+
 
         # spike stats
         spike_Count20 = list[i]['spikes'][0]
@@ -943,7 +975,7 @@ for list in spikeStats_All: # cycles through each patient
         
 data = {
     'patientunitstayid' : patient_list, 
-    'Hour (24-72 hours)' : time_period, 
+    'Hour (24-168 hours)' : time_period, 
     'num_spike_20' : num_spike_20, 
     'num_spike_25' : num_spike_25,
     'num_spike_30' : num_spike_30,
@@ -955,6 +987,52 @@ megaStats_DF = pd.DataFrame(data)
 # for debugging in the first 24 hours; is correct as we have 7 num20 spikes 
 megaStats_DF.head(10000000000000000000)
 
+
+
+# NOTE: 
+    # commented this stuff out for now, was going to add systemicmean and sytemicsystolic into the dataset 
+
+# # 'patientunitstayid' 'Hour' 'Time' 'icp' 'systemicmean' 'systemcsystolic'
+# patient_List2 = []
+# hour2 = []
+# time_period2 = []
+# icp_period2 = []
+# systemicmean_list2 = []
+# systemicsystolic2 = []
+
+# for list in newGraph_All: # cycles through each patient
+#     for i in range(len(list)): # within each patient, cycles through each hour
+#         for p in range(len(list[i])): # within each hour, cycles through each point
+        
+#             patientID = p['patientunitstayid'].iloc[0] # NOTE : 'int' object is not subscriptable
+#             hour = p['Hour']
+#             time = p['Time']
+#             icp = p['icp']
+#             systemicmean = p['systemicmean']
+#             systemicsystolic = p['systemicsystolic']
+
+#             patient_List2.append(patientID)
+#             hour2.append(hour)
+#             time_period2.append(time)
+#             icp_period2.append(icp)
+#             systemicmean_list2.append(systemicmean)
+#             systemicsystolic2.append(systemicsystolic)
+
+
+# data = {
+#     'patientunitstayid' : patient_List2, 
+#     'Hour (24-168 hours)' : hour2, 
+#     'Time' : time, 
+#     'icp' : icp,
+#     'systemicmean' : systemicmean,
+#     'systemicsystolic' : systemicsystolic
+# }
+
+# megaNewRow_DF = pd.DataFrame(data)
+
+# # %%
+
+# megaNewRow_DF.head(1000000000000000000000)
 
  # %%
 
@@ -1254,6 +1332,8 @@ data = {
     'patientunitstayid': patient_list2, 
     'Hour' : hour2,
     'Total AUC for Hour': test_list,
+    # 'systemicmean' : vitalsP_imputed_DF['systemicmean'], # NOTE 
+    # 'systemicsystolic': vitalsP_imputed_DF['systemicsystolic'], # NOTE
     '>20 auc': auc_list[0],
     '>25 auc': auc_list[1],
     '>30 auc': auc_list[2],
@@ -1279,6 +1359,19 @@ AUC_RESULTS = AUC_RESULTS[new_order]
 
 AUC_RESULTS.head(1000000000000000000000000000000000000)
 
+
+# %%
+
+print(len(AUC_RESULTS))
+print(len(vitalsP_imputed_DF))
+
+# %%
+# vitalsP_imputed_DF = vitalsP_imputed_DF.sort_values(by=['patientunitstayid', 'Time'])
+# vitalsP_imputed_DF.head(1000000000000)
+
+
+# AUC_RESULTS = pd.merge(AUC_RESULTS, vitalsP_imputed_DF, on='patientunitstayid')
+
 # %%
 # Used to be filtered from 24 to 72 hours, then filtered from 24 to 168 hours. 
 AUC_RESULTS = AUC_RESULTS[(AUC_RESULTS['Hour'] >= 24) & (AUC_RESULTS['Hour'] <= 168)]
@@ -1292,3 +1385,22 @@ AUC_RESULTS.to_csv('AUC_RESULTS_hourly_168.csv')
 # add up numbers for first 24 hours and divide by values we have 
 # use the actual vitalsP dataframe, don't waste time with LL 
 
+tempVital = vitalsP_imputed_DF[['patientunitstayid', 'icp', 'Time', 'systemicmean', 'systemicsystolic']]
+tempVital = tempVital.loc[(tempVital['Time'] > 0) & (tempVital['Time'] < 169)]
+# tempVital.head(1000000000000000)
+
+tempVital.to_csv('newColumns.csv')
+
+
+# %%
+
+
+# working with vitalsSub for etco2 
+vitalsSub = pd.read_csv('vitalsSub.csv')
+
+vitalsSub = vitalsSub[['patientunitstayid', 'observationoffset', 'etco2']]
+vitalsSub = vitalsSub.loc[(vitalsSub['observationoffset'] > 0) & (vitalsSub['observationoffset'] < 169)]
+
+mno.matrix(vitalsSub)
+
+vitalsSub.to_csv('patient_etc02.csv')
