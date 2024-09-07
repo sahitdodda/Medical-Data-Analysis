@@ -1,3 +1,3 @@
 # Hospital-Data-Project
 
-This is this the project for analyzing the data from Dallas Children's Hospital
+These are the code files regarding analysis of ICP and time-to-event data.
